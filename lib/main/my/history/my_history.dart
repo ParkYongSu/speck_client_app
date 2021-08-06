@@ -1,8 +1,6 @@
 import 'dart:convert';
 
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speck_app/Time/return_auth_time.dart';
 import 'package:speck_app/main/my/history/history_info.dart';
@@ -10,6 +8,7 @@ import 'package:speck_app/ui/ui_color.dart';
 import 'package:speck_app/ui/ui_criteria.dart';
 import 'package:http/http.dart' as http;
 import 'package:speck_app/widget/public_widget.dart';
+import 'package:speck_app/util/util.dart';
 
 class MyHistory extends StatefulWidget {
   @override
@@ -20,7 +19,6 @@ class _MyHistoryState extends State<MyHistory> with TickerProviderStateMixin {
   UICriteria _uiCriteria = new UICriteria();
   TabController _controller;
   int _tabIndex;
-  List<Widget> _publicList;
   List<Widget> _ingGalaxy;
   List<Widget> _expireGalaxy;
 
@@ -44,9 +42,11 @@ class _MyHistoryState extends State<MyHistory> with TickerProviderStateMixin {
               print("스냅샷 데이터 ${snapshot.data}");
               List<dynamic> ing = snapshot.data["myGalaxy"];
               List<dynamic> expire = snapshot.data["expireGalaxy"];
+              List<dynamic> pre = snapshot.data["myPreGalaxy"];
               _sort(ing);
               _sort(expire);
-              _ingGalaxy = _getGalaxy(ing);
+              _sort(pre);
+              _ingGalaxy = _getGalaxy(ing) + _getPreGalaxy(pre);
               _expireGalaxy = _getGalaxy(expire);
               return  Container(
                 decoration: BoxDecoration(
@@ -60,18 +60,18 @@ class _MyHistoryState extends State<MyHistory> with TickerProviderStateMixin {
                       ),
                       child: TabBar(
                         controller: _controller,
-                        indicatorColor: Colors.black,
+                        indicatorColor: mainColor,
                         indicatorWeight: 3,
                         tabs: <Widget>[
                           Container(
                             alignment: Alignment.center,
                             height: _uiCriteria.totalHeight * 0.049,
-                            child: Text("탐험중인 갤럭시", style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize3),),
+                            child: Text("탐험중인 갤럭시", style: TextStyle(color: mainColor, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize3),),
                           ),
                           Container(
                             alignment: Alignment.center,
                             height: _uiCriteria.totalHeight * 0.049,
-                            child: Text("완료한 갤럭시",  style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize3),),
+                            child: Text("완료한 갤럭시",  style: TextStyle(color: mainColor, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize3),),
                           )
                         ],
                       ),
@@ -128,7 +128,7 @@ class _MyHistoryState extends State<MyHistory> with TickerProviderStateMixin {
   Future<dynamic> _request() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
     String userEmail = sp.getString("email");
-    Uri url = Uri.parse("http://13.209.138.39:8080/mypage/mygalaxy");
+    Uri url = Uri.parse("http://$speckUrl/mypage/mygalaxy");
     String body = '''{
       "userEmail" : "$userEmail" 
     }''';
@@ -149,7 +149,29 @@ class _MyHistoryState extends State<MyHistory> with TickerProviderStateMixin {
     Future future = _request();
     var result;
     await future.then((value) => result = value).onError((error, stackTrace) => print(error));
-    print("************* $result");
+    return result;
+  }
+  List<Widget> _getPreGalaxy(List<dynamic> preGalaxy) {
+    List<Widget> result = <Widget>[];
+
+    for (int i = 0; i < preGalaxy.length; i++) {
+      dynamic info = preGalaxy[i];
+      int official = info["official"];
+      String time = getAuthTime(info["timeNum"]);
+      int attendCount = info["attendCount"];
+      int totalCount = info["totalCount"];
+      int bookInfo = info["bookinfo"];
+      String startDate = info["startdate"];
+      String endDate = info["enddate"];
+      DateTime current = DateTime.now();
+      String galaxyName = info["galaxyName"];
+      String start = "${startDate.toString().substring(0,4)}.${startDate.toString().substring(5,7)}.${startDate.toString().substring(8,10)}";
+      String end = "${endDate.toString().substring(0,4)}.${endDate.toString().substring(5,7)}.${endDate.toString().substring(8,10)}";
+      int index = -1;
+      String status = "입금대기";
+      Color statusColor = mainColor;
+      result.add(_galaxyListElement(status, statusColor, official, attendCount, galaxyName, time, start, end, totalCount, index, bookInfo));
+    }
     return result;
   }
 
@@ -200,97 +222,102 @@ class _MyHistoryState extends State<MyHistory> with TickerProviderStateMixin {
       }
 
       result.add(
-        GestureDetector(
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.transparent
-            ),
-            child: AspectRatio(
-                aspectRatio: 375/103,
-                child: LayoutBuilder(
-                  builder: (BuildContext context, BoxConstraints constraint) {
-                    return Container(
-                      padding: EdgeInsets.symmetric(horizontal: _uiCriteria.horizontalPadding, vertical: constraint.maxHeight * 0.1165),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Container(
-                            width: constraint.maxWidth * 0.2107,
-                            height: constraint.maxWidth * 0.2107,
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Color(0XFFd8d8d8)),
-                                borderRadius: BorderRadius.circular(6.9),
-                                image: DecorationImage(
-                                  image: AssetImage("assets/png/example.png",),
-                                  fit: BoxFit.fitHeight
-                                )
-                            ),
-                          ),
-                          SizedBox(
-                            width: _uiCriteria.horizontalPadding,
-                          ),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Row(
-                                children: <Widget>[
-                                  Container(
-                                    alignment: Alignment.center,
-                                    padding: EdgeInsets.symmetric(horizontal: constraint.maxWidth * 0.016, vertical: constraint.maxHeight * 0.0388),
-                                    decoration: BoxDecoration(
-                                        color: statusColor,
-                                        borderRadius: BorderRadius.circular(3.5)
-                                    ),
-                                    child: Text(
-                                      status, style: TextStyle(fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w500, color: Colors.white),
-                                    ),
-                                  ),
-                                  SizedBox(width: constraint.maxWidth * 0.016,),
-                                  Container(
-                                    padding: EdgeInsets.symmetric(horizontal: constraint.maxWidth * 0.016, vertical: constraint.maxHeight * 0.0388),
-                                    decoration: BoxDecoration(
-                                        color: Color(0XFFf5f5f6),
-                                        borderRadius: BorderRadius.circular(3.5)
-                                    ),
-                                    child: Text(
-                                      "출석횟수 $attendCount회", style: TextStyle(fontSize: _uiCriteria.textSize3, color: Color(0XFFd8d8d8), fontWeight: FontWeight.w500,),
-                                    ),
-                                  )
-                                ],
-                              ),
-                              SizedBox(
-                                height: constraint.maxHeight * 0.068,
-                              ),
-                              Text("${(official == 0)?"[공식] ":""}$galaxyName($time)", style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize3),),
-                              SizedBox(
-                                height: constraint.maxHeight * 0.068,
-                              ),
-                              RichText(
-                                text: TextSpan(
-                                    style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500, fontSize: _uiCriteria.textSize5),
-                                    children: <TextSpan>[
-                                      TextSpan(text: "예약 기간"),
-                                      TextSpan(text: " $start ~ $end (총 $totalCount일)", style: TextStyle(fontWeight: FontWeight.w700))
-                                    ]
-                                ),
-                              )
-                            ],
-                          )
-                        ],
-                      ),
-                    );
-                  },
-                )
-            ),
-          ),
-          onTap: () => _navigateHistoryInfo(index, bookInfo),
-        ),
+        _galaxyListElement(status, statusColor, official, attendCount, galaxyName, time, start, end, totalCount, index, bookInfo)
       );
     }
     return result;
   }
 
+  /// 리스트 항목
+  Widget _galaxyListElement(String status, Color statusColor, int official, int attendCount, String galaxyName, String time, String start, String end, int totalCount,
+  int index, int bookInfo) {
+    return GestureDetector(
+      child: Container(
+        decoration: BoxDecoration(
+            color: Colors.transparent
+        ),
+        child: AspectRatio(
+            aspectRatio: 375/103,
+            child: LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraint) {
+                return Container(
+                  padding: EdgeInsets.symmetric(horizontal: _uiCriteria.horizontalPadding, vertical: constraint.maxHeight * 0.1165),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        width: constraint.maxWidth * 0.2107,
+                        height: constraint.maxWidth * 0.2107,
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Color(0XFFd8d8d8)),
+                            borderRadius: BorderRadius.circular(6.9),
+                            image: DecorationImage(
+                                image: AssetImage("assets/png/example.png",),
+                                fit: BoxFit.fitHeight
+                            )
+                        ),
+                      ),
+                      SizedBox(
+                        width: _uiCriteria.horizontalPadding,
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              Container(
+                                alignment: Alignment.center,
+                                padding: EdgeInsets.symmetric(horizontal: constraint.maxWidth * 0.016, vertical: constraint.maxHeight * 0.0388),
+                                decoration: BoxDecoration(
+                                    color: statusColor,
+                                    borderRadius: BorderRadius.circular(3.5)
+                                ),
+                                child: Text(
+                                  status, style: TextStyle(fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w500, color: Colors.white),
+                                ),
+                              ),
+                              SizedBox(width: constraint.maxWidth * 0.016,),
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: constraint.maxWidth * 0.016, vertical: constraint.maxHeight * 0.0388),
+                                decoration: BoxDecoration(
+                                    color: Color(0XFFf5f5f6),
+                                    borderRadius: BorderRadius.circular(3.5)
+                                ),
+                                child: Text(
+                                  "출석횟수 $attendCount회", style: TextStyle(fontSize: _uiCriteria.textSize3, color: Color(0XFFd8d8d8), fontWeight: FontWeight.w500,),
+                                ),
+                              )
+                            ],
+                          ),
+                          SizedBox(
+                            height: constraint.maxHeight * 0.068,
+                          ),
+                          Text("${(official == 0)?"[공식] ":""}$galaxyName($time)", style: TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize3),),
+                          SizedBox(
+                            height: constraint.maxHeight * 0.068,
+                          ),
+                          RichText(
+                            text: TextSpan(
+                                style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500, fontSize: _uiCriteria.textSize5),
+                                children: <TextSpan>[
+                                  TextSpan(text: "예약 기간"),
+                                  TextSpan(text: " $start ~ $end (총 $totalCount일)", style: TextStyle(fontWeight: FontWeight.w700))
+                                ]
+                            ),
+                          )
+                        ],
+                      )
+                    ],
+                  ),
+                );
+              },
+            )
+        ),
+      ),
+      onTap: () => _navigateHistoryInfo(index, bookInfo),
+    );
+  }
 
   Widget _galaxyList(BuildContext context, List<Widget> list) {
     return  Container(

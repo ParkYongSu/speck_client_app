@@ -54,7 +54,6 @@ class _SetProfileState extends State<SetProfile> {
   void _setting() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
     _profile = sp.getString("profile");
-    print(_profile);
     if (_profile != "N") {
       _isBasicSelected = false;
     }
@@ -171,8 +170,17 @@ class _SetProfileState extends State<SetProfile> {
             return Stack(
               alignment: Alignment.bottomRight,
               children: <Widget>[
-                (!_isBasicSelected)
-                ? (_image == null)
+                (_isBasicSelected)
+                ? Container(
+                  margin: EdgeInsets.all(constraint.maxWidth * 0.166 ),
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                          fit: BoxFit.fill,
+                          image: AssetImage(getCharacter(characterIndex))
+                      )
+                  ),
+                )
+                : (_image == null)
                 ? Container(
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
@@ -191,16 +199,37 @@ class _SetProfileState extends State<SetProfile> {
                             alignment: Alignment.center,
                             image: FileImage(File(_image.path),),
                             fit: BoxFit.cover)
-                    ))
-                :Container(
-                  margin: EdgeInsets.all(constraint.maxWidth * 0.166 ),
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                          fit: BoxFit.fill,
-                          image: AssetImage(getCharacter(characterIndex))
-                      )
-                  ),
-                ),
+                    )),
+                // (!_isBasicSelected)
+                // ? (_image == null)
+                // ? Container(
+                //   decoration: BoxDecoration(
+                //       shape: BoxShape.circle,
+                //       image: DecorationImage(
+                //         image: NetworkImage(_profile),
+                //         fit: BoxFit.fill,
+                //       )
+                //   ),
+                // )
+                // : Container(
+                //     width: double.infinity,
+                //     height: double.infinity,
+                //     decoration: BoxDecoration(
+                //         shape: BoxShape.circle,
+                //         image: DecorationImage(
+                //             alignment: Alignment.center,
+                //             image: FileImage(File(_image.path),),
+                //             fit: BoxFit.cover)
+                //     ))
+                // :Container(
+                //   margin: EdgeInsets.all(constraint.maxWidth * 0.166 ),
+                //   decoration: BoxDecoration(
+                //       image: DecorationImage(
+                //           fit: BoxFit.fill,
+                //           image: AssetImage(getCharacter(characterIndex))
+                //       )
+                //   ),
+                // ),
                 Container(
                   width: constraint.maxWidth * 0.3212,
                   height: constraint.maxWidth * 0.3212,
@@ -344,26 +373,39 @@ class _SetProfileState extends State<SetProfile> {
 
   // 카메라로 직접 가져옴
   _imgFromCamera () async {
-    PickedFile image = await ImagePicker().getImage(
-        source: ImageSource.camera, imageQuality: 50);
-    setState(() {
-      _image = image;
-      print("image ${image.path}");
-      _isBasicSelected = false;
-      _isImageSelected = true;
-    });
-    Navigator.of(context, rootNavigator: true).pop();
+    try {
+      PickedFile image = await ImagePicker().getImage(
+          source: ImageSource.camera, imageQuality: 50);
+      setState(() {
+        _image = image;
+        _isBasicSelected = false;
+        _isImageSelected = true;
+      });
+      Navigator.of(context, rootNavigator: true).pop();
+    }
+    catch (e) {
+      print(e);
+    }
   }
   // 앨범에서 가져옴
   _imgFromAlbum() async {
-    PickedFile image = await ImagePicker().getImage(
-        source: ImageSource.gallery, imageQuality: 50);
-    setState(() {
-      _image = image;
-      _isBasicSelected = false;
-      _isImageSelected = true;
-    });
-    Navigator.of(context, rootNavigator: true).pop();
+    try {
+      PickedFile image = await ImagePicker().getImage(
+          source: ImageSource.gallery, imageQuality: 50);
+      setState(() {
+        print("image ${image.path}");
+
+        _image = image;
+        if (_image != null) {
+          _isBasicSelected = false;
+          _isImageSelected = true;
+        }
+      });
+      Navigator.of(context, rootNavigator: true).pop();
+    }
+    catch (e) {
+      print(e);
+    }
   }
 
   _selectBasicImage() {
@@ -415,7 +457,7 @@ class _SetProfileState extends State<SetProfile> {
     SharedPreferences sp = await SharedPreferences.getInstance();
     var url;
     if (image != null) {
-      url = Uri.parse("http://13.209.138.39:8080/update/profile");
+      url = Uri.parse("http://$speckUrl/update/profile");
       var request = http.MultipartRequest('POST', url);
       String data = '''{
         "email" : "${sp.getString("email")}",
@@ -441,7 +483,7 @@ class _SetProfileState extends State<SetProfile> {
     }
     else {
       String profile = (_isBasicSelected)?"N":"$_profile";
-      url = Uri.parse("http://13.209.138.39:8080/update/profile/none");
+      url = Uri.parse("http://$speckUrl/update/profile/none");
       String body = '''{
         "email" : "${sp.getString("email")}",
         "nickname" : "$nickname",

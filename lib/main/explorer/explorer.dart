@@ -111,13 +111,14 @@ class _ExplorerState extends State<Explorer> with TickerProviderStateMixin {
       controller: _controller,
       children: <Widget>[
         GalaxyDetail(
+            route: _route,
             galaxyName: widget.galaxyName,
             imagePath: widget.imageUrl,
             galaxyNum: widget.galaxyNum,
             official: widget.official,
-            route: _route
         ),
         ExplorerDetail(
+          route: _route,
         ),
         Container(
             decoration: BoxDecoration(

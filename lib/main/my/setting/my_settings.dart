@@ -15,6 +15,7 @@ import 'package:speck_app/ui/ui_criteria.dart';
 import 'package:speck_app/widget/public_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
+import 'package:speck_app/util/util.dart';
 
 class Settings extends StatelessWidget {
   final UICriteria _uiCriteria = new UICriteria();
@@ -456,7 +457,7 @@ class Settings extends StatelessWidget {
 
   void _requestWithdrawal2(BuildContext context) async {
     SharedPreferences sp = await SharedPreferences.getInstance();
-    var url = Uri.parse("http://13.209.138.39:8080/withdraw");
+    var url = Uri.parse("http://$speckUrl/withdraw");
     String body = '''{
       "email" : "${sp.getString("email")}"
     }''';

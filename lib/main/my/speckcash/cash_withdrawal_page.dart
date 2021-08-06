@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:date_format/date_format.dart';
+import 'package:speck_app/util/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -222,7 +222,7 @@ class _CashWithdrawalPageState extends State<CashWithdrawalPage> {
       int withdrawal = int.parse(value);
       _amount = value.replaceAllMapped(new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');
 
-      var url = Uri.parse("http://13.209.138.39:8080/send");
+      var url = Uri.parse("http://$speckUrl/send");
       String body = '''{
       "userEmail" : "${sp.getString("email")}",
       "withdrawal" : $withdrawal,

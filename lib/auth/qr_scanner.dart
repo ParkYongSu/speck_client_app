@@ -16,6 +16,7 @@ import 'package:speck_app/ui/ui_color.dart';
 import 'package:speck_app/ui/ui_criteria.dart';
 import 'package:http/http.dart' as http;
 import 'package:speck_app/widget/public_widget.dart';
+import 'package:speck_app/util/util.dart';
 
 class QrScanner extends StatefulWidget {
   @override
@@ -323,7 +324,7 @@ class QrScannerState extends State<QrScanner> {
     String placeCode = code.substring(code.length - 4, code.length);
     String hashCode = code.substring(0, code.length - 4);
     print("bookInfo $bookInfo");
-    var url = Uri.parse("http://13.209.138.39:8080/certify/auth");
+    var url = Uri.parse("http://$speckUrl/certify/auth");
     String body = '''{
        "status" : $status,
        "placeCode" : "$placeCode",

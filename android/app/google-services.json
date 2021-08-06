@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "687330380704",
+    "project_id": "paidagogosspeck",
+    "storage_bucket": "paidagogosspeck.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:687330380704:android:4256fc78301ac47cb7b2c5",
+        "android_client_info": {
+          "package_name": "com.paidagogos.speck"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "687330380704-2kegij1o7tgldram1bt9rte2r5bsp2b0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCT8Qk1MdT6dlPqz5v1AFDDFDB2Rzi996c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "687330380704-2kegij1o7tgldram1bt9rte2r5bsp2b0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "687330380704-uaspe29hpoj7lr9e82h4bb9pemg5uo8u.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.paidagogos.speck"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

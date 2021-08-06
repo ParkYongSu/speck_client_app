@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:speck_app/util/util.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -186,7 +187,7 @@ class _SetSexState extends State<SetSex> {
     SharedPreferences sp = await SharedPreferences.getInstance();
     String email = sp.getString("email");
     String gender = (_selectedIndex == -1)?"N":(_selectedIndex == 0)?"M":"W";
-    Uri url = Uri.parse("http://13.209.138.39:8080/update/gender");
+    Uri url = Uri.parse("http://$speckUrl/update/gender");
     String body = '''{
       "email" :  "$email",
       "gender" : "$gender"

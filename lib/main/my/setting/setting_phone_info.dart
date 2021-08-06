@@ -12,6 +12,7 @@ import 'package:speck_app/ui/ui_color.dart';
 import 'package:speck_app/ui/ui_criteria.dart';
 import "package:http/http.dart" as http;
 import 'package:speck_app/widget/public_widget.dart';
+import 'package:speck_app/util/util.dart';
 
 class SetPhoneNumber extends StatefulWidget {
   @override
@@ -446,7 +447,7 @@ class _SetPhoneNumberState extends State<SetPhoneNumber> {
 
   void _complete() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
-    var url = Uri.parse("http://13.209.138.39:8080/update/phonenumber");
+    var url = Uri.parse("http://$speckUrl/update/phonenumber");
     String body = '''{
       "email" : "${sp.getString("email")}",
       "phoneNumber" : "${_pNumController.text}"

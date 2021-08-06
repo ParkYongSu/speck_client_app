@@ -15,6 +15,7 @@ import 'package:speck_app/ui/ui_color.dart';
 import 'package:speck_app/widget/public_widget.dart';
 import 'package:speech_bubble/speech_bubble.dart';
 import 'package:http/http.dart' as http;
+import 'package:speck_app/util/util.dart';
 
 class GpsAuth extends StatefulWidget {
   @override
@@ -61,7 +62,7 @@ class _GpsAuthState extends State<GpsAuth> with TickerProviderStateMixin, Widget
   int _timeNum;
   int _mannerTime;
   String _assetName = "";
-  LocationTrackingMode _locationTrackingMode = LocationTrackingMode.Follow;
+  LocationTrackingMode _locationTrackingMode;
   int _noticeMark = 0;
 
   @override
@@ -409,7 +410,7 @@ class _GpsAuthState extends State<GpsAuth> with TickerProviderStateMixin, Widget
 
   void _getSpeckZone() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
-    var url = Uri.parse("http://13.209.138.39:8080/map");
+    var url = Uri.parse("http://$speckUrl/map");
     String body = ''' {
       "email" : "${sp.getString("email")}"  
     } ''';
@@ -740,7 +741,7 @@ class _GpsAuthState extends State<GpsAuth> with TickerProviderStateMixin, Widget
 
   Future<dynamic> _authenticate() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
-    var url = Uri.parse("http://13.209.138.39:8080/certify/auth");
+    var url = Uri.parse("http://$speckUrl/certify/auth");
     int bookInfo = sp.getInt("bookInfo");
     String email = sp.getString("email");
     String body = ''' {

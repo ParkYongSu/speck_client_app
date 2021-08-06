@@ -16,6 +16,7 @@ import 'package:speck_app/ui/ui_color.dart';
 import 'package:speck_app/ui/ui_criteria.dart';
 import 'package:speck_app/widget/public_widget.dart';
 import "package:http/http.dart" as http;
+import 'package:speck_app/util/util.dart';
 
 class GalaxyDetail extends StatefulWidget {
   final String galaxyName; // 학교이름
@@ -149,12 +150,11 @@ class GalaxyDetailState extends State<GalaxyDetail> {
     _timeSelectionSort(timeList, "timenum");
     _popularSelectionSort(timeList, "total");
     print(timeList);
-    int totalReserveAM;
-    int totalReservePM;
+    int totalReserveAM = 0;
+    int totalReservePM = 0;
     // 위젯으로 리턴
     for (int i = 0; i < timeList.length; i++) {
-      totalReserveAM = 0;
-      totalReservePM = 0;
+
       int timeNum = timeList[i]["timenum"];
       String time = getAuthTime(timeNum);
       int att = timeList[i]["att"];
@@ -218,7 +218,7 @@ class GalaxyDetailState extends State<GalaxyDetail> {
         ? () => _timeTap1(timeNum)
         :() {
         _setExplorerState(timeNum);
-        Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (context) => ExplorerForm()));
+        Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (context) => ExplorerForm(route: widget.route,)));
       },
       child: Container(
         margin: EdgeInsets.only(left: (ampm.length == 11)?_uiCriteria.horizontalPadding:0, right: _uiCriteria.screenWidth * 0.032),
@@ -274,7 +274,7 @@ class GalaxyDetailState extends State<GalaxyDetail> {
       ? () => _timeTap1(timeNum)
       :(){
         _setExplorerState(timeNum);
-        Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (context) => ExplorerForm()));
+        Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (context) => ExplorerForm(route: widget.route,)));
       },
       child: Container(
           margin: EdgeInsets.only(left: (popularSortList.length == 4)? _uiCriteria.horizontalPadding : 0, right: _uiCriteria.screenWidth * 0.032),
@@ -472,7 +472,7 @@ class GalaxyDetailState extends State<GalaxyDetail> {
 
   // /// 탭을 눌렀을 때 시간별 데이터를 가져옴
   // void _getTimeList() async {
-  //   var url = Uri.parse("http://13.209.138.39:8080/galaxy/detail/timelist");
+  //   var url = Uri.parse("http://$speckUrl/galaxy/detail/timelist");
   //   String body = """{
   //     "galaxyNum":${widget.galaxyNum},
   //     "dateInfo":"$_selectedDate"
@@ -1316,7 +1316,7 @@ class GalaxyDetailState extends State<GalaxyDetail> {
   Future<dynamic> _getDetail(int galaxyNum) async {
     SharedPreferences sp = await SharedPreferences.getInstance();
     String email = sp.getString("email");
-    var url = Uri.parse("http://13.209.138.39:8080/galaxy/detail");
+    var url = Uri.parse("http://$speckUrl/galaxy/detail");
     String body = '''{
       "userEmail": "$email",
       "galaxyNum":$galaxyNum,

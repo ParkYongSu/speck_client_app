@@ -10,6 +10,7 @@ import 'package:speck_app/ui/ui_color.dart';
 import 'package:speck_app/ui/ui_criteria.dart';
 import 'package:http/http.dart' as http;
 import 'package:speck_app/widget/public_widget.dart';
+import 'package:speck_app/util/util.dart';
 
 import 'my_settings.dart';
 
@@ -187,7 +188,7 @@ class SetBirthdayState extends State<SetBirthday> {
   
   void _request() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
-    var url = Uri.parse("http://13.209.138.39:8080/update/borntime");
+    var url = Uri.parse("http://$speckUrl/update/borntime");
     String bornTime = (_birthdayController.text.isNotEmpty)?_birthdayController.text:"N";
     String body = '''{
       "email" : "${sp.getString("email")}",

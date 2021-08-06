@@ -1,7 +1,5 @@
- import 'dart:async';
+import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk/all.dart';
@@ -30,7 +28,6 @@ import 'package:speck_app/kakao/kakao_share.dart';
 import 'package:speck_app/ui/ui_color.dart';
 import 'package:speck_app/ui/ui_criteria.dart';
 import 'package:speck_app/widget/public_widget.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'Login/Email/email_login_page.dart';
 import 'State/notice.dart';
 import 'package:speck_app/Time/stopwatch.dart';
@@ -40,13 +37,15 @@ import 'State/find_state.dart';
 import "package:http/http.dart" as http;
 import 'package:intl/date_symbol_data_local.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   KakaoContext.clientId = "73f39efa3b70764d2db33838d3d8afb7";
   KakaoContext.javascriptClientId = "92c297bce9437e32308dead29e3b1806";
   KakaoShareManager manager = new KakaoShareManager();
   manager.initializeKakaoSDK();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  // await Firebase.initializeApp();
+  // FirebaseMessaging.onBackgroundMessage(_messageHandler);
   initializeDateFormatting().then((_) => runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (context) => PageNaviState()),
@@ -74,8 +73,12 @@ void main() {
         debugShowCheckedModeBanner: false,
         home: SpeckApp()),
   )));
-
 }
+
+/// 주석제거
+// Future<void> _messageHandler(RemoteMessage message) async {
+//   print(message.notification.body);
+// }
 
 class SpeckApp extends StatefulWidget {
   @override
@@ -89,6 +92,25 @@ class SpeckAppState extends State<SpeckApp> {
   final UICriteria _uiCriteria = new UICriteria();
   SharedPreferences _sp;
   BannerState _bs;
+  // FirebaseMessaging _firebaseMessaging; /// 주석제거
+
+  @override
+  void initState() {
+    super.initState();
+    /// 주석제거
+    // _firebaseMessaging = FirebaseMessaging.instance;
+    // _firebaseMessaging.getToken().then((value) =>
+    //   print("토큰 $value")
+    // );
+    // _firebaseMessaging.requestPermission();
+    // FirebaseMessaging.onMessage.listen((RemoteMessage event) {
+    //   print("message recieved");
+    //   print(event.notification.body);
+    // });
+    // FirebaseMessaging.onMessageOpenedApp.listen((message) {
+    //   print('Message clicked!');
+    // });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -223,7 +245,6 @@ class SpeckAppState extends State<SpeckApp> {
       _bs.setMapStatus(data["map"]);
     }
   }
-
 
   Future<Widget> _splashAction(BuildContext context) async {
     _sp = await SharedPreferences.getInstance();

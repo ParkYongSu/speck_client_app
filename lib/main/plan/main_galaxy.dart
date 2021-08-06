@@ -12,7 +12,7 @@ import 'package:speck_app/ui/ui_color.dart';
 import 'package:speck_app/ui/ui_criteria.dart';
 import 'package:speck_app/widget/public_widget.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:speck_app/util/util.dart';
 import 'galaxy_detail_form.dart';
 
 class MainPlan extends StatefulWidget {
@@ -193,7 +193,7 @@ class _MainPlanState extends State<MainPlan> {
   Future<dynamic> _getGalaxyInfo(int categoryId) async {
     SharedPreferences sp = await SharedPreferences.getInstance();
     String email = sp.getString("email");
-    var url = Uri.parse("http://13.209.138.39:8080/galaxy");
+    var url = Uri.parse("http://$speckUrl/galaxy");
     print("카테고리 $categoryId");
     String body = '''{
       "userEmail" : "$email",
@@ -610,7 +610,7 @@ class _MainPlanState extends State<MainPlan> {
   void _transferData(String type) async {
     String data;
     SharedPreferences sp = await SharedPreferences.getInstance();
-    var url = Uri.parse("http://13.209.138.39:8080/home/insert/galaxy");
+    var url = Uri.parse("http://$speckUrl/home/insert/galaxy");
     String body;
     Map<String, String> header = {
       "Content-Type" : "application/json"

@@ -22,6 +22,7 @@ import 'package:speck_app/ui/ui_color.dart';
 import 'package:speck_app/ui/ui_criteria.dart';
 import 'package:speck_app/widget/public_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:speck_app/util/util.dart';
 
 class MainMap extends StatefulWidget {
   @override
@@ -907,7 +908,7 @@ class MainMapState extends State<MainMap> {
     print("장소 정보 가져오기");
     String email = sp.getString("email");
     // var url = Uri.parse("http://192.168.0.17:8080/map");
-    var url = Uri.parse("http://13.209.138.39:8080/map");
+    var url = Uri.parse("http://$speckUrl/map");
     String body = '''{
       "email" : "$email"
     }''';
@@ -1343,7 +1344,7 @@ class MainMapState extends State<MainMap> {
   void _transferData(String type) async {
     String data;
     SharedPreferences sp = await SharedPreferences.getInstance();
-    var url = Uri.parse("http://13.209.138.39:8080/home/insert/map");
+    var url = Uri.parse("http://$speckUrl/home/insert/map");
     String body;
     Map<String, String> header = {
       "Content-Type" : "application/json"

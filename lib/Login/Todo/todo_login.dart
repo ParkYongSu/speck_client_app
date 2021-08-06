@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import "package:intl/intl.dart";
+import 'package:speck_app/util/util.dart';
+
 class TodoLogin {
 // todo 로그인하면 서버로부터 토큰을 받아와서 SharedPreference 로 저장
   Future<bool> confirmInfo(String email, String pw) async {
@@ -32,7 +34,7 @@ class TodoLogin {
   }
 
   Future<dynamic> login(String email) async {
-    Uri url = Uri.parse("http://13.209.138.39:8080/login");
+    Uri url = Uri.parse("http://$speckUrl/login");
     String body = '''{
       "email":"$email"
     }''';

@@ -10,6 +10,7 @@ import 'package:speck_app/Time/return_auth_time.dart';
 import 'package:speck_app/main/explorer/explorer.dart';
 import 'package:speck_app/ui/ui_color.dart';
 import 'package:speck_app/ui/ui_criteria.dart';
+import 'package:speck_app/util/util.dart';
 import 'package:speck_app/widget/public_widget.dart';
 
 class MainExplorer extends StatefulWidget {
@@ -58,7 +59,7 @@ class _MainExplorerState extends State<MainExplorer> {
   }
 
   Future<dynamic> _requestExplorer(String userEmail) async {
-    var url = Uri.parse("http://13.209.138.39:8080/explorer");
+    var url = Uri.parse("http://$speckUrl/explorer");
     String body = ''' 
       {
         "userEmail" : "$userEmail"
@@ -169,22 +170,9 @@ class _MainExplorerState extends State<MainExplorer> {
     return result??Container();
   }
 
-  List<Widget> _times(List<dynamic> timeList, Color color) {
-    List<Widget> times = [];
-
-    for (int i = 0; i < timeList.length; i++) {
-      times.add(
-          Text("${(times.length == timeList.length - 1)? " ${getAuthTime(timeList[i])}":" ${getAuthTime(timeList[i])},"}", style: TextStyle(fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize5, color: color ),)
-      );
-    }
-    return times;
-
-  }
-
   Widget _gridElement(int official, String nickname, String galaxyName, int todayReserve,
       String message, String imgUrl, int galaxyNum, List<Widget> hashTags, int avgAtt, int avgAttRank,
       List<dynamic> timeList, String bookStartDate, String bookEndDate, int attendCount, int timeNum, int bookInfo) {
-    List<Widget> times = _times(timeList, mainColor);
     DateTime current = DateTime.now();
     String status;
     Color statusColor;
@@ -297,9 +285,7 @@ class _MainExplorerState extends State<MainExplorer> {
                       Row(
                         children: <Widget>[
                           Text("가입한 탐험단", style: TextStyle(fontSize: _uiCriteria.textSize5, fontWeight: FontWeight.w500, color: mainColor),),
-                          Row(
-                            children: times,
-                          )
+                          Text(" ${getAuthTime(timeNum)}", style: TextStyle(fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize5, color: mainColor))
                         ],
                       ),
                     ],
@@ -456,14 +442,14 @@ class _MainExplorerState extends State<MainExplorer> {
     return GestureDetector(
       onTap: () => _navigateExplorer(official, galaxyName, todayReserve, message, imgUrl, galaxyNum, hashTags, avgAtt, avgAttRank, timeList, timeNum, bookInfo),
       child: AspectRatio(
-        aspectRatio: 375 / 375,
+        aspectRatio: 375 / 391,
         child: Container(
           decoration: BoxDecoration(
             border: Border(bottom: BorderSide(color: greyD8D8D8, width: 0.5))
           ),
           alignment: Alignment.center,
           padding: EdgeInsets.symmetric(
-              horizontal: _uiCriteria.horizontalPadding, vertical: _uiCriteria.verticalPadding),
+              horizontal: _uiCriteria.horizontalPadding,),
           child: AspectRatio(
             aspectRatio: 343/343,
             child: LayoutBuilder(

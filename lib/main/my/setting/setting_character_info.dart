@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:speck_app/util/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -276,7 +276,7 @@ class SetCharacterState extends State<SetCharacter> {
 
   _onPressed() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
-    var url = Uri.parse("http://13.209.138.39:8080/update/character");
+    var url = Uri.parse("http://$speckUrl/update/character");
     String body = '''{
       "email" : "${sp.getString("email")}",
       "character" : $_selectedIndex

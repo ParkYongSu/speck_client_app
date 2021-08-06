@@ -34,12 +34,6 @@
               android:name="io.flutter.embedding.android.SplashScreenDrawable"
               android:resource="@drawable/launch_background"
               />
-
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN"/>-->
-<!--                <category android:name="android.intent.category.LAUNCHER"/>-->
-<!--                <data android:scheme="kakao73f39efa3b70764d2db33838d3d8afb7" android:host="oauth"/>-->
-<!--            </intent-filter>-->
            <intent-filter>
                <action android:name="android.intent.action.MAIN"/>
                <category android:name="android.intent.category.LAUNCHER"/>
@@ -63,5 +57,8 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+<!--       <meta-data-->
+<!--           android:name="com.google.firebase.messaging.default_notification_channel_id"-->
+<!--           android:value="@string/default_notification_channel_id" />-->
     </application>
 </manifest>

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:speck_app/util/util.dart';
 
 class TodoRegister {
   //todo.1 아이디 중복확인 가입된 이메일이 있는지 확인하는 거로 메서드 이름 바꾸기
@@ -79,7 +80,7 @@ class TodoRegister {
 
   Future<int> requestUserDataProfile(String email, String pw, String phoneNumber, String nickname,
       String sex, String bornTime, int characterIndex, String service, String personalInformationCollection, String receiveEventInformation, File image) async {
-    var url = Uri.parse("http://13.209.138.39:8080/signup/profile");
+    var url = Uri.parse("http://$speckUrl/signup/profile");
     var request = http.MultipartRequest('POST', url);
     String signUpData = """ {
       "email":"$email",
@@ -112,7 +113,7 @@ class TodoRegister {
 
   Future<int> requestUSerDataNoneProfile(String email, String pw, String phoneNumber, String nickname,
       String sex, String bornTime, int characterIndex, String service, String personalInformationCollection, String receiveEventInformation) async {
-    var url = Uri.parse("http://13.209.138.39:8080/signup/none-profile");
+    var url = Uri.parse("http://$speckUrl/signup/none-profile");
     String body = """ {
       "email" : "$email", 
 	    "pw" : "$pw", 

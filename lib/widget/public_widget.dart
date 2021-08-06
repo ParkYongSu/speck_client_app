@@ -47,25 +47,31 @@ Widget reservedGalaxyInfo(BuildContext context, DateTime startDate, DateTime end
   DateTime current = DateTime.now();
   String status;
   Color statusColor;
-  if (current.isAfter(startDate) && current.isBefore(endDate)) {
-    status = "진행중";
-    statusColor = Color(0XFF404040);
-  }
-  else if (current.isAfter(DateTime.parse(endDate.toString().substring(0, 10)  + " " + getAuthTime(timeNum)))) {
-    status = "완료됨";
-    statusColor = greyD8D8D8;
-  }
-  else {
-    int dDay = DateTime(startDate.year,startDate.month,startDate.day, 0, 0, 0, 0)
-        .difference(DateTime(current.year, current.month, current.day, 0, 0, 0, 0)).inDays;
-    if (dDay == 0) {
+  if (type != -1) { /// 입금대기 상태가 아니
+    if (current.isAfter(startDate) && current.isBefore(endDate)) {
       status = "진행중";
       statusColor = Color(0XFF404040);
     }
-    else {
-      status = "D-"+ dDay.toString();
-      statusColor = Color(0XFFE7535C);
+    else if (current.isAfter(DateTime.parse(endDate.toString().substring(0, 10)  + " " + getAuthTime(timeNum)))) {
+      status = "완료됨";
+      statusColor = greyD8D8D8;
     }
+    else {
+      int dDay = DateTime(startDate.year,startDate.month,startDate.day, 0, 0, 0, 0)
+          .difference(DateTime(current.year, current.month, current.day, 0, 0, 0, 0)).inDays;
+      if (dDay == 0) {
+        status = "진행중";
+        statusColor = Color(0XFF404040);
+      }
+      else {
+        status = "D-"+ dDay.toString();
+        statusColor = Color(0XFFE7535C);
+      }
+    }
+  }
+  else {
+    status = "입금대기";
+    statusColor = mainColor;
   }
   return AspectRatio(
     aspectRatio: 3750/1208,

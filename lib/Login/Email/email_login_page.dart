@@ -20,6 +20,7 @@ import 'package:speck_app/ui/ui_criteria.dart';
 import '../Find/find_email_page.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
+import 'package:speck_app/util/util.dart';
 
 class EmailLoginPage extends StatefulWidget {
   @override
@@ -348,7 +349,7 @@ class EmailLoginPageState extends State<EmailLoginPage> {
   }
 
   Future<dynamic>_bannerData() async {
-    var url = Uri.parse("http://13.209.138.39:8080/home");
+    var url = Uri.parse("http://$speckUrl/home");
     String body = '''{
       "userEmail" : "${_sp.getString("email")}"
     }''';

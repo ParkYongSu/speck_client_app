@@ -8,6 +8,7 @@ import 'package:speck_app/main/my/setting/my_settings.dart';
 import 'package:speck_app/ui/ui_color.dart';
 import 'package:speck_app/ui/ui_criteria.dart';
 import 'package:http/http.dart' as http;
+import 'package:speck_app/util/util.dart';
 
 class AccountSettingPage extends StatefulWidget {
   final int index;
@@ -245,7 +246,7 @@ class _AccountSettingPageState extends State<AccountSettingPage> {
 
   void _setAccount(int index) async {
     SharedPreferences sp = await SharedPreferences.getInstance();
-    var url = Uri.parse((index == 0)?"http://13.209.138.39:8080/account/set/main":"http://13.209.138.39:8080/account/set/sub");
+    var url = Uri.parse((index == 0)?"http://$speckUrl/account/set/main":"http://$speckUrl/account/set/sub");
     String body = (index == 0)
     ? '''{
       "email" : "${sp.getString("email")}",

@@ -8,6 +8,7 @@ import 'package:speck_app/ui/ui_color.dart';
 import 'package:speck_app/ui/ui_criteria.dart';
 import 'package:speck_app/widget/public_widget.dart';
 import 'package:http/http.dart' as http;
+import 'package:speck_app/util/util.dart';
 
 class BenefitWithdrawResult extends StatelessWidget {
   final String amount;
@@ -58,7 +59,7 @@ class BenefitWithdrawResult extends StatelessWidget {
 
   dynamic _getAccountInfo() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
-    var url = Uri.parse("http://13.209.138.39:8080/account");
+    var url = Uri.parse("http://$speckUrl/account");
     String body = '''{
       "email" : "${sp.getString("email")}"
     }''';

@@ -114,7 +114,7 @@ class _MainMyPageState extends State<MainMyPage> with TickerProviderStateMixin{
                                           children: <Widget>[
                                             (_bookInfoList.isEmpty)
                                             ? Text("갤럭시에 가입해주세요", style: TextStyle(letterSpacing: 0.7,color: Colors.white, fontSize: _uiCriteria.textSize5, fontWeight: FontWeight.w500))
-                                            :  Text("인하대학교 갤럭시의", style: TextStyle(letterSpacing: 0.7,color: Colors.white, fontSize: _uiCriteria.textSize5, fontWeight: FontWeight.w500)),
+                                            :  Text("$_galaxyName의", style: TextStyle(letterSpacing: 0.7,color: Colors.white, fontSize: _uiCriteria.textSize5, fontWeight: FontWeight.w500)),
                                             SizedBox(
                                               height: constraint.maxHeight * 0.04317,
                                             ),
@@ -576,11 +576,10 @@ class _MainMyPageState extends State<MainMyPage> with TickerProviderStateMixin{
   dynamic _getMyData() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
     _profile = sp.getString("profile");
-    print("");
     String userEmail = sp.getString("email");
     _character = sp.getInt("characterIndex");
     _nickname = sp.getString("nickname");
-    Uri url = Uri.parse("http://13.209.138.39:8080/mypage/");
+    Uri url = Uri.parse("http://$speckUrl/mypage/");
     String body = """ {
       "userEmail":"$userEmail"
     } """;
@@ -595,7 +594,6 @@ class _MainMyPageState extends State<MainMyPage> with TickerProviderStateMixin{
 
     var response = await http.post(url, body: body, headers: header);
     var result = jsonDecode(utf8.decode(response.bodyBytes));
-    print("result $result");
     return result;
   }
 
@@ -606,6 +604,7 @@ class _MainMyPageState extends State<MainMyPage> with TickerProviderStateMixin{
     _attRate = result["attRate"];
     _bookInfoList = result["bookCalendar"];
     _authInfoList = result["authCalendar"];
+    _galaxyName = result["galaxyName"];
   }
 
   List<Event> _getEventsForDay(DateTime day, List<dynamic> infoList, int index) {
@@ -649,6 +648,7 @@ class _MainMyPageState extends State<MainMyPage> with TickerProviderStateMixin{
   List<dynamic> _authInfoList = [];
   int _character;
   String _profile;
+  String _galaxyName;
 
   @override
   void initState() {

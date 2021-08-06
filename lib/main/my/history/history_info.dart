@@ -11,6 +11,7 @@ import 'package:speck_app/widget/public_widget.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
+import 'package:speck_app/util/util.dart';
 
 import 'history_event.dart';
 import 'my_history.dart';
@@ -497,8 +498,9 @@ class HistoryInfo extends StatelessWidget {
           child: MaterialButton(
             disabledColor: greyB3B3BC,
             color: mainColor,
-            onPressed: (type == 0)
-            ?() {
+            onPressed: (type == 1)
+            ? null
+            : () {
               showDialog(
                   barrierColor: Colors.black.withOpacity(0.2),
                   barrierDismissible: false,
@@ -526,7 +528,7 @@ class HistoryInfo extends StatelessWidget {
                                         Spacer(flex: 235,),
                                         Text("정말 취소하시겠어요?", style: TextStyle(letterSpacing: 0.7, color: mainColor, fontSize: _uiCriteria.screenWidth * 0.042, fontWeight: FontWeight.w700),),
                                         Spacer(flex: 50),
-                                        Text("취소시 스펙 캐시로 환급됩니다.", style: TextStyle(letterSpacing: 0.5, color: greyAAAAAA, fontSize: _uiCriteria.textSize5, fontWeight: FontWeight.w700),),
+                                        Text((type == 0)?"취소시 스펙 캐시로 환급됩니다.":"취소시 예약데이터가 삭제됩니다.", style: TextStyle(letterSpacing: 0.5, color: greyAAAAAA, fontSize: _uiCriteria.textSize5, fontWeight: FontWeight.w700),),
                                         Spacer(flex: 245,)
                                       ],
                                     ))),
@@ -558,9 +560,11 @@ class HistoryInfo extends StatelessWidget {
                                               alignment: Alignment.center,
                                               child: Text("예약취소", style: TextStyle(letterSpacing: 0.7, color: Color(0XFFe7535c), fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize2),)),
                                           onTap:() async {
-                                            var url = Uri.parse("http://13.209.138.39:8080/bookingdelete");
+                                            int pre = (type == -1)?1:0;
+                                            var url = Uri.parse("http://$speckUrl/bookingdelete");
                                             String body = ''' {
-                                             "bookinfo" : $bookInfo}
+                                             "bookinfo" : $bookInfo,
+                                             "pre" : $pre
                                             } ''';
                                             Map<String, String> header = {
                                               "Content-Type" : "application/json"
@@ -590,8 +594,7 @@ class HistoryInfo extends StatelessWidget {
                       ),
                     );
                   });
-            }
-            : null,
+            },
             elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(3.5),
@@ -688,7 +691,7 @@ class HistoryInfo extends StatelessWidget {
                                     alignment: Alignment.center,
                                     child: Text("예약취소", style: TextStyle(letterSpacing: 0.7, color: Color(0XFFe7535c), fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize2),)),
                                 onTap:() async {
-                                  var url = Uri.parse("http://13.209.138.39:8080/bookingdelete");
+                                  var url = Uri.parse("http://$speckUrl/bookingdelete");
                                   String body = ''' {
                             "bookinfo" : $bookInfo}
                             } ''';
@@ -776,7 +779,7 @@ class HistoryInfo extends StatelessWidget {
                               alignment: Alignment.center,
                               child: Text("예약취소", style: TextStyle(letterSpacing: 0.7, color: Color(0XFFe7535c), fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize2),)),
                           onTap:() async {
-                            var url = Uri.parse("http://13.209.138.39:8080/bookingdelete");
+                            var url = Uri.parse("http://$speckUrl/bookingdelete");
                             String body = ''' {
                             "bookinfo" : $bookInfo}
                             } ''';
@@ -810,7 +813,7 @@ class HistoryInfo extends StatelessWidget {
   }
 
   void _cancel(BuildContext context) async {
-    var url = Uri.parse("http://13.209.138.39:8080/bookingdelete");
+    var url = Uri.parse("http://$speckUrl/bookingdelete");
     String body = ''' {
       "bookinfo" : $bookInfo}
     } ''';
@@ -833,7 +836,7 @@ class HistoryInfo extends StatelessWidget {
   }
 
   dynamic _getData() async {
-    var url = Uri.parse("http://13.209.138.39:8080/mypage/mygalaxyDetail");
+    var url = Uri.parse("http://$speckUrl/mypage/mygalaxyDetail");
     String body = '''{
       "bookinfo" : $bookInfo
     }''';

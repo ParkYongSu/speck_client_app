@@ -13,6 +13,7 @@ import 'package:speck_app/reservation/check_event.dart';
 import 'package:speck_app/reservation/reservation_util.dart';
 import 'package:speck_app/ui/ui_color.dart';
 import 'package:speck_app/ui/ui_criteria.dart';
+import 'package:speck_app/util/util.dart';
 import 'package:speck_app/widget/public_widget.dart';
 import 'package:speech_bubble/speech_bubble.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -446,7 +447,6 @@ class _ReservationState extends State<Reservation> {
                       ),
                       child: _getReservationCalendar(context, _reservationList)
                   ),
-
                   (_rangeSelectionMode == RangeSelectionMode.toggledOn)
                       ? Column(
                     children: [
@@ -1322,7 +1322,11 @@ class _ReservationState extends State<Reservation> {
                                                     fontSize: _uiCriteria.textSize1,
                                                     fontWeight: FontWeight.w700)),
                                             (_isDateSelected && _correctMoney)
-                                                ?Text("$_totalPayment원",
+                                                ?Text("${_totalPayment.replaceAllMapped(
+                                                new RegExp(
+                                                    r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+                                                    (Match m) =>
+                                                '${m[1]},')}원",
                                                 style: TextStyle(
                                                     letterSpacing: 0.8,
                                                     color: mainColor,
@@ -1549,17 +1553,21 @@ class _ReservationState extends State<Reservation> {
   Future<dynamic> _reservationData() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
     String userEmail = sp.getString("email");
-
-    Uri url = Uri.parse("http://13.209.138.39:8080/prebooking");
+    Uri url = Uri.parse("http://$speckUrl/prebooking");
     String body = '''{
+      "galaxyNum" : ${widget.galaxyNum},
       "userEmail" : "$userEmail"
     }''';
+    print(body);
     Map<String, String> header = {
       "Content-Type" : "application/json"
     };
 
     var response = await http.post(url, headers: header, body: body);
+    print(response.body);
     var result = jsonDecode(utf8.decode(response.bodyBytes));
+    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+
     print(result);
     return Future(() {
       return result;
@@ -1571,7 +1579,7 @@ class _ReservationState extends State<Reservation> {
     _accumAtt = data["accumAtt"].toString();
     _accumDeposit = data["accumDeposit"].toString();
     _avgDeposit = data["avgDeposit"].toString();
-    _reservationList = data["reserveResult"];
+    _reservationList = data["reserveResult"] + data["preReserveResult"];
   }
 
   void _accountOwnerChanged(String value) {
@@ -1628,7 +1636,11 @@ class _ReservationState extends State<Reservation> {
               fontWeight: FontWeight.w700,
               fontSize: _uiCriteria.textSize2));
     }
-    return Text("$_totalPayment원 결제하기",
+    return Text("${_totalPayment.replaceAllMapped(
+        new RegExp(
+            r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+            (Match m) =>
+        '${m[1]},')}원 결제하기",
         style: TextStyle(
             letterSpacing: 0.7,
             color: Colors.white,
@@ -1661,7 +1673,7 @@ class _ReservationState extends State<Reservation> {
 
           _cnt = _selectedDays.length;
           _totalPayment = (int.parse(((_paymentController.text.isEmpty)?"0":_paymentController.text)) * _cnt)
-              .toString().replaceAllMapped(new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');
+              .toString();
 
           if (_cnt == 0) {
             _startDate = "미선택";
@@ -1760,7 +1772,7 @@ class _ReservationState extends State<Reservation> {
           _isRangeSelected = true;
           _isDateSelected = true;
           _totalPayment = (int.parse(((_paymentController.text.isEmpty)?"0":_paymentController.text)) * _cnt)
-              .toString().replaceAllMapped(new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');
+              .toString();
         }
       });
     }
@@ -2021,12 +2033,7 @@ class _ReservationState extends State<Reservation> {
         }
       }
       _cnt = _temp.length;
-      _totalPayment = (int.parse((_paymentController.text.isEmpty)?"0":_paymentController.text) * _cnt).toString()
-          .replaceAllMapped(
-          new RegExp(
-              r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-              (Match m) =>
-          '${m[1]},');
+      _totalPayment = (int.parse((_paymentController.text.isEmpty)?"0":_paymentController.text) * _cnt).toString();
     });
   }
 
@@ -2339,7 +2346,9 @@ class _ReservationState extends State<Reservation> {
   }
 
   void _reservationByCash() async {
-    if (int.parse(_speckCash) > int.parse(_paymentController.text)) {
+    print(int.parse(_speckCash));
+    print(int.parse(_totalPayment));
+    if (int.parse(_speckCash) > int.parse(_totalPayment)) {
       Future future = _request();
       int statusCode;
       await future.then((value) => statusCode = value).onError((error, stackTrace) => print("error: $error"));
@@ -2544,7 +2553,7 @@ class _ReservationState extends State<Reservation> {
     String end = (_selectedIndex == 0)?_rangeEndDay.toString().substring(0,10):_selectedEndDay.toString().substring(0,10);
     List<String> date = _generateListDate(_selectedIndex);
     _showLoader();
-    var url = Uri.parse("http://13.209.138.39:8080/booking");
+    var url = Uri.parse("http://$speckUrl/booking");
     String body = '''{
       "startdate": "$start",
       "enddate": "$end",
@@ -2587,12 +2596,7 @@ class _ReservationState extends State<Reservation> {
             _totalPayment = (int.parse(
                 value) *
                 _cnt)
-                .toString()
-                .replaceAllMapped(
-                new RegExp(
-                    r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-                    (Match m) =>
-                '${m[1]},');
+                .toString();
             _correctMoney = true;
 
           }

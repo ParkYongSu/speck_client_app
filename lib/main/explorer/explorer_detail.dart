@@ -15,6 +15,9 @@ import 'package:speck_app/util/util.dart';
 import 'package:speck_app/widget/public_widget.dart';
 
 class ExplorerDetail extends StatefulWidget {
+  final int route;
+
+  const ExplorerDetail({Key key, @required this.route}) : super(key: key);
   @override
   _ExplorerDetailState createState() => _ExplorerDetailState();
 }
@@ -48,7 +51,6 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
   int _official;
   String _selectedDate;
   String _selectedDateWeekdayText;
-  int _route;
   List<dynamic> _timeList;
   int _myAttendCount;
   int _myTotalCount;
@@ -63,6 +65,7 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
   int _avgAttRate;
   int _remainingTime;
   MyInfoTimer _myInfoTimer;
+  int _bookInfo;
 
   @override
   void initState() {
@@ -98,19 +101,16 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
     _official = _es.getOfficial();
     _selectedDate = _es.getSelectedDate();
     _selectedDateWeekdayText = _es.getSelectedDateWeekdayText();
-    _route = _es.getRoute();
     _timeList = _es.getTimeList();
     _time = getAuthTime(_timeNum);
     _selectedDateText = "${DateTime.parse(_selectedDate).year}.${DateTime.parse(_selectedDate).month}.${DateTime.parse(_selectedDate).day}";
     _current = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
     _diff = DateTime.parse(_selectedDate).difference(_current).inDays;
     _myInfoTimer = Provider.of<MyInfoTimer>(context, listen: true);
-
     return FutureBuilder(
         future: _explorer(context),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.hasData == true) {
-            print(snapshot.data);
             return snapshot.data;
           }
           else {
@@ -156,12 +156,12 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
     // todo. shcoolId, classId 가져오기
     Future future = _getExplorerInfo(_galaxyNum, _timeNum, _selectedDate);
     await future.then((value) => result = value, onError: (e) => print(e));
-    print("결과 $result");
     _avgAtt = result["avgAtt"].toString().replaceAllMapped(new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');
     _avgAttRate = result["avgAttRate"];
     _todayCount = result["todayCount"];
     _attCount = result["attCount"];
     _explorerRank = result["explorerRank"];
+    _bookInfo = result["bookInfo"];
     List<dynamic> explorerTodayList = result["explorerTodayList"];
     _selectionSort(explorerTodayList);
     for (int i = 0; i < explorerTodayList.length; i++) {
@@ -177,23 +177,23 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
           _userInfo(context, nickname, countAtt, characterIndex, attendValue)
       );
     }
-
     _usersList = userList;
 
     return Future(() {
-      return Stack(
-        alignment: Alignment.bottomCenter,
-        children: [
-          _background(context, _avgAtt, _avgAttRate),
-          _slidingPanel(context)
-        ],
+      return Container(
+        child: Stack(
+          alignment: Alignment.bottomCenter,
+          children: [
+            _background(context, _avgAtt, _avgAttRate),
+            _slidingPanel(context)
+          ],
+        ),
       );
     });
   }
 
   /// 아래 캐릭터
   Widget _userInfo(BuildContext context, String nickname, int countAtt, int characterIndex, int attendValue) {
-    print("캐릭터 $characterIndex");
     return Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
@@ -230,7 +230,7 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
             children: [
               Container(
                   child: Image.asset("assets/png/explorer_background1.png", fit: BoxFit.fill,)),
-              (_route == 0)
+              (!_timeList.contains(_timeNum))
               ? Container()
               : Container(
                   child: Image.asset("assets/png/explorer_background1.png", fit: BoxFit.fill,)),
@@ -304,12 +304,18 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
                         ]
                     ),
                   ),
-                  Container(
-                    margin: EdgeInsets.only(bottom: _uiCriteria.totalHeight * 0.5428),
-                    height: _uiCriteria.totalHeight * 0.1582,
-                    alignment: Alignment.center,
-                    child: Image.asset((_route == 0)?"assets/png/planet_draw.png":"assets/png/explorer_draw_color.png",),
+                  AspectRatio(aspectRatio: 375/10),
+                  Expanded(
+                    child: Container(
+                      alignment: Alignment.center,
+                      child: Image.asset((!_timeList.contains(_timeNum))?"assets/png/planet_draw.png":"assets/png/explorer_draw_color.png",),
+                    ),
                   ),
+                  AspectRatio(aspectRatio: 375/10),
+                  /// 받침
+                  Container(
+                    height: (widget.route == 0)?(uiCriteria.totalHeight - uiCriteria.appBarHeight) * 0.55 : (uiCriteria.totalHeight - uiCriteria.appBarHeight - uiCriteria.totalHeight * 0.049) * 0.55,
+                  )
                 ],
               ),
             ),
@@ -386,12 +392,10 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
 
   void _onTapLeft() {
     DateTime date = DateTime.parse(_selectedDate);
-    print(date);
     setState(() {
       if (_diff > 0) {
         date = date.add(Duration(days: -1));
         _diff = date.difference(_current).inDays;
-        print("-------diff--------- $_diff");
         _es.setSelectedDate(date.toString().substring(0, 10));
         _selectedDateText = "${date.year}.${date.month}.${date.day}";
 
@@ -476,7 +480,7 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
 
   Widget _myInfoButton(BoxConstraints constraint) {
     return GestureDetector(
-      onTap: (_route == 0)
+      onTap: (!_timeList.contains(_timeNum))
       ? null
       : () {
         if (_myInfo) {
@@ -498,18 +502,18 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
           children: <Widget>[
             Container(
               decoration: BoxDecoration(
-                color: (_route == 0)?greyF5F5F6:(_myInfo)?mainColor:Colors.white,
+                color: (!_timeList.contains(_timeNum))?greyF5F5F6:(_myInfo)?mainColor:Colors.white,
                 shape: BoxShape.circle,
-                boxShadow: (_route == 0)
+                boxShadow: (!_timeList.contains(_timeNum))
                     ? null
                     : [BoxShadow(color: Colors.black.withOpacity(0.13), spreadRadius: 0, blurRadius: 6, offset: Offset(0,1))],
               ),
               width: constraint.maxHeight * 0.4864,
               height: constraint.maxHeight * 0.4864,
               padding: EdgeInsets.all(constraint.maxHeight * 0.1018),
-              child: Image.asset("assets/png/my_info.png", color: (_route == 0)?greyAAAAAA:(_myInfo)?Colors.white:mainColor),),
+              child: Image.asset("assets/png/my_info.png", color: (!_timeList.contains(_timeNum))?greyAAAAAA:(_myInfo)?Colors.white:mainColor),),
             SizedBox(height: constraint.maxHeight * 0.0630),
-            Text("나의 정보", style: TextStyle(letterSpacing: 0.6, color: (_route == 0)?greyAAAAAA:mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w700),)
+            Text("나의 정보", style: TextStyle(letterSpacing: 0.6, color: (!_timeList.contains(_timeNum))?greyAAAAAA:mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w700),)
           ]
       ),
     );
@@ -863,10 +867,10 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
   /// 내정보 가져오기
   Future<dynamic> _getMyInfo() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
-    var url = Uri.parse("http://13.209.138.39:8080/explorer/myinfo");
+    var url = Uri.parse("http://$speckUrl/explorer/myinfo");
     String body = '''{
       "userEmail" : "${sp.getString("email")}",
-      "bookinfo" : ${_es.getBookInfo()}
+      "bookinfo" : $_bookInfo
     }''';
     Map<String, String> header = {
       "Content-Type" : "application/json"
@@ -874,7 +878,6 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
 
     var response = await http.post(url, headers: header, body: body);
     var result = jsonDecode(utf8.decode(response.bodyBytes));
-    print(result);
     return result;
   }
 
@@ -893,7 +896,6 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
     _dust = result["dust"];
     _totalDust = result["totalDust"];
     _nextReserveTime = result["nextReserveTime"];
-    print(_nextReserveTime);
     DateTime nrt = DateTime.parse(_nextReserveTime + " " + getAuthTime(_timeNum));
     _remainingTime = nrt.difference(DateTime.now()).inSeconds;
     _myInfoTimer.setTime(_remainingTime);
@@ -924,31 +926,6 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
 
   /// 슬라이딩 판넬
   Widget _slidingPanel(BuildContext context) {
-    List<Widget> widgets = [
-      _threeButton(),
-      (_myInfo)
-          ? _myInformation()
-          : (_benefit)
-          ? _benefitInfo()
-          : Container(),
-      _reservationButton(),
-      greyBar(),
-      _checkedUserTitle(),
-      GridView.builder(
-          padding: EdgeInsets.symmetric(vertical: _uiCriteria.totalHeight * 0.04),
-          physics: NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: 150,
-            childAspectRatio: 1.16,
-            mainAxisSpacing: _uiCriteria.totalHeight * 0.05,
-          ),
-          itemCount: _usersList.length,
-          itemBuilder: (BuildContext context, int index) {
-            return _usersList[index];
-          }),
-    ];
-
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.only(topRight: Radius.circular(13.8), topLeft: Radius.circular(13.8)),
@@ -1070,13 +1047,15 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
   }
 
   Future<Map<String, dynamic>> _getExplorerInfo(int galaxyNum, int timeNum, String dateInfo) async {
-    var url = Uri.parse("http://13.209.138.39:8080/explorer/detail");
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    String email = sp.getString("email");
+    var url = Uri.parse("http://$speckUrl/explorer/detail");
     String body = '''{
     "galaxyNum" : $galaxyNum,
     "timeNum": $timeNum,
-    "dateinfo": "$dateInfo"
+    "dateinfo": "$dateInfo",
+    "userEmail" : "$email"
      }''';
-    print("body $body");
     Map<String, String> header = {
       "Content-Type":"application/json"
     };
@@ -1088,17 +1067,19 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
     });
   }
 
-  Widget _predictBenefit(String predictReward) {
+  Widget _predictBenefit(int book, [String prize]) {
     return  Container(
       alignment: Alignment.centerLeft,
       child: Container(
-        child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Text("${DateTime.parse(_selectedDate).month}/${DateTime.parse(_selectedDate).day} 나의 상금", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w700)),
-              SizedBox(width: _uiCriteria.screenWidth * 0.0613),
-              Text("(예상 0 ~ $predictReward원)", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w700)),
-            ]
+        child: RichText(
+          text: TextSpan(
+              style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w700),
+              children: <TextSpan>[
+                TextSpan(text: "${DateTime.parse(_selectedDate).month}/${DateTime.parse(_selectedDate).day} "),
+                TextSpan(text: (book == 0)?"상금 보기    ": "나의 상금    "),
+                TextSpan(text: (book == 0)? "":(book == -1)?"(예상) 0원 ~ $prize원":"$prize원")
+              ]
+          ),
         ),
       ),
     );
@@ -1107,7 +1088,7 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
   Future<Widget> _checkBenefit(BuildContext context) async {
     _myInfoTimer.stopTimer();
     SharedPreferences sp = await SharedPreferences.getInstance();
-    var url = Uri.parse("http://13.209.138.39:8080/explorer/reward");
+    var url = Uri.parse("http://$speckUrl/explorer/reward");
     int galaxyNum = _galaxyNum;
     String memberEmail = sp.getString("email");
     String body = ''' {
@@ -1116,18 +1097,17 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
       "timeNum" : $_timeNum,
       "dateinfo" : "$_selectedDate"
       }''';
-    print("benefit body $body");
+    print("reward body $body");
     Map<String, String> header = {
       "Content-Type" : "application/json"
     };
     var response = await http.post(url, body: body, headers: header);
     dynamic result = jsonDecode(response.body);
-
-    print(result);
+    print("result $result");
+    int book = result["book"]; /// 0 예약 X 1 인증시간 지남 -1 인증시간 안지남
+    String rewardPrize = result["rewardPrize"].toString().replaceAllMapped(new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},'); /// 상금
     dynamic rewardTotal = result["rewardTotal"];
     dynamic rewardTotalExplorer = result["rewardTotalExplorer"];
-
-    String estimateRewardPrize = result["estimateRewardPrize"].toString().replaceAllMapped(new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');
 
     int totalAvgAttRate = rewardTotal["avgAttRate"]; // 평균 출석률
     int totalAvgAtt = rewardTotal["avgAtt"]; // 평균 출석 인원
@@ -1167,7 +1147,9 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                     _predictBenefit(estimateRewardPrize),
+                      (book == 0)
+                      ? _predictBenefit(book)
+                      :_predictBenefit(book, rewardPrize),
                       SizedBox(height: constraint.maxHeight * 0.0757),
                       Expanded(
                         child: Container(
@@ -1493,13 +1475,13 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
             onTap: () {
               setState(() {
                 _es.setTimeNum(id);
+                _myInfo = false;
               });
               Navigator.of(context, rootNavigator: true).pop(context);
             },
           )
       );
     }
-
     return amList;
   }
 
@@ -1591,6 +1573,7 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
             onTap: () {
               setState(() {
                 _es.setTimeNum(id);
+                _myInfo = false;
               });
               Navigator.of(context, rootNavigator: true).pop(context);
             },

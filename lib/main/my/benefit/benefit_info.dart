@@ -11,7 +11,7 @@ import 'package:speck_app/widget/public_widget.dart';
 import 'package:speech_bubble/speech_bubble.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:speck_app/util/util.dart';
 import 'benefit_event.dart';
 
 class BenefitInfo extends StatefulWidget {
@@ -151,7 +151,7 @@ class BenefitInfoState extends State<BenefitInfo> {
 
   Future<dynamic> _getData() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
-    var url = Uri.parse("http://13.209.138.39:8080/mypage/myPrize");
+    var url = Uri.parse("http://$speckUrl/mypage/myPrize");
     String body = '''{
       "userEmail" : "${sp.getString("email")}"
     }''';

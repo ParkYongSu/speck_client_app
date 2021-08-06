@@ -87,7 +87,7 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
   String _userEmail;
   String _dust;
   int _character;
-
+  List<int> _timeList = [];
   @override
   void initState() {
     super.initState();
@@ -149,7 +149,7 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
     List<Widget> items = [];
     //String email = sp.getString("email");
     // String __memberEmail = "zkspffh@naver.com";
-    var url = Uri.parse("http://13.209.138.39:8080/maincard");
+    var url = Uri.parse("http://$speckUrl/maincard");
     String body = '''{
       "userEmail" : "$_userEmail"
     }''';
@@ -159,6 +159,7 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
     var response = await http.post(url, headers: header, body: body);
     var utf = utf8.decode(response.bodyBytes);
     dynamic result = jsonDecode(utf);
+    print(result);
     dynamic homeDataMyInfo = result["homeDataMyInfo"];
     _dust = homeDataMyInfo["dust"].toString();
     // _attImage = "http://icnogari96.cafe24.com:8080/file/get.do?imagePath=${homeDataMyInfo["attImage"]}";
@@ -222,6 +223,7 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
         dynamic info = homeExplorerVOS[i];
         int galaxyNum = info["galaxyNum"];
         int timeNum = info["timeNum"];
+        _timeList.add(timeNum);
         int official = info["official"];
         String authTime = getAuthTime(timeNum);
         String galaxyName = info["galaxyName"];
@@ -560,7 +562,7 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
   }
 
   void _noToday() async {
-    var url = Uri.parse("http://13.209.138.39:8080/home/banner");
+    var url = Uri.parse("http://$speckUrl/home/banner");
     String body = '''{
       "userEmail" : "${_sp.getString("email")}"
     }''';
@@ -996,7 +998,7 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
     _es.setSelectedDate(DateTime.now().toString().substring(0, 10));
     _es.setSelectedDateWeekdayText("오늘");
     _es.setTimeNum(timeNum);
-
+    _es.setTimeList(_timeList);
     Navigator.push((context), MaterialPageRoute(builder: (context) => Explorer(
         galaxyName: galaxyName,
         imageUrl: imagePath,

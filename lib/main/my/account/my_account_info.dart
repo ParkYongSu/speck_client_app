@@ -9,6 +9,7 @@ import 'package:speck_app/main/my/account/my_account_set_page.dart';
 import 'package:speck_app/ui/ui_color.dart';
 import 'package:speck_app/ui/ui_criteria.dart';
 import 'package:http/http.dart' as http;
+import 'package:speck_app/util/util.dart';
 import 'package:speck_app/widget/public_widget.dart';
 
 class AccountInfo extends StatefulWidget {
@@ -116,7 +117,7 @@ class _SetAccountState extends State<AccountInfo> {
 
   Future<dynamic> _getAccount() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
-    var url = Uri.parse("http://13.209.138.39:8080/account");
+    var url = Uri.parse("http://$speckUrl/account");
     String body = '''{
       "email" : "${sp.getString("email")}"
     }''';
