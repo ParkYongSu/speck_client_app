@@ -246,7 +246,7 @@ class _AccountSettingPageState extends State<AccountSettingPage> {
 
   void _setAccount(int index) async {
     SharedPreferences sp = await SharedPreferences.getInstance();
-    var url = Uri.parse((index == 0)?"http://$speckUrl/account/set/main":"http://$speckUrl/account/set/sub");
+    var url = Uri.parse((index == 0)?"$speckUrl/account/set/main":"$speckUrl/account/set/sub");
     String body = (index == 0)
     ? '''{
       "email" : "${sp.getString("email")}",

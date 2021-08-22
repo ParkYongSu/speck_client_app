@@ -10,6 +10,7 @@ import 'package:speck_app/ui/ui_criteria.dart';
 import 'package:http/http.dart' as http;
 import 'package:speck_app/widget/public_widget.dart';
 
+
 class SetCharacter extends StatefulWidget {
   final int index;
 
@@ -276,11 +277,12 @@ class SetCharacterState extends State<SetCharacter> {
 
   _onPressed() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
-    var url = Uri.parse("http://$speckUrl/update/character");
+    var url = Uri.parse("$speckUrl/update/character");
     String body = '''{
       "email" : "${sp.getString("email")}",
       "character" : $_selectedIndex
     }''';
+    print(body);
     Map<String, String> header = {
       "Content-Type" : "application/json"
     };

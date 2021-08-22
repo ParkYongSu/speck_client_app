@@ -9,7 +9,6 @@ import 'package:speck_app/Time/card_time.dart';
 import 'package:speck_app/auth/select_auth_method.dart';
 import 'package:speck_app/auth/todo_auth.dart';
 import 'package:speck_app/Main/explorer/main_explorer.dart';
-import 'package:speck_app/Main/notify/todo_notice.dart';
 import 'package:speck_app/Main/notify/main_notify.dart';
 import 'package:speck_app/Map/main_map.dart';
 import 'package:speck_app/State/notice.dart';
@@ -95,28 +94,34 @@ class _MainNavigationState extends State<MainNavigation> {
             backwardsCompatibility: false,
             // brightness: Brightness.dark,
             systemOverlayStyle: SystemUiOverlayStyle(statusBarColor: mainColor, statusBarBrightness: Brightness.dark),
-            title: Container(
-              padding: EdgeInsets.only(left: _uiCriteria.screenWidth * 0.008, right: _uiCriteria.horizontalPadding),
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    GestureDetector(
-                        child:  Icon(Icons.chevron_left_rounded,
-                            color: Colors.white, size: _uiCriteria.screenWidth * 0.1),
-                        onTap: () {
-                          pageState.setIndex(0);
-                          // __pageState.getIndex() = _pageState.getIndex();
-                          Notice notice = Provider.of<Notice>(context, listen: false);
-                          notice.clearWidgetList();
-                          notice.clearNotRead();
-                          notice.setZero();
-                        }),
-                    GestureDetector(
-                      child: Container(child: Image.asset("assets/png/settings.png", height: _uiCriteria.textSize4,)),
-                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => Settings())),
-                    )
-                  ]
-              ),
+            title: Stack(
+              alignment: Alignment.center,
+              children: [
+                Container(
+                  padding: EdgeInsets.only(left: _uiCriteria.screenWidth * 0.008, right: _uiCriteria.horizontalPadding),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        GestureDetector(
+                            child:  Icon(Icons.chevron_left_rounded,
+                                color: Colors.white, size: _uiCriteria.screenWidth * 0.1),
+                            onTap: () {
+                              pageState.setIndex(0);
+                              // __pageState.getIndex() = _pageState.getIndex();
+                              Notice notice = Provider.of<Notice>(context, listen: false);
+                              notice.clearWidgetList();
+                              notice.clearNotRead();
+                              notice.setZero();
+                            }),
+                        GestureDetector(
+                          child: Container(child: Image.asset("assets/png/settings.png", height: _uiCriteria.textSize4,)),
+                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => Settings())),
+                        )
+                      ]
+                  ),
+                ),
+                Text("알림", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize1))
+              ],
             ),
           )
               : (pageState.getIndex() == 2)
@@ -188,57 +193,6 @@ class _MainNavigationState extends State<MainNavigation> {
                           children: <Widget>[
                             GestureDetector(
                               onTap: () async {
-                                SharedPreferences sp = await SharedPreferences.getInstance();
-                                TodoNotice todoNotice = new TodoNotice();
-                                String email = sp.getString("email");
-                                String token = sp.getString("token");
-                                // 알림리스트를 저장할 리스트 선언
-                                List<dynamic> list;
-                                // readFlag 가 false 인 알림의 id를 저장할 리스트 선언
-                                List<int> falseList = [];
-                                Notice notice = Provider.of<Notice>(context, listen: false);
-                                // 서버에서 알림리스트를 받아옴
-                                Future future = todoNotice.getNoticeList();
-                                await future.then((value) => list = value,
-                                    onError: (e) => print(e));
-                                // 알림리스트를 위젯으로 변경
-                                if (list != null) {
-                                  for (int i = 0; i < list.length; i++) {
-                                    int id = list[i]["alarmId"];
-                                    String imagePath = list[i]["msg"]["imagePath"];
-                                    bool isRead = list[i]["readFlag"];
-                                    print(DateTime.now().add(Duration(hours: 9)).difference(DateTime.parse(list[i]["msg"]["transferTime"])).inHours);
-                                    print(DateTime.now().add(Duration(hours: 9)));
-                                    String transferTime = (DateTime.now().add(Duration(hours: 9)).difference(DateTime.parse(list[i]["msg"]["transferTime"])).inHours < 24)
-                                        ?DateTime.now().add(Duration(hours: 9)).difference(DateTime.parse(list[i]["msg"]["transferTime"])).inHours.toString() + "시간전"
-                                        :DateTime.now().difference(DateTime.parse(list[i]["msg"]["transferTime"])).inDays.toString() + "일전";
-                                    // 해당 알림을 읽지 않았다면
-                                    if (!isRead) {
-                                      // 읽지 않은 알림의 개수를 추가함
-                                      notice.add();
-                                      notice.addNotRead(id);
-                                      // 읽지 않은 알림의 id를 리스트에 추가함
-                                      falseList.add(id);
-                                    }
-                                    // 타입에 따라 위젯 생성
-                                    switch (list[i]["msg"]["type"]) {
-                                    // 시스템 알림
-                                      case "-1":
-                                        String content = list[i]["msg"]["content"];
-                                        notice.addWidget(id, todoNotice.systemNotice(context, id, imagePath, content, transferTime));
-                                        break;
-                                    // 친구요청
-                                      case "1":
-                                        String nickname = list[i]["msg"]["from"];
-                                        notice.addWidget(id, todoNotice.addFriendNotice(context, id, imagePath, nickname, transferTime));
-                                        break;
-                                    }
-                                  }
-                                }
-                                else {
-                                  list = [];
-                                }
-                                print(notice.getWidgetList());
                                 pageState.setIndex(4);
                               },
                               child: Image.asset("assets/png/notify.png", height: _uiCriteria.screenWidth * 0.0533,),

@@ -12,6 +12,7 @@ import "package:http/http.dart" as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speck_app/ui/ui_color.dart';
 import 'package:speck_app/ui/ui_criteria.dart';
+import 'package:speck_app/util/util.dart';
 import 'package:speck_app/widget/public_widget.dart';
 import 'find_email_result.dart';
 import "package:intl/intl.dart";
@@ -233,11 +234,12 @@ class FindEmailPageState extends State<FindEmailPage> {
                         flex: 294,
                         child: Container(
                           decoration: BoxDecoration(
-                            color: _isAuthCorrect?greyF5F5F6:Colors.transparent
+                            color: (_isOver)?greyF5F5F6:_isAuthCorrect?greyF5F5F6:Colors.transparent,
+                            borderRadius: BorderRadius.circular(3.5)
                           ),
                           child: TextField(
                                     style: TextStyle(letterSpacing: 0.7, fontSize: _uiCriteria.textSize2, color: _isAuthCorrect? greyB3B3BC : mainColor,) ,
-                                    enabled: (_isAuthCorrect)? false:true,
+                                    enabled: (_isOver)?false:(_isAuthCorrect)?false:true,
                                     cursorColor: mainColor,
                                     maxLength: 4,
                                     onChanged: (String value) {
@@ -345,7 +347,6 @@ class FindEmailPageState extends State<FindEmailPage> {
   bool _pNumIsNotEmpty;
   bool _authNumIsNotEmpty;
   int _authNum;
-  String _dtReceiveAuth;
   String _labelPNum;
   FocusNode _authNumFocus;
   FontWeight _pNumFW;
@@ -359,7 +360,6 @@ class FindEmailPageState extends State<FindEmailPage> {
     _isTryAuth = false;
     _pNumIsNotEmpty = false;
     _authNumIsNotEmpty = false;
-    _dtReceiveAuth = "";
     _authNumFocus = new FocusNode();
     _labelPNum = "전화번호";
     _pNumFW = FontWeight.w700;
@@ -373,19 +373,19 @@ class FindEmailPageState extends State<FindEmailPage> {
     print("dispose dispose");
   }
 
-  /// 이미 가입된 회원이면 인증번호, 아니면 -1 리턴
- Future<dynamic> _requestAuth() async {
+  Future<dynamic> _requestAuth() async {
     String phoneNumber = _pNumController.text;
     print('phoneNumber = $phoneNumber');
-    var url = Uri.parse("http://icnogari96.cafe24.com:8080/sms/upt/receive.do");
-    String body = "pNum=$phoneNumber";
+    var url = Uri.parse("$speckUrl/sms/find/email");
+    String body = """{
+      "phoneNum" : "$phoneNumber"
+    }""";
     Map<String, String> header = {
-      "Content-Type" : "application/x-www-form-urlencoded"
+      "Content-Type" : "application/json"
     };
     var response = await http.post(url, body: body, headers: header);
-    var result = json.decode(response.body);
+    var result = json.decode(utf8.decode(response.bodyBytes));
     print("result $result");
-    print(result.runtimeType);
     return Future(() {
       return result;
     });
@@ -396,29 +396,22 @@ class FindEmailPageState extends State<FindEmailPage> {
     dynamic result;
     await future.then((value) => setState(() => result = value),
         onError: (e) => print(e));
-    _authNum = result["code"];
-    // 가입 되어있으면
-    if (_authNum.toString() != "-100") {
-      setState(() {
-        _dtReceiveAuth = DateTime.now().add(Duration(hours: 9)).toString();
-      });
-      print(_dtReceiveAuth);
-      setState(() {
-        _labelPNum = "전화번호";
-        _isRequested = true;
-        _isRegistered = true;
-        _pNumFW = FontWeight.w700;
-        try {
-          FocusScope.of(context).requestFocus(_authNumFocus);
-        }
-        catch (e) {
-          print(e);
-        }
-      });
+    int statusCode = result["status"]["statusCode"];
+
+    if (statusCode == 202) {
+      _authNum = result["code"];
+      _labelPNum = "전화번호";
+      _isRequested = true;
+      _isRegistered = true;
+      _pNumFW = FontWeight.w700;
+      try {
+        FocusScope.of(context).requestFocus(_authNumFocus);
+      }
+      catch (e) {
+        print(e);
+      }
     }
-    // 가입되어 있지 않으면
-    else {
-      print("bye");
+    else if (statusCode == 300) {
       setState(() {
         _isRequested = true;
         _isRegistered = false;
@@ -426,24 +419,18 @@ class FindEmailPageState extends State<FindEmailPage> {
         _pNumFW = FontWeight.bold;
       });
     }
+    else {
+      _isRequested = true;
+      _isRegistered = false;
+      _labelPNum = "다시 한번 시도해주세요.";
+      _pNumFW = FontWeight.bold;
+    }
   }
 
   void _authentication() async {
     setState(() {
       _isTryAuth = true;
     });
-    String result;
-    TodoRegister todoRegister = new TodoRegister(); // 전역 변수로
-    Future future = todoRegister.isTimeout(_dtReceiveAuth);
-    await future.then((value) => result = value, onError: (e) => print(e));
-    print("result $result");
-    setState(() {
-      _isOver = (result == "true")?false:true;
-    });
-    print(1212);
-    print(_isOver);
-    print(_authNumController.text.isNotEmpty);
-    print(_pNumController.text.isNotEmpty);
     if (!_isOver && _authNumController.text.isNotEmpty && _pNumController.text.isNotEmpty) {
       // 인증번호가 맞으면
       if (_authNumController.text == _authNum.toString()) {
@@ -476,25 +463,19 @@ class FindEmailPageState extends State<FindEmailPage> {
 
   }
   void _receiveEmail() async {
-    var url = Uri.parse("http://icnogari96.cafe24.com:8080/members/find/email");
-    String body = "pNum=${_pNumController.text}";
+    var url = Uri.parse("$speckUrl/home/find/email");
+    String body = """{
+      "phoneNum" : "${_pNumController.text}"
+    }""";
     Map<String, String> header = {
-      "Content-Type": "application/x-www-form-urlencoded"
+      "Content-Type": "application/json"
     };
     var response = await http.post(url, headers: header, body: body);
-    var result = response.body;
+    var result = jsonDecode(utf8.decode(response.bodyBytes));
     print("result $result");
-    try {
-      var json = jsonDecode(result);
-      print("json $json");
-      FindState state = Provider.of<FindState>(context, listen: false);
-      state.setInfo(json["email"]);
-      var regDate = DateTime.fromMillisecondsSinceEpoch(json["regDate"]);
-      state.setRegisterDate(regDate.toString().substring(0,10));
-      Navigator.push(context, MaterialPageRoute(builder: (context) => FindEmailResultPage()));
-    }
-    catch (e) {
-      errorToast("해당 정보로 가입된 이메일이 없습니다.");
-    }
+    FindState state = Provider.of<FindState>(context, listen: false);
+    state.setInfo(result["email"]);
+    state.setRegisterDate(result["joinTime"]);
+    Navigator.push(context, MaterialPageRoute(builder: (context) => FindEmailResultPage()));
   }
 }

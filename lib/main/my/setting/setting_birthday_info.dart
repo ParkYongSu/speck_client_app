@@ -188,7 +188,7 @@ class SetBirthdayState extends State<SetBirthday> {
   
   void _request() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
-    var url = Uri.parse("http://$speckUrl/update/borntime");
+    var url = Uri.parse("$speckUrl/update/borntime");
     String bornTime = (_birthdayController.text.isNotEmpty)?_birthdayController.text:"N";
     String body = '''{
       "email" : "${sp.getString("email")}",

@@ -61,7 +61,7 @@ class CashWithdrawResult extends StatelessWidget {
 
   dynamic _getAccountInfo() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
-    var url = Uri.parse("http://$speckUrl/account");
+    var url = Uri.parse("$speckUrl/account");
     String body = '''{
       "email" : "${sp.getString("email")}"
     }''';

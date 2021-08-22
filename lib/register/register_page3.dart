@@ -143,7 +143,8 @@ class _RegisterPage3State extends State<RegisterPage3> {
               return Stack(
                 children: [
                   Container(
-                    padding: EdgeInsets.all(constraint.maxWidth * 0.0877),
+                    // padding: EdgeInsets.all(constraint.maxWidth * 0.0877),
+                    padding: EdgeInsets.symmetric(horizontal: constraint.maxWidth * 0.0877),
                     decoration: BoxDecoration(
                         color: Colors.white,
                         boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.16), spreadRadius: 0, blurRadius: 6, offset: Offset(0,3))],
@@ -153,22 +154,29 @@ class _RegisterPage3State extends State<RegisterPage3> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
+                        Spacer(flex: 140,),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Icon(Icons.check_circle, color: (_selectedIndex == index)? mainColor:greyD8D8D8, size: _uiCriteria.textSize4,),
                           ],
                         ),
-                        SizedBox(height: constraint.maxHeight * 0.0485,),
+                        Spacer(flex: 90,),
+                        // SizedBox(height: constraint.maxHeight * 0.0485,),
                         Container(
                           width: constraint.maxWidth * 0.4852,
                           height: constraint.maxWidth * 0.4852,
                           child: Image.asset(_imageList[index]),
                         ),
-                        SizedBox(height: constraint.maxHeight * 0.0781,),
+                        Spacer(flex: 145,),
+                        // SizedBox(height: constraint.maxHeight * 0.0781,),
                         Text(name, style: TextStyle(color: mainColor, fontSize: _uiCriteria.textSize1, fontWeight: FontWeight.bold, letterSpacing: 0.8),),
-                        SizedBox(height: constraint.maxHeight * 0.0108,),
-                        Text(pref, style: TextStyle(color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w500, letterSpacing: 0.6),),
+                        // SizedBox(height: constraint.maxHeight * 0.0108,),
+                        Spacer(flex: 40,),
+                        FittedBox(
+                            fit: BoxFit.fitWidth,
+                            child: Text(pref, style: TextStyle(color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w500, letterSpacing: 0.6),)),
+                        Spacer(flex: 175,),
                       ],
                     ),
                   ),

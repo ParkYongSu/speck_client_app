@@ -39,7 +39,6 @@ class _MyHistoryState extends State<MyHistory> with TickerProviderStateMixin {
           future: _getMyHistory(),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.hasData) {
-              print("스냅샷 데이터 ${snapshot.data}");
               List<dynamic> ing = snapshot.data["myGalaxy"];
               List<dynamic> expire = snapshot.data["expireGalaxy"];
               List<dynamic> pre = snapshot.data["myPreGalaxy"];
@@ -128,7 +127,7 @@ class _MyHistoryState extends State<MyHistory> with TickerProviderStateMixin {
   Future<dynamic> _request() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
     String userEmail = sp.getString("email");
-    Uri url = Uri.parse("http://$speckUrl/mypage/mygalaxy");
+    Uri url = Uri.parse("$speckUrl/mypage/mygalaxy");
     String body = '''{
       "userEmail" : "$userEmail" 
     }''';
@@ -139,7 +138,6 @@ class _MyHistoryState extends State<MyHistory> with TickerProviderStateMixin {
     var response = await http.post(url, body: body, headers: header);
     print(response);
     var result = jsonDecode(utf8.decode(response.bodyBytes));
-    print("내 갤럭시: $result");
     return Future(() {
       return result;
     });
@@ -165,12 +163,13 @@ class _MyHistoryState extends State<MyHistory> with TickerProviderStateMixin {
       String endDate = info["enddate"];
       DateTime current = DateTime.now();
       String galaxyName = info["galaxyName"];
+      String imagePath = info["imgUrl"];
       String start = "${startDate.toString().substring(0,4)}.${startDate.toString().substring(5,7)}.${startDate.toString().substring(8,10)}";
       String end = "${endDate.toString().substring(0,4)}.${endDate.toString().substring(5,7)}.${endDate.toString().substring(8,10)}";
       int index = -1;
       String status = "입금대기";
       Color statusColor = mainColor;
-      result.add(_galaxyListElement(status, statusColor, official, attendCount, galaxyName, time, start, end, totalCount, index, bookInfo));
+      result.add(_galaxyListElement(status, statusColor, official, attendCount, galaxyName, time, start, end, totalCount, index, bookInfo, imagePath));
     }
     return result;
   }
@@ -191,6 +190,7 @@ class _MyHistoryState extends State<MyHistory> with TickerProviderStateMixin {
       String galaxyName = info["galaxyName"];
       String start = "${startDate.toString().substring(0,4)}.${startDate.toString().substring(5,7)}.${startDate.toString().substring(8,10)}";
       String end = "${endDate.toString().substring(0,4)}.${endDate.toString().substring(5,7)}.${endDate.toString().substring(8,10)}";
+      String imagePath = info["imgUrl"];
       String status;
       Color statusColor;
       int index;
@@ -222,7 +222,7 @@ class _MyHistoryState extends State<MyHistory> with TickerProviderStateMixin {
       }
 
       result.add(
-        _galaxyListElement(status, statusColor, official, attendCount, galaxyName, time, start, end, totalCount, index, bookInfo)
+        _galaxyListElement(status, statusColor, official, attendCount, galaxyName, time, start, end, totalCount, index, bookInfo, imagePath)
       );
     }
     return result;
@@ -230,7 +230,7 @@ class _MyHistoryState extends State<MyHistory> with TickerProviderStateMixin {
 
   /// 리스트 항목
   Widget _galaxyListElement(String status, Color statusColor, int official, int attendCount, String galaxyName, String time, String start, String end, int totalCount,
-  int index, int bookInfo) {
+  int index, int bookInfo, String imagePath) {
     return GestureDetector(
       child: Container(
         decoration: BoxDecoration(
@@ -252,7 +252,7 @@ class _MyHistoryState extends State<MyHistory> with TickerProviderStateMixin {
                             border: Border.all(color: Color(0XFFd8d8d8)),
                             borderRadius: BorderRadius.circular(6.9),
                             image: DecorationImage(
-                                image: AssetImage("assets/png/example.png",),
+                                image: NetworkImage(imagePath),
                                 fit: BoxFit.fitHeight
                             )
                         ),
@@ -315,7 +315,7 @@ class _MyHistoryState extends State<MyHistory> with TickerProviderStateMixin {
             )
         ),
       ),
-      onTap: () => _navigateHistoryInfo(index, bookInfo),
+      onTap: () => _navigateHistoryInfo(index, bookInfo, imagePath),
     );
   }
 
@@ -344,9 +344,9 @@ class _MyHistoryState extends State<MyHistory> with TickerProviderStateMixin {
   }
 
 
-  void _navigateHistoryInfo(int type, int bookInfo) {
+  void _navigateHistoryInfo(int type, int bookInfo, String imagePath) {
     print(type);
-    Navigator.push(context, MaterialPageRoute(builder: (context) => HistoryInfo(type: type, bookInfo: bookInfo,)));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => HistoryInfo(type: type, bookInfo: bookInfo, imagePath: imagePath,)));
   }
 
   void _sort(List<dynamic> list) {

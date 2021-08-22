@@ -273,7 +273,7 @@ class _MainMyPageState extends State<MainMyPage> with TickerProviderStateMixin{
                                   child: Text("${_bookInfoList.isEmpty?"예약":"예약(${_bookInfoList.length})"}", style: TextStyle(letterSpacing: 0.6,color: mainColor, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize3),)),
                               Container(
                                   padding: EdgeInsets.only(top: constraint.maxHeight * 0.2245),
-                                  child: Text("${(_authInfoList.isEmpty)?"인증":"인증(${_authInfoList.length})"}", style: TextStyle(letterSpacing: 0.6,color: mainColor, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize3),))
+                                  child: Text("${(_authInfoList.isEmpty)?"인증":"인증($_authCount)"}", style: TextStyle(letterSpacing: 0.6,color: mainColor, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize3),))
                             ]);
                       },
                     ),
@@ -579,14 +579,10 @@ class _MainMyPageState extends State<MainMyPage> with TickerProviderStateMixin{
     String userEmail = sp.getString("email");
     _character = sp.getInt("characterIndex");
     _nickname = sp.getString("nickname");
-    Uri url = Uri.parse("http://$speckUrl/mypage/");
+    Uri url = Uri.parse("$speckUrl/mypage/");
     String body = """ {
       "userEmail":"$userEmail"
     } """;
-    // Uri url = Uri.parse("http://13.124.227.150:8080/mypage/");
-    // String body = """ {
-    //   "userEmail":"ykc0131@naver.com"
-    // } """;
 
     Map<String, String> header = {
       "Content-Type":"application/json"
@@ -605,6 +601,13 @@ class _MainMyPageState extends State<MainMyPage> with TickerProviderStateMixin{
     _bookInfoList = result["bookCalendar"];
     _authInfoList = result["authCalendar"];
     _galaxyName = result["galaxyName"];
+    int authCount = 0;
+    for (int i = 0; i < _authInfoList.length; i++) {
+      if (_authInfoList[i]["calendar"]["attendvalue"] == 1) {
+        authCount++;
+      }
+    }
+    _authCount = authCount;
   }
 
   List<Event> _getEventsForDay(DateTime day, List<dynamic> infoList, int index) {
@@ -649,6 +652,7 @@ class _MainMyPageState extends State<MainMyPage> with TickerProviderStateMixin{
   int _character;
   String _profile;
   String _galaxyName;
+  int _authCount;
 
   @override
   void initState() {

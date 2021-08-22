@@ -160,8 +160,7 @@ class _ReservationState extends State<Reservation> {
                                       border: Border.all(color: greyD8D8D8, width: 0.5),
                                       image: DecorationImage(
                                           fit: BoxFit.fitHeight,
-                                          // image: NetworkImage(widget.imagePath)
-                                          image: AssetImage("assets/png/example.png")
+                                          image: NetworkImage(widget.imagePath)
                                       )
                                   ),
                                 ),
@@ -1553,7 +1552,7 @@ class _ReservationState extends State<Reservation> {
   Future<dynamic> _reservationData() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
     String userEmail = sp.getString("email");
-    Uri url = Uri.parse("http://$speckUrl/prebooking");
+    Uri url = Uri.parse("$speckUrl/prebooking");
     String body = '''{
       "galaxyNum" : ${widget.galaxyNum},
       "userEmail" : "$userEmail"
@@ -2553,12 +2552,12 @@ class _ReservationState extends State<Reservation> {
     String end = (_selectedIndex == 0)?_rangeEndDay.toString().substring(0,10):_selectedEndDay.toString().substring(0,10);
     List<String> date = _generateListDate(_selectedIndex);
     _showLoader();
-    var url = Uri.parse("http://$speckUrl/booking");
+    var url = Uri.parse("$speckUrl/booking");
     String body = '''{
       "startdate": "$start",
       "enddate": "$end",
       "userEmail": "$userEmail",
-      "groupnum": ${widget.official},
+      "groupnum": ${widget.galaxyNum},
       "explorer": ${widget.timeNum},
       "dateinfo": $date,
       "deposit": $_deposit,

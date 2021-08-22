@@ -172,18 +172,25 @@ class _SetPhoneNumberState extends State<SetPhoneNumber> {
                     Container(
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
+                          color: _isAuthenticated?greyF5F5F6:Colors.transparent,
                           borderRadius: BorderRadius.circular(3.5),
-                          border: _isTryGetAuth
-                          ? (_isRequested)
-                          ? (_isOver)
-                          ? Border.all(color: mainColor, width: 1.5)
+                          border:
+                          (_isAuthenticated)
+                              ? null
+                              :_isTryGetAuth
+                              ? (_isRequested)
+                              ? (_isOver)
+                              ? Border.all(color: mainColor, width: 1.5)
                               : Border.all(color: greyB3B3BC, width: 0.5)
                               : Border.all(color: mainColor, width: 1.5)
                               : Border.all(color: greyB3B3BC, width: 0.5)
                       ),
                       padding: EdgeInsets.symmetric(horizontal: constraint.maxWidth * 0.0485),
                       child: TextField(
-                        style: TextStyle(color: mainColor, fontWeight: FontWeight.w500, fontSize: _uiCriteria.textSize2, letterSpacing: 0.7),
+                        enabled: (_isAuthenticated)?false:true,
+                        style: TextStyle(
+                            letterSpacing: 0.7,
+                            fontSize: _uiCriteria.textSize2, color: (_isAuthenticated)?greyB3B3BC:mainColor, fontWeight: FontWeight.w500),
                         controller: _pNumController,
                         focusNode: _pNumFocus,
                         maxLength: 11,
@@ -228,8 +235,11 @@ class _SetPhoneNumberState extends State<SetPhoneNumber> {
                 borderRadius: BorderRadius.circular(3.5)
               ),
               elevation: 0,
+              disabledColor: _isAuthenticated?greyF5F5F6:greyD8D8D8,
               onPressed: (_pNumNotEmpty)
-              ?() {
+                  ? (_isAuthenticated)
+                  ? null
+                  : () {
                 setState(() {
                   _isTryAuthenticate = false;
                   _isAuthenticated = false;
@@ -237,12 +247,10 @@ class _SetPhoneNumberState extends State<SetPhoneNumber> {
                 _authTimer.startTimer();
                 _request();
               }
-              : null,
-              child:
-              _isRequested
-                  ? AutoSizeText("재요청", maxLines: 1, style: TextStyle(letterSpacing: 0.7, color: Colors.white, fontSize: _uiCriteria.textSize2,fontWeight: FontWeight.w700,))
-                  : AutoSizeText("인증요청", maxLines: 1, style: TextStyle(letterSpacing: 0.7, color: Colors.white, fontSize: _uiCriteria.textSize2,fontWeight: FontWeight.w700,)),
-              disabledColor: greyD8D8D8,
+                  : null,
+              child: _isRequested
+                  ? AutoSizeText("재요청", maxLines: 1, style: TextStyle(letterSpacing: 0.7, color: _isAuthenticated?greyB3B3BC:Colors.white, fontSize: _uiCriteria.textSize2,fontWeight: FontWeight.w700,))
+                  : AutoSizeText("인증요청", maxLines: 1, minFontSize: 10,style: TextStyle(letterSpacing: 0.7, fontSize: _uiCriteria.textSize2,color: Colors.white,fontWeight: FontWeight.w700,)),
               color:mainColor,
             ),
           )
@@ -268,9 +276,11 @@ class _SetPhoneNumberState extends State<SetPhoneNumber> {
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(3.5),
-                            color: _isAuthenticated?greyF5F5F6:Colors.transparent,
+                            color: (_isOver)?greyF5F5F6:_isAuthenticated?greyF5F5F6:Colors.transparent,
                             border:
-                            _isTryAuthenticate
+                            (_isOver)
+                            ? null
+                            : _isTryAuthenticate
                                 ? _isAuthenticated
                                 ? null
                                 : Border.all(color: mainColor, width: 1.5)
@@ -278,12 +288,12 @@ class _SetPhoneNumberState extends State<SetPhoneNumber> {
                         ),
                         padding: EdgeInsets.symmetric(horizontal: constraint.maxWidth * 0.0485),
                         child:  TextField(
-                          style: TextStyle(color: mainColor, fontWeight: FontWeight.w500, fontSize: _uiCriteria.textSize2, letterSpacing: 0.7),
+                          style: TextStyle(letterSpacing: 0.7, fontSize: _uiCriteria.textSize2, color: _isAuthenticated? greyB3B3BC : mainColor, fontWeight: FontWeight.w500),
                           controller: _authNumController,
                           keyboardType: TextInputType.number,
                           focusNode: _authNumFocus,
                           maxLength: 4,
-                          enabled: (_isAuthenticated)?false:true,
+                          enabled: (_isOver)?false:(_isAuthenticated)?false:true,
                           cursorColor: mainColor,
                           decoration: InputDecoration(
                               counterText: "",
@@ -375,12 +385,6 @@ class _SetPhoneNumberState extends State<SetPhoneNumber> {
 
   void _authentication() async {
     AuthTimer authTimer = Provider.of<AuthTimer>(context, listen: false);
-    TodoRegister todoRegister = new TodoRegister();
-    print("현재 시간: ${DateTime.now()}");
-    print(_dtReceiveAuth);
-    Future<String> future = todoRegister.isTimeout(_dtReceiveAuth);
-    await future.then((value) => _isTimeOut = value, onError: (e) => print(e));
-    print("시간초과? $_isTimeOut");
     setState(() {
       _isTryAuthenticate = true;
     });
@@ -402,52 +406,52 @@ class _SetPhoneNumberState extends State<SetPhoneNumber> {
   }
 
   void _request() async {
-    setState(() {
-      _isTryGetAuth = true;
-    });
-    Future future = _getAuthNumber(_pNumController.text);
+    TodoRegister todoRegister = new TodoRegister();
+    String phoneNumber = _pNumController.text;
+    int statusCode;
     dynamic result;
-    await future.then((value) {
-      _authStatus = value["status"];
-      _authNum = value["code"];
+    Future getAuthNum = todoRegister.getAuthNumber(phoneNumber);
+    await getAuthNum.then((value) {
+      result = value;
     });
 
+    print(result);
+    statusCode = result["status"]["statusCode"];
 
-    if (_authStatus == 500) {
-      setState(() {
-        _labelPNum = "이미 등록된 전화번호예요.";
-        _pNumFW = FontWeight.bold;
-        _isRequested = false;
-      });
-    }
-    else if (_authStatus == 202){
-      _dtReceiveAuth = DateTime.now().toString();
-      setState(() {
-        _labelPNum = "전화번호";
-        _isRequested = true;
-      });
+    if (statusCode == 202) {
+      _labelPNum = "전화번호";
+      _isRequested = true;
+      _isTryGetAuth = true;
+      _authNum = result["code"];
       FocusScope.of(context).requestFocus(_authNumFocus);
+      setState((){});
     }
-  }
-
-  Future<dynamic> _getAuthNumber(String phoneNumber) async {
-    SharedPreferences sp = await SharedPreferences.getInstance();
-    await sp.setString("authTime", DateTime.now().toString());
-    var url = Uri.parse("http://icnogari96.cafe24.com:8080/sms/reg/receive.do");
-    String pNum = phoneNumber;
-    var response = await http.post(url,
-        body: "pNum=$pNum",
-        headers: {"Content-Type": "application/x-www-form-urlencoded"});
-    dynamic authNumber = jsonDecode(response.body);
-    print("authNumber: $authNumber");
-    return Future(() {
-      return authNumber;
-    });
+    else if (statusCode == 300) {
+      _labelPNum = "이미 등록된 전화번호예요.";
+      _pNumFW = FontWeight.bold;
+      _isTryGetAuth = true;
+      _isRequested = false;
+      setState(() {});
+    }
+    else if (statusCode == 305) {
+      _labelPNum = "전화번호를 확인해주세요.";
+      _pNumFW = FontWeight.bold;
+      _isTryGetAuth = true;
+      _isRequested = false;
+      setState(() {});
+    }
+    else {
+      _labelPNum = "다시 한번 시도해주세요.";
+      _pNumFW = FontWeight.bold;
+      _isTryGetAuth = true;
+      _isRequested = false;
+      setState(() {});
+    }
   }
 
   void _complete() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
-    var url = Uri.parse("http://$speckUrl/update/phonenumber");
+    var url = Uri.parse("$speckUrl/update/phonenumber");
     String body = '''{
       "email" : "${sp.getString("email")}",
       "phoneNumber" : "${_pNumController.text}"
@@ -457,7 +461,7 @@ class _SetPhoneNumberState extends State<SetPhoneNumber> {
     };
     var response = await http.post(url,body: body, headers: header);
     var code = int.parse(utf8.decode(response.bodyBytes));
-    print(response);
+    print(response.body);
     if (code == 100) {
       SharedPreferences sp = await SharedPreferences.getInstance();
       sp.setString("phoneNumber", _pNumController.text);

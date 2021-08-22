@@ -394,7 +394,6 @@ class _SetProfileState extends State<SetProfile> {
           source: ImageSource.gallery, imageQuality: 50);
       setState(() {
         print("image ${image.path}");
-
         _image = image;
         if (_image != null) {
           _isBasicSelected = false;
@@ -457,7 +456,7 @@ class _SetProfileState extends State<SetProfile> {
     SharedPreferences sp = await SharedPreferences.getInstance();
     var url;
     if (image != null) {
-      url = Uri.parse("http://$speckUrl/update/profile");
+      url = Uri.parse("$speckUrl/update/profile");
       var request = http.MultipartRequest('POST', url);
       String data = '''{
         "email" : "${sp.getString("email")}",
@@ -483,7 +482,7 @@ class _SetProfileState extends State<SetProfile> {
     }
     else {
       String profile = (_isBasicSelected)?"N":"$_profile";
-      url = Uri.parse("http://$speckUrl/update/profile/none");
+      url = Uri.parse("$speckUrl/update/profile/none");
       String body = '''{
         "email" : "${sp.getString("email")}",
         "nickname" : "$nickname",

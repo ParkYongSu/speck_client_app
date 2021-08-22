@@ -1,8 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk/all.dart';
+import 'package:package_info/package_info.dart';
 import 'package:speck_app/Login/Todo/state_galaxy_sort.dart';
 import 'package:speck_app/Login/Todo/state_time_sort.dart';
 import 'package:speck_app/Main/home/main_home.dart';
@@ -24,9 +29,16 @@ import 'package:speck_app/Time/auth_timer.dart';
 import 'package:speck_app/Time/card_time.dart';
 import 'package:speck_app/Time/myInfo_timer.dart';
 import 'package:speck_app/error/network_check.dart';
+import 'package:speck_app/error/network_error_page.dart';
+import 'package:speck_app/firebase/check_token.dart';
+import 'package:speck_app/firebase/firebase_init.dart';
+import 'package:speck_app/firebase/token_init_state.dart';
 import 'package:speck_app/kakao/kakao_share.dart';
 import 'package:speck_app/ui/ui_color.dart';
 import 'package:speck_app/ui/ui_criteria.dart';
+import 'package:speck_app/util/util.dart';
+import 'package:speck_app/version/version_error_page.dart';
+import 'package:speck_app/version/version_management.dart';
 import 'package:speck_app/widget/public_widget.dart';
 import 'Login/Email/email_login_page.dart';
 import 'State/notice.dart';
@@ -44,8 +56,10 @@ void main() async {
   KakaoShareManager manager = new KakaoShareManager();
   manager.initializeKakaoSDK();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  // await Firebase.initializeApp();
-  // FirebaseMessaging.onBackgroundMessage(_messageHandler);
+  await Firebase.initializeApp();
+  firebaseSettings();
+  FirebaseMessaging.onBackgroundMessage(showNotification);
+  // getAppVersion();
   initializeDateFormatting().then((_) => runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (context) => PageNaviState()),
@@ -68,17 +82,13 @@ void main() async {
       ChangeNotifierProvider(create: (context) => MyInfoTimer(),),
       ChangeNotifierProvider(create: (context) => AccountState()),
       ChangeNotifierProvider(create: (context) => RecommendBannerState()),
+      ChangeNotifierProvider(create: (context) => TokenInitState())
     ],
     child: MaterialApp(
         debugShowCheckedModeBanner: false,
         home: SpeckApp()),
   )));
 }
-
-/// 주석제거
-// Future<void> _messageHandler(RemoteMessage message) async {
-//   print(message.notification.body);
-// }
 
 class SpeckApp extends StatefulWidget {
   @override
@@ -92,119 +102,25 @@ class SpeckAppState extends State<SpeckApp> {
   final UICriteria _uiCriteria = new UICriteria();
   SharedPreferences _sp;
   BannerState _bs;
-  // FirebaseMessaging _firebaseMessaging; /// 주석제거
-
-  @override
-  void initState() {
-    super.initState();
-    /// 주석제거
-    // _firebaseMessaging = FirebaseMessaging.instance;
-    // _firebaseMessaging.getToken().then((value) =>
-    //   print("토큰 $value")
-    // );
-    // _firebaseMessaging.requestPermission();
-    // FirebaseMessaging.onMessage.listen((RemoteMessage event) {
-    //   print("message recieved");
-    //   print(event.notification.body);
-    // });
-    // FirebaseMessaging.onMessageOpenedApp.listen((message) {
-    //   print('Message clicked!');
-    // });
-  }
 
   @override
   Widget build(BuildContext context) {
     _bs = Provider.of<BannerState>(context, listen: false);
     return FutureBuilder(
-        future: _splashAction(context),
+        future: _checkIsNewVersion(),
         builder: (context, AsyncSnapshot snapshot) {
           _uiCriteria.init(context);
-          _checkNetworkState();
-
-          if (_connectionState == 0) {
-            return Container(
-              decoration: BoxDecoration(
-                  color: mainColor
-              ),
-              child: _networkErrorDialog(context),
+          if (snapshot.hasData == false) {
+            return Scaffold(
+              body: loader(context, 1),
             );
           }
+          // 데이터를 불러왔을 때 리턴하는 위젯
           else {
-            print("스냅샷 데이터 있나 ${snapshot.hasData}");
-            // 데이터를 아직 불러오지 못했을 때 리턴하는 위젯
-            if (snapshot.hasData == false) {
-              return Scaffold(
-                body: loader(context, 1),
-              );
-            }
-            // 데이터를 불러왔을 때 리턴하는 위젯
-            else {
-              return snapshot.data;
-            }
+            return snapshot.data;
           }
         }
     );
-  }
-
-  /// 네트워크 오류 다이얼로그
-  Widget _networkErrorDialog(BuildContext context) {
-    TextStyle style = TextStyle(color: mainColor, fontSize: _uiCriteria.textSize2, letterSpacing: 0.6, fontWeight: FontWeight.w700);
-
-    AlertDialog alertDialog = new AlertDialog(
-        insetPadding: EdgeInsets.symmetric(horizontal: _uiCriteria.screenWidth * 0.152),
-        contentPadding: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-        content: AspectRatio(
-          aspectRatio: 260/120,
-          child: Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10.0),
-                color: Colors.white
-            ),
-            child: Column(
-              children: <Widget>[
-                Expanded(
-                  flex: 619,
-                  child: Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      border: Border(bottom: BorderSide(color: greyD8D8D8, width: 0.5))
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Spacer(flex: 3,),
-                        Text("네트워크 오류가 발생했습니다.", style: style),
-                        Spacer(flex: 1,),
-                        Text("잠시 후 다시 시도해주세요.", style: style),
-                        Spacer(flex: 3,),
-                      ],
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 371,
-                  child: Material(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.white,
-                    child: InkWell(
-                      onTap: () {
-                        main();
-                      },
-                      child: Container(
-                          width: double.infinity,
-                          height: double.infinity,
-                          alignment: Alignment.center,
-                          child: Text("다시 시도", style: style,))
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
-        )
-    );
-    return alertDialog;
   }
 
   void _checkNetworkState() async {
@@ -246,14 +162,71 @@ class SpeckAppState extends State<SpeckApp> {
     }
   }
 
-  Future<Widget> _splashAction(BuildContext context) async {
+  Future<Widget> _checkIsNewVersion() async {
+    Future grc = getRemoteConfig();
+    RemoteConfig remoteConfig;
+    await grc.then((value) => remoteConfig = value);
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    String currentVersion = packageInfo.version;
+    String updateVersion = (Platform.isAndroid)?remoteConfig.getString("update_version_android"):remoteConfig.getString("update_version_ios");
+    print("updateVersion $updateVersion");
+    if (currentVersion.compareTo(updateVersion) == 0) {
+      return _splashAction();
+    }
+    else {
+      return VersionErrorPage();
+    }
+  }
+
+
+  Future<dynamic> _initToken(String email) async {
+    var tokenUpdateUrl = Uri.parse("$speckUrl/user/retoken");
+    String body = """{
+          "userEmail" : "$email"
+        }""";
+    Map<String, String> header = {
+      "Content-Type" : "application/json"
+    };
+
+    var response = await http.post(tokenUpdateUrl, body: body, headers: header);
+    var result = jsonDecode(utf8.decode(response.bodyBytes));
+    print("토큰 갱신 $result");
+    return Future(() {
+      return result;
+    });
+  }
+
+  Future<int> _autoLogin(String token) async {
+    var checkInOutUrl = Uri.parse("$speckUrl/user/login/auto");
+    String body = """{
+          "token" : "$token"
+        }""";
+    Map<String, String > header = {
+      "Content-Type" : "application/json",
+      "Authorization" : "$token"
+    };
+
+    var response = await http.post(checkInOutUrl, body: body, headers: header);
+    var result = int.parse(response.body);
+    print("자동로그인 $result");
+    return Future(() {
+      return result;
+    });
+  }
+
+  Future<Widget> _splashAction() async {
+    _checkNetworkState(); // 네트워크 통신상태 확인
+    // _checkIsNewVersion(); // 새로운 버전인지 확인
+    if (_connectionState == 0) {
+      return NetworkErrorPage();
+    }
+
     _sp = await SharedPreferences.getInstance();
     String email = _sp.getString("email");
     String token = _sp.getString("token");
     // 최근 토큰 갱신 날짜를 가져옴
     String tokenUpdateDate = _sp.getString("tokenUpdateDate");
-    print(email);
-    print("쿠키에 저장된 이메일: ${_sp.getString("email")}");
+    print(token);
     print("token ${_sp.getString("token")}");
 
     /// 지도에서 최근 검색어 목록을 가져옴
@@ -263,45 +236,39 @@ class SpeckAppState extends State<SpeckApp> {
     else {
       SearchPageState.postWordList = _sp.getStringList("mapPostWordList");
     }
-    /// 실시간 집중모드 사용인원 표시를 위한 웹소켓 통신에 사용될 닉네임 저장
-    if (email != null) {
-      MainHome.email = email;
-    }
-    // 현재 시간
-    DateTime current = DateTime.now();
 
-    print("tokenUpdateDate: $tokenUpdateDate");
+    initToken(email, context);
+
     // 토큰이 있을 때
     if (token != null) {
       if (DateTime.now().difference(DateTime.parse(tokenUpdateDate)).inDays >= 21) {
-        // 토큰 갱신
-        var tokenUpdateUrl = Uri.parse("http://icnogari96.cafe24.com:8080/token/get.do?subject=$email");
-        var response = await http.get(tokenUpdateUrl);
-        var newToken = response.body;
-        print("newToken: $newToken");
-        await _sp.setString("token", newToken); // 새로운 토큰 저장
-        await _sp.setString("tokenUpdateDate", current.toString()); // 토큰 갱신날짜 update
-        /// 웹소켓 연결
-        _checkBanner();
-        return Future<Widget>(() {
-          return MainNavigation();
-        });
+        DateTime current = DateTime.now();
+        dynamic result;
+        Future future = _initToken(email);
+        await future.then((value) => result = value);
+        int statusCode = result["status"]["statusCode"];
+
+        if (statusCode == 200) {
+          String newToken = result["token"];
+          await _sp.setString("token", newToken.substring(0, newToken.length)); // 새로운 토큰 저장
+          await _sp.setString("tokenUpdateDate", current.toString()); // 토큰 갱신날짜 update
+          _checkBanner();
+          return Future<Widget>(() {
+            return MainNavigation();
+          });
+        }
+        else {
+          return Future<Widget>(() {
+            return EmailLoginPage();
+          });
+        }
       }
       else {
-        var checkInOutUrl = Uri.parse("http://icnogari96.cafe24.com:8080/members/check/auto/login");
-        String body = "token=${token.substring(1,token.length - 1)}";
-        print(body);
-        Map<String, String > header = {
-          "Content-Type" : "application/x-www-form-urlencoded"
-        };
-
-        var response = await http.post(checkInOutUrl, body: body, headers: header).onError((error, stackTrace) {
-          print(error.toString());
-          return;
-        });
-        var tf = response.body;
-        if (tf == "true") {
-          /// 웹소켓 연결
+        int result;
+        Future future = _autoLogin(token);
+        await future.then((value) => result = value);
+        print("result34232 $result");
+        if (result == 1) {
           _checkBanner();
           return Future<Widget>(() {
             return MainNavigation();

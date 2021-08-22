@@ -235,8 +235,7 @@ class ReservationComplete extends StatelessWidget {
                         border: Border.all(color: greyD8D8D8, width: 0.5),
                         borderRadius: BorderRadius.circular(6.9),
                         image: DecorationImage(
-                          // image: NetworkImage(imagePath)
-                          image: AssetImage("assets/png/example.png"),
+                          image: NetworkImage(imagePath),
                           fit: BoxFit.fitHeight,
                         )
                       ),

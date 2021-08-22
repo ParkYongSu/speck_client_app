@@ -222,7 +222,7 @@ class _CashWithdrawalPageState extends State<CashWithdrawalPage> {
       int withdrawal = int.parse(value);
       _amount = value.replaceAllMapped(new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');
 
-      var url = Uri.parse("http://$speckUrl/send");
+      var url = Uri.parse("$speckUrl/send");
       String body = '''{
       "userEmail" : "${sp.getString("email")}",
       "withdrawal" : $withdrawal,

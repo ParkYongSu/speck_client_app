@@ -5,7 +5,6 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
 import 'package:flutter/services.dart';
-import 'package:geocoder/geocoder.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:speck_app/Map/place_photoview.dart';
 import 'package:speck_app/Map/search_page.dart';
@@ -907,8 +906,8 @@ class MainMapState extends State<MainMap> {
     SharedPreferences sp = await SharedPreferences.getInstance();
     print("장소 정보 가져오기");
     String email = sp.getString("email");
-    // var url = Uri.parse("http://192.168.0.17:8080/map");
-    var url = Uri.parse("http://$speckUrl/map");
+    // var url = Uri.parse("$speckUrl/map");
+    var url = Uri.parse("$speckUrl/map");
     String body = '''{
       "email" : "$email"
     }''';
@@ -1055,7 +1054,7 @@ class MainMapState extends State<MainMap> {
         print(e);
       }
     }
-    Navigator.pop(context);
+    Navigator.of(context, rootNavigator: true).pop();
   }
 
   void _moveCamera(LatLng latLng) async {
@@ -1344,7 +1343,7 @@ class MainMapState extends State<MainMap> {
   void _transferData(String type) async {
     String data;
     SharedPreferences sp = await SharedPreferences.getInstance();
-    var url = Uri.parse("http://$speckUrl/home/insert/map");
+    var url = Uri.parse("$speckUrl/home/insert/map");
     String body;
     Map<String, String> header = {
       "Content-Type" : "application/json"

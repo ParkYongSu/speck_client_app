@@ -73,6 +73,11 @@
 	<string>나의 현위치를 지도상에 표시하고 GPS 출석 인증을 위해 위치 권한이 필요합니다.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>프로필 사진 설정과 출석인증 성공 후에 주어지는 티켓을 저장하기 위해 사진 권한이 필요합니다.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

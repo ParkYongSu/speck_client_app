@@ -867,17 +867,19 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
   /// 내정보 가져오기
   Future<dynamic> _getMyInfo() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
-    var url = Uri.parse("http://$speckUrl/explorer/myinfo");
+    var url = Uri.parse("$speckUrl/explorer/myinfo");
     String body = '''{
       "userEmail" : "${sp.getString("email")}",
       "bookinfo" : $_bookInfo
     }''';
+    print(body);
     Map<String, String> header = {
       "Content-Type" : "application/json"
     };
 
     var response = await http.post(url, headers: header, body: body);
     var result = jsonDecode(utf8.decode(response.bodyBytes));
+    print("result4324 $result");
     return result;
   }
 
@@ -1049,19 +1051,21 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
   Future<Map<String, dynamic>> _getExplorerInfo(int galaxyNum, int timeNum, String dateInfo) async {
     SharedPreferences sp = await SharedPreferences.getInstance();
     String email = sp.getString("email");
-    var url = Uri.parse("http://$speckUrl/explorer/detail");
+    var url = Uri.parse("$speckUrl/explorer/detail");
     String body = '''{
     "galaxyNum" : $galaxyNum,
     "timeNum": $timeNum,
     "dateinfo": "$dateInfo",
     "userEmail" : "$email"
      }''';
+    print(body);
     Map<String, String> header = {
       "Content-Type":"application/json"
     };
     var response = await http.post(url, headers: header, body: body);
     var utf = utf8.decode(response.bodyBytes);
     Map<String, dynamic> result = jsonDecode(utf);
+    print("result121  $result");
     return Future(() {
       return result;
     });
@@ -1088,7 +1092,7 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
   Future<Widget> _checkBenefit(BuildContext context) async {
     _myInfoTimer.stopTimer();
     SharedPreferences sp = await SharedPreferences.getInstance();
-    var url = Uri.parse("http://$speckUrl/explorer/reward");
+    var url = Uri.parse("$speckUrl/explorer/reward");
     int galaxyNum = _galaxyNum;
     String memberEmail = sp.getString("email");
     String body = ''' {

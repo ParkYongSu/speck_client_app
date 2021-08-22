@@ -313,30 +313,30 @@ class RegisterPageState4 extends State<RegisterPage4> {
     }
     print("image $image");
     // N, M,
-    String bornTime2 = _registerState.getBirthday1();
+    String bornTime = _registerState.getBirthday();
 
-    _request1(email, pw, phoneNumber, nickname, sex, bornTime2, characterIndex, service, personalInformationCollection, receiveEventInformation,image);
+    _request(email, pw, phoneNumber, nickname, sex, bornTime, characterIndex, service, personalInformationCollection, receiveEventInformation, image);
 
   }
 
-  void _request1(String email, String pw, String phoneNumber, String nickname,
-      String sex, String bornTime, int characterIndex, String service, String personalInformationCollection,
-      String receiveEventInformation, File image) async{
-    var result;
-    Future<String> future = _todoRegister.register1(email, pw, phoneNumber, nickname, sex, bornTime);
-    await future.then((value) => result = value, onError: (e) => print(e));
-    print(result);
-    if (result == "100") {
-      print("1단계 통과");
-      String bornTime1 = _registerState.getBirthday2();
-      _request2(email, pw, phoneNumber, nickname, sex, bornTime1, characterIndex, service, personalInformationCollection, receiveEventInformation,image);
-    } else {
-      print("1단계 실패");
-      print("가입실패");
-    }
-  }
+  // void _request1(String email, String pw, String phoneNumber, String nickname,
+  //     String sex, String bornTime, int characterIndex, String service, String personalInformationCollection,
+  //     String receiveEventInformation, File image) async{
+  //   var result;
+  //   Future<String> future = _todoRegister.register1(email, pw, phoneNumber, nickname, sex, bornTime);
+  //   await future.then((value) => result = value, onError: (e) => print(e));
+  //   print(result);
+  //   if (result == "100") {
+  //     print("1단계 통과");
+  //     String bornTime1 = _registerState.getBirthday2();
+  //     _request2(email, pw, phoneNumber, nickname, sex, bornTime1, characterIndex, service, personalInformationCollection, receiveEventInformation,image);
+  //   } else {
+  //     print("1단계 실패");
+  //     print("가입실패");
+  //   }
+  // }
 
-  void _request2(String email, String pw, String phoneNumber, String nickname,
+  void _request(String email, String pw, String phoneNumber, String nickname,
       String sex, String bornTime, int characterIndex, String service, String personalInformationCollection,
       String receiveEventInformation, File image,) async {
     var result;
@@ -346,7 +346,6 @@ class RegisterPageState4 extends State<RegisterPage4> {
     _showLoader();
     await future.then((value) => result = value);
     if (result == 100) {
-      print("2단계 통과");
       print("가입성공");
       // 현재 시간
       Future.delayed(Duration(seconds: 2), () {
@@ -358,7 +357,8 @@ class RegisterPageState4 extends State<RegisterPage4> {
       );
     }
     else {
-      print("2단계 실패");
+      Fluttertoast.showToast(msg: "다시 한번 시도해주세요.", gravity: ToastGravity.CENTER, fontSize: _uiCriteria.textSize2);
+      print("실패");
     }
   }
 

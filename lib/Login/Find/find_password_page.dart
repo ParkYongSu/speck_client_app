@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speck_app/ui/ui_color.dart';
 import 'package:speck_app/ui/ui_criteria.dart';
+import 'package:speck_app/util/util.dart';
 import 'find_password_result.dart';
 
 class FindPasswordPage extends StatefulWidget {
@@ -148,7 +149,7 @@ class FindPasswordPageState extends State<FindPasswordPage> {
                             disabledColor: greyD8D8D8,
                             onPressed:(!_isEmailEmpty)
                                 ? () {
-                              receivePassword();
+                              _receivePassword();
                               print(_isTryAuth);
                               //print(emptyOrNot.getIsEmpty());
                             }
@@ -184,48 +185,49 @@ class FindPasswordPageState extends State<FindPasswordPage> {
     _emailFW = FontWeight.w700;
   }
 
-  void receivePassword() async {
-    TodoRegister todoRegister = new TodoRegister(); // 이런거 전역변수로 선언
+
+  void _receivePassword() async {
     String email = _emailController.text;
-    Future<bool> future = todoRegister.isIdDuplicated(email);
-    await future.then((value) => setState((){
-      _isTryAuth = true;
-      _isRegistered = value;
-    }),
-        onError: (e) => print(e));
-    if (_isRegistered) {
-      setState(() {
-        _labelEmail = "이메일";
-        _emailFW = FontWeight.w700;
-      });
-      /// 임시비밀번호 받기
-      var url = Uri.parse("http://icnogari96.cafe24.com:8080/members/gen/tmp/pw");
-      String body = "email=$email";
-      // Map<String, String> header = {
-      //   "Content-Type": "application/x-www-form-urlencoded"
-      // };
-      Map<String, String> header = {
-        "Content-Type": "application/json"
-      };
-      FindState findState = Provider.of<FindState>(context, listen: false);
-      findState.setInfo(email);
-      var response = await http.post(url, headers: header, body: body);
-      String result = response.body;
-      print(1);
-
-      var json = jsonDecode(result);
-      print("json $json");
-      var regDate = DateTime.fromMillisecondsSinceEpoch(json["regDate"]);
-
-      findState.setRegisterDate(regDate.toString().substring(0,10));
-
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => FindPasswordResultPage()));
-    } else {
+    Future future = _checkEmail(email);
+    dynamic result;
+    print(result);
+    await future.then((value) => result = value);
+    int code = result["status"]["statusCode"];
+    String joinTime;
+    if (code == 240) {
+       FindState findState = Provider.of<FindState>(context, listen: false);
+       findState.setInfo(email);
+       joinTime = result["response"]["joinTime"];
+       findState.setRegisterDate(joinTime.toString().substring(0,10));
+       Navigator.push(context, MaterialPageRoute(builder: (context) => FindPasswordResultPage()));
+    }
+    else if (code == 300) {
       setState(() {
         _labelEmail = "등록되지 않은 이메일이에요.";
         _emailFW = FontWeight.bold;
       });
     }
+    else {
+      _labelEmail = "다시 한번 시도해주세요.";
+      _emailFW = FontWeight.bold;
+    }
+  }
+
+  Future<dynamic> _checkEmail(String email) async {
+
+    var url = Uri.parse("$speckUrl/mail/find/password");
+    String body = """{
+      "userEmail" : "$email"
+    }""";
+    Map<String, String> header = {
+      "Content-Type" : "application/json"
+    };
+
+    var response = await http.post(url, body: body, headers: header);
+    var result = jsonDecode(utf8.decode(response.bodyBytes));
+    print(result);
+    return Future(() {
+      return result;
+    });
   }
 }

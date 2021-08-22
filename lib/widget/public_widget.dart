@@ -39,7 +39,7 @@ Widget title(BuildContext context, String title) {
   );
 }
 
-Widget reservedGalaxyInfo(BuildContext context, DateTime startDate, DateTime endDate, String schoolName, int type, int cnt, int attCount, int timeNum) {
+Widget reservedGalaxyInfo(BuildContext context, DateTime startDate, DateTime endDate, String schoolName, int type, int cnt, int attCount, int timeNum, String imagePath) {
   uiInit(context);
 
   String start = "${startDate.toString().substring(0,4)}.${startDate.toString().substring(5,7)}.${startDate.toString().substring(8,10)}";
@@ -94,7 +94,7 @@ Widget reservedGalaxyInfo(BuildContext context, DateTime startDate, DateTime end
                         borderRadius: BorderRadius.circular(6.9),
                         image: DecorationImage(
                           // image: NetworkImage(imagePath)
-                          image: AssetImage("assets/png/example.png"),
+                          image: NetworkImage(imagePath),
                           fit: BoxFit.fitHeight,
                         )
                     ),
@@ -131,7 +131,7 @@ Widget reservedGalaxyInfo(BuildContext context, DateTime startDate, DateTime end
                       Row(
                         children: <Widget>[
                           Text("예약 기간 ", style: TextStyle(color: mainColor, fontWeight: FontWeight.w500, fontSize: uiCriteria.textSize5, letterSpacing: 0.2),),
-                          Text("$start ~ $end (총  $cnt일)", style: TextStyle(color: mainColor, fontWeight: FontWeight.w700, fontSize: uiCriteria.textSize5, letterSpacing: 0.2),),
+                          Text("$start ~ $end (총 $cnt일)", style: TextStyle(color: mainColor, fontWeight: FontWeight.w700, fontSize: uiCriteria.textSize5, letterSpacing: 0.2),),
                         ],
                       )
                     ],
@@ -528,7 +528,7 @@ Widget loaderDialog() {
   return dialog;
 }
 
-List<Widget> generateHashTags(BuildContext context, List<dynamic> hts) {
+List<Widget> generateHashTags(BuildContext context, List<dynamic> hts, int index) {
   uiInit(context);
   List<Widget> hashTags = <Widget>[];
   if (hts.isNotEmpty) {
@@ -536,7 +536,7 @@ List<Widget> generateHashTags(BuildContext context, List<dynamic> hts) {
       String text = hts[j]["hashTag"];
       hashTags.add(
           Container(
-              margin: EdgeInsets.only(right:uiCriteria.screenWidth * 0.016),
+              margin: (index == 0)?EdgeInsets.zero:EdgeInsets.only(right:uiCriteria.screenWidth * 0.016),
               padding: EdgeInsets.symmetric(horizontal: uiCriteria.screenWidth * 0.016, vertical: uiCriteria.screenWidth * 0.0106),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(3.5),
@@ -548,7 +548,6 @@ List<Widget> generateHashTags(BuildContext context, List<dynamic> hts) {
 
     }
   }
-
   return hashTags;
 }
 

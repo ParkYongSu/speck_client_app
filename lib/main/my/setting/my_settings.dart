@@ -10,6 +10,7 @@ import 'package:speck_app/Login/Email/email_login_page.dart';
 import 'package:speck_app/Main/my/account/my_account_info.dart';
 import 'package:speck_app/Main/my/setting/setting_all_info.dart';
 import 'package:speck_app/main/home/page_state.dart';
+import 'package:speck_app/main/my/setting/setting_notification.dart';
 import 'package:speck_app/ui/ui_color.dart';
 import 'package:speck_app/ui/ui_criteria.dart';
 import 'package:speck_app/widget/public_widget.dart';
@@ -90,7 +91,7 @@ class Settings extends StatelessWidget {
 
   Widget _userSettingList(BuildContext context) {
     return AspectRatio(
-      aspectRatio: 375/74,
+      aspectRatio: 375/111,
       child: Column(
         children: <Widget>[
           Expanded(
@@ -111,6 +112,26 @@ class Settings extends StatelessWidget {
                 ),
               ),
               onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileInfo())),
+            ),
+          ),
+          Expanded(
+            child: GestureDetector(
+              child: Container(
+                width: _uiCriteria.screenWidth,
+                padding: EdgeInsets.symmetric(horizontal: _uiCriteria.horizontalPadding),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border(bottom: BorderSide(color: greyD8D8D8.withOpacity(0.5), width: 0.5))
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("알림 설정", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w500),),
+                    Icon(Icons.arrow_forward_ios_rounded, size: _uiCriteria.textSize2, color: greyB3B3BC,)
+                  ],
+                ),
+              ),
+              onTap: () => _navigateSetNotification(context),
             ),
           ),
           Expanded(
@@ -357,7 +378,7 @@ class Settings extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Spacer(flex: 235,),
-                          Text("정말 회원탈퇴하시겠어요?", style: TextStyle(letterSpacing: 0.7, color: mainColor, fontSize: _uiCriteria.screenWidth * 0.042, fontWeight: FontWeight.w700),),
+                          Text("정말 회원탈퇴 하시겠어요?", style: TextStyle(letterSpacing: 0.7, color: mainColor, fontSize: _uiCriteria.screenWidth * 0.042, fontWeight: FontWeight.w700),),
                           Spacer(flex: 50),
                           Text("탈퇴시 모든 데이터는 삭제됩니다", style: TextStyle(letterSpacing: 0.5, color: greyAAAAAA, fontSize: _uiCriteria.textSize5, fontWeight: FontWeight.w700),),
                           Spacer(flex: 245,)
@@ -415,6 +436,11 @@ class Settings extends StatelessWidget {
     );
   }
 
+  /// 알림 설정 페이지로 이동
+  void _navigateSetNotification(BuildContext context) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => SetNotification()));
+  }
+
   void _navigateSetAccount(BuildContext context) {
     Navigator.push(context, MaterialPageRoute(builder: (context) => AccountInfo()));
   }
@@ -426,12 +452,23 @@ class Settings extends StatelessWidget {
   /// 기존서버
   void _logout(BuildContext context) async {
     SharedPreferences sp = await SharedPreferences.getInstance();
-    String params = "?email=${sp.getString("email")}";
-    var url = Uri.parse("http://icnogari96.cafe24.com:8080/members/logout$params");
-    var response = await http.post(url);
-    var code = int.parse(utf8.decode(response.bodyBytes));
-    print(code);
-    if (code == 202) {
+    String email = sp.getString("email");
+    String token = sp.getString("token");
+    var url = Uri.parse("$speckUrl/user/logout");
+    String body = """{
+      "userEmail" : "$email"
+    }""";
+    Map<String, String> header = {
+      "Content-Type" : "application/json",
+      "Authorization" : "$token"
+    };
+    print(body);
+    print(token);
+
+    var response = await http.post(url, headers: header, body: body);
+    var result = response.body;
+    print(result);
+    if (result == "true") {
       Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => EmailLoginPage()), (route) => false);
     }
     else {
@@ -439,16 +476,25 @@ class Settings extends StatelessWidget {
     }
   }
 
-  void _requestWithdrawal(BuildContext context) async {
+  void  _requestWithdrawal(BuildContext context) async {
     SharedPreferences sp = await SharedPreferences.getInstance();
-    String params = "?email=${sp.getString("email")}";
-    var url = Uri.parse("http://icnogari96.cafe24.com:8080/members/delete$params");
-    var response = await http.post(url);
-    var result = jsonDecode(utf8.decode(response.bodyBytes));
-    int code = result["status"];
-
-    if (code == 202) {
-      _requestWithdrawal2(context);
+    String email = sp.getString("email");
+    String token = sp.getString("token");
+    var url = Uri.parse("$speckUrl/withdraw");
+    String body = """{
+      "userEmail" : "$email"
+    }""";
+    Map<String, String> header = {
+      "Content-Type" : "application/json",
+      "Authorization" : "$token"
+    };
+    print(header);
+    var response = await http.post(url, headers: header, body: body);
+    int code = int.parse(response.body);
+    print(code);
+    if (code == 100) {
+      sp.clear();
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => EmailLoginPage()), (route) => false);
     }
     else {
       errorToast("다시 한번 시도해주세요");
@@ -457,7 +503,7 @@ class Settings extends StatelessWidget {
 
   void _requestWithdrawal2(BuildContext context) async {
     SharedPreferences sp = await SharedPreferences.getInstance();
-    var url = Uri.parse("http://$speckUrl/withdraw");
+    var url = Uri.parse("$speckUrl/withdraw");
     String body = '''{
       "email" : "${sp.getString("email")}"
     }''';

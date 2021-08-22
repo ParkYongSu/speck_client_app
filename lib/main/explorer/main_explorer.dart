@@ -59,7 +59,7 @@ class _MainExplorerState extends State<MainExplorer> {
   }
 
   Future<dynamic> _requestExplorer(String userEmail) async {
-    var url = Uri.parse("http://$speckUrl/explorer");
+    var url = Uri.parse("$speckUrl/explorer");
     String body = ''' 
       {
         "userEmail" : "$userEmail"
@@ -151,7 +151,7 @@ class _MainExplorerState extends State<MainExplorer> {
       List<dynamic> hts = data["hashTags"];
       String message = data["message"];
       String nextReserveTime = data["nextReserveTime"];
-      List<Widget> hashTags = generateHashTags(context, hts);
+      List<Widget> hashTags = generateHashTags(context, hts, 1);
 
       /// 크게 표시될 갤럭시
       if (result == null && (DateTime.now().isBefore(DateTime.parse(nextReserveTime + " " + getAuthTime(timeNum))))) {
@@ -241,15 +241,15 @@ class _MainExplorerState extends State<MainExplorer> {
                               )
                           )
                       ),
-                      Container(
-                          padding: EdgeInsets.symmetric(vertical: constraint.maxHeight * 0.0188, horizontal: constraint.maxWidth * 0.0421),
-                          margin: EdgeInsets.only(top: constraint.maxHeight * 0.0283, right: constraint.maxWidth * 0.036),
-                          decoration: BoxDecoration(
-                              color: (official == 1)?mainColor.withOpacity(0.9):greyD8D8D8.withOpacity(0.9),
-                              borderRadius: BorderRadius.circular(3.5)
-                          ),
-                          child: Text((official == 1)?"자유 장소":"지정 장소", maxLines: 1,style: TextStyle(color: Colors.white, fontSize: _uiCriteria.textSize5, fontWeight: FontWeight.w700),)
-                      )
+                      // Container(
+                      //     padding: EdgeInsets.symmetric(vertical: constraint.maxHeight * 0.0188, horizontal: constraint.maxWidth * 0.0421),
+                      //     margin: EdgeInsets.only(top: constraint.maxHeight * 0.0283, right: constraint.maxWidth * 0.036),
+                      //     decoration: BoxDecoration(
+                      //         color: (official == 1)?mainColor.withOpacity(0.9):greyD8D8D8.withOpacity(0.9),
+                      //         borderRadius: BorderRadius.circular(3.5)
+                      //     ),
+                      //     child: Text((official == 1)?"자유 장소":"지정 장소", maxLines: 1,style: TextStyle(color: Colors.white, fontSize: _uiCriteria.textSize5, fontWeight: FontWeight.w700),)
+                      // )
                     ],
                   ),
                   Spacer(flex: 13),
@@ -459,7 +459,7 @@ class _MainExplorerState extends State<MainExplorer> {
                       borderRadius: BorderRadius.circular(6.9),
                       image: DecorationImage(
                           image: NetworkImage(imgUrl),
-                          fit: BoxFit.fitHeight
+                          fit: BoxFit.cover
                       )
                   ),
                   padding: EdgeInsets.symmetric(horizontal: constraint.maxWidth * 0.0466, vertical: constraint.maxHeight * 0.0437),

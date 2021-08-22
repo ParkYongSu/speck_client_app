@@ -42,11 +42,12 @@ class _ExplorerState extends State<Explorer> with TickerProviderStateMixin {
     _controller = new TabController(length: 3, vsync: this);
   }
 
-
   @override
   void dispose() {
     super.dispose();
-    _cardTime.startTimer();
+    if (_cardTime.seconds != null) {
+      _cardTime.startTimer();
+    }
   }
 
   @override
@@ -129,17 +130,21 @@ class _ExplorerState extends State<Explorer> with TickerProviderStateMixin {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text("스펙 오픈채팅방", style: TextStyle(fontSize: _uiCriteria.textSize1, color: mainColor, fontWeight: FontWeight.bold)),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.02,
-                ),
+                Spacer(flex: 242,),
+                Text("곧 채팅 서비스가 오픈될 예정입니다.", style: TextStyle(fontSize: _uiCriteria.textSize1, color: mainColor, fontWeight: FontWeight.bold,)),
+                Spacer(flex: 12,),
+                Text("지금은 대체 서비스로 오픈 채팅방을 운영중입니다.", style: TextStyle(fontSize: _uiCriteria.textSize1, color: mainColor, fontWeight: FontWeight.bold)),
+                Spacer(flex: 8,),
+                Text("채팅을 통해 서로 자료를 공유해보세요!", style: TextStyle(fontSize: _uiCriteria.textSize1, color: mainColor, fontWeight: FontWeight.bold)),
+                Spacer(flex: 50,),
+                Text("스펙 오픈채팅방", style: TextStyle(fontSize: _uiCriteria.textSize2, color: greyAAAAAA, fontWeight: FontWeight.bold)),
+                Spacer(flex: 6,),
                 GestureDetector(
                     onTap: () => launch("https://open.kakao.com/o/g5wavQmd"),
-                    child: Text("https://open.kakao.com/o/g5wavQmd", style: TextStyle(decoration: TextDecoration.underline,fontSize: _uiCriteria.textSize2, color: mainColor, fontWeight: FontWeight.bold))),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.02,
-                ),
-                Text("참여코드: G01T", style: TextStyle(fontSize: _uiCriteria.textSize2, color: mainColor, fontWeight: FontWeight.bold)),
+                    child: Text("https://open.kakao.com/o/g5wavQmd", style: TextStyle(decoration: TextDecoration.underline,fontSize: _uiCriteria.textSize2, color: greyAAAAAA, fontWeight: FontWeight.bold))),
+                Spacer(flex: 6,),
+                Text("참여코드: G01T", style: TextStyle(fontSize: _uiCriteria.textSize2, color: greyAAAAAA, fontWeight: FontWeight.bold)),
+                Spacer(flex: 261,),
               ],
             )
         )

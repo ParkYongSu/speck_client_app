@@ -324,7 +324,7 @@ class QrScannerState extends State<QrScanner> {
     String placeCode = code.substring(code.length - 4, code.length);
     String hashCode = code.substring(0, code.length - 4);
     print("bookInfo $bookInfo");
-    var url = Uri.parse("http://$speckUrl/certify/auth");
+    var url = Uri.parse("$speckUrl/certify/auth");
     String body = '''{
        "status" : $status,
        "placeCode" : "$placeCode",

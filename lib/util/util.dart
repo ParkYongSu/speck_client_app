@@ -4,8 +4,9 @@ import 'dart:ui';
 import 'package:speck_app/kakao/kakao_share.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-String speckUrl = "13.209.138.39:8080";
-// String speckUrl = "13.124.227.150:8080";
+// String speckUrl = "https://api.speck.kr";
+String speckUrl = "https://develop.speck.kr";
+// String speckUrl = "http://192.168.0.17:8080";
 
 String getCharacter(int index) {
   switch (index) {

@@ -410,7 +410,7 @@ class _GpsAuthState extends State<GpsAuth> with TickerProviderStateMixin, Widget
 
   void _getSpeckZone() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
-    var url = Uri.parse("http://$speckUrl/map");
+    var url = Uri.parse("$speckUrl/map");
     String body = ''' {
       "email" : "${sp.getString("email")}"  
     } ''';
@@ -741,7 +741,7 @@ class _GpsAuthState extends State<GpsAuth> with TickerProviderStateMixin, Widget
 
   Future<dynamic> _authenticate() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
-    var url = Uri.parse("http://$speckUrl/certify/auth");
+    var url = Uri.parse("$speckUrl/certify/auth");
     int bookInfo = sp.getInt("bookInfo");
     String email = sp.getString("email");
     String body = ''' {
@@ -773,6 +773,7 @@ class _GpsAuthState extends State<GpsAuth> with TickerProviderStateMixin, Widget
   }
 
   void _action() async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
     dynamic result;
     Future future = _authenticate();
     await future.then((value) => result = value);
@@ -784,6 +785,7 @@ class _GpsAuthState extends State<GpsAuth> with TickerProviderStateMixin, Widget
         Future.delayed(Duration(milliseconds: 1500), () {
           Navigator.pop(context);
         }).then((value) {
+          sp.remove("bookInfo");
           Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => SpeckApp()), (route) => false);
           _setTicketData(ticketData);
           _showTicket(context, _placeName, _attCount, _totalCount, _attRate, _totalDeposit, _myDeposit,

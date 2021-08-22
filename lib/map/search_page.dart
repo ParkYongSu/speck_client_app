@@ -306,8 +306,8 @@ class SearchPageState extends State<SearchPage> {
     String token = sp.getString("token");
     String email = sp.getString("email");
     Map<String, String> header = {
-      "member-token" : "${token.substring(1, token.length -1)}",
-      "member-email" : "$email"
+      "member-token" : "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkeWR0bjM1MTBAbmF2ZXIuY29tIiwiZXhwIjoxNjMxODIxMDY3fQ.Q7z0m0Sp45If8CNfcbJsGTUL1Xh6jnH3qlZDIjK2cVw",
+      "member-email" : "dydtn3510@naver.com"
     };
     var response = await http.get(url, headers: header);
     var utf = utf8.decode(response.bodyBytes);

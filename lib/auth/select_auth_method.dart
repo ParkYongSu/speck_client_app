@@ -1,12 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:speck_app/Time/card_time.dart';
 import 'package:speck_app/auth/gps_auth.dart';
 import 'package:speck_app/auth/qr_scanner.dart';
 import 'package:speck_app/ui/ui_color.dart';
 import 'package:speck_app/widget/public_widget.dart';
 
-class AuthMethod extends StatelessWidget {
+class AuthMethod extends StatefulWidget {
+  @override
+  _AuthMethodState createState() => _AuthMethodState();
+}
+
+class _AuthMethodState extends State<AuthMethod> {
+  CardTime _cardTime;
+
+  @override
+  void dispose() {
+    super.dispose();
+    if (_cardTime.seconds != null) {
+      _cardTime.startTimer();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    _cardTime = Provider.of<CardTime>(context, listen: false);
     return _authMethod(context);
   }
 
@@ -27,7 +45,9 @@ class AuthMethod extends StatelessWidget {
             ),
             Align(
               alignment: Alignment.bottomCenter,
-              child: Image.asset("assets/png/select_method_draw.png"),
+              child: Container(
+                  width: uiCriteria.screenWidth,
+                  child: Image.asset("assets/png/select_method_draw.png", fit: BoxFit.fitWidth,)),
             )
           ],
         )
@@ -38,7 +58,7 @@ class AuthMethod extends StatelessWidget {
   Widget _title() {
     return Container(
         decoration: BoxDecoration(
-          boxShadow: [BoxShadow(color: Colors.white.withOpacity(0.17), blurRadius: 26, spreadRadius: 0, offset: Offset(-4,0))]
+            boxShadow: [BoxShadow(color: Colors.white.withOpacity(0.17), blurRadius: 26, spreadRadius: 0, offset: Offset(-4,0))]
         ),
         child: Text("원하는 인증 방식을 선택해주세요", style: TextStyle(fontSize: uiCriteria.textSize6, color: Colors.white, fontWeight: FontWeight.w700, letterSpacing: 1.05),));
   }
@@ -97,3 +117,5 @@ class AuthMethod extends StatelessWidget {
     );
   }
 }
+
+

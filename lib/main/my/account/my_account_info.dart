@@ -117,7 +117,7 @@ class _SetAccountState extends State<AccountInfo> {
 
   Future<dynamic> _getAccount() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
-    var url = Uri.parse("http://$speckUrl/account");
+    var url = Uri.parse("$speckUrl/account");
     String body = '''{
       "email" : "${sp.getString("email")}"
     }''';

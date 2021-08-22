@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:speck_app/Login/Find/find_password_page.dart';
 import 'package:speck_app/Login/Home/home_login_page.dart';
 import 'package:speck_app/State/banner_state.dart';
+import 'package:speck_app/firebase/check_token.dart';
 import 'package:speck_app/main.dart';
 import 'package:speck_app/Main/home/main_home.dart';
 import 'package:speck_app/Main/main_page.dart';
@@ -245,6 +246,23 @@ class EmailLoginPageState extends State<EmailLoginPage> {
                     Expanded(
                       flex: 1,
                       child: InkWell(
+                        child: Text("비밀번호 찾기",
+                            style: TextStyle(letterSpacing: 0.6, fontSize: _uiCriteria.textSize3, color: greyB3B3BC),
+                            textAlign: TextAlign.center),
+                        onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => FindPasswordPage())),
+                      ),
+                    ),
+                    Container(
+                      width: 1,
+                      height: _uiCriteria.screenWidth * 0.025,
+                      color: greyB3B3BC,
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: InkWell(
                         child: Text("회원가입",
                             style: TextStyle(letterSpacing: 0.6, fontSize: _uiCriteria.textSize3, color: greyB3B3BC),
                             textAlign: TextAlign.center),
@@ -302,54 +320,50 @@ class EmailLoginPageState extends State<EmailLoginPage> {
     String email = _emailController.text;
     String pw = _passwordController.text;
     TodoLogin todoLogin = new TodoLogin(); // 전역변수
-    var userData;
-
-    Future<bool> future = todoLogin.confirmInfo(email, pw);
+    dynamic userData;
+    Future future = todoLogin.login(email, pw);
     await future.then((value) => setState(() {
       _isTryLogin = true;
-      _result = value;
+      userData = value;
     }), onError: (e) => print(e));
     print("_result $_result");
-    // result 가 true 면 로그인 성공
-    if (_result) {
-      Future future = todoLogin.login(email);
-      await future.then((value) => userData = value).onError((error, stackTrace) => print(error));
-      print(userData);
-      if (userData != null) {
-        print(userData);
-        await _sp.setString("email", userData["email"]);
-        await _sp.setString("sex", userData["sex"]);
-        await _sp.setString("bornTime", userData["bornTime"]);
-        await _sp.setString("nickname", userData["nickname"]);
-        await _sp.setString("phoneNumber", userData["phoneNumber"]);
-        await _sp.setInt("characterIndex", userData["characterIndex"]);
-        await _sp.setString("profile", userData["profile"]??"N");
-        print("쿠키 저장 데이터 ${_sp.getKeys()}");
-        _checkBanner();
-        setState(() {
-          _resultMessage = "";
-        });
-        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => MainNavigation()), (route) => false);
-      }
-      else {
-        FocusScope.of(context).unfocus();
-        setState(() {
-          _resultMessage = "이메일과 비밀번호를 확인해주세요.";
-        });
-      }
+
+    int statusCode = userData["defaultRes"]["statusCode"];
+    String token = userData["token"];
+    dynamic userInfo = userData["userInfo"];
+
+    if (statusCode == 200) {
+      DateTime current = DateTime.now();
+      await _sp.setString("email", userInfo["email"]);
+      await _sp.setString("sex", userInfo["sex"]);
+      await _sp.setString("bornTime", userInfo["bornTime"]);
+      await _sp.setString("nickname", userInfo["nickname"]);
+      await _sp.setString("phoneNumber", userInfo["phoneNumber"]);
+      await _sp.setInt("characterIndex", userInfo["characterIndex"]);
+      await _sp.setString("profile", userInfo["profile"]??"N");
+      await _sp.setInt("userId", userInfo["userId"]);
+      await _sp.setString("token", token.substring(0, token.length));
+      await _sp.setString("tokenUpdateDate", current.toString());
+
+      _checkBanner();
+      initToken(email, context);
+      setState(() {
+        _resultMessage = "";
+        _result = true;
+      });
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => MainNavigation()), (route) => false);
     }
-    // 실패면 이메일, 비밀번호 확인해달라는 알림
     else {
-      // 포커스를 떼고
       FocusScope.of(context).unfocus();
       setState(() {
         _resultMessage = "이메일과 비밀번호를 확인해주세요.";
+        _result = false;
       });
     }
   }
 
   Future<dynamic>_bannerData() async {
-    var url = Uri.parse("http://$speckUrl/home");
+    var url = Uri.parse("$speckUrl/home");
     String body = '''{
       "userEmail" : "${_sp.getString("email")}"
     }''';
@@ -378,5 +392,4 @@ class EmailLoginPageState extends State<EmailLoginPage> {
       _bs.setMapStatus(data["map"]);
     }
   }
-
 }

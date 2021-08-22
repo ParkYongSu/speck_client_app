@@ -151,7 +151,7 @@ class BenefitInfoState extends State<BenefitInfo> {
 
   Future<dynamic> _getData() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
-    var url = Uri.parse("http://$speckUrl/mypage/myPrize");
+    var url = Uri.parse("$speckUrl/mypage/myPrize");
     String body = '''{
       "userEmail" : "${sp.getString("email")}"
     }''';

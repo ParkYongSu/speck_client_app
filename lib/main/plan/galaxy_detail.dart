@@ -104,7 +104,7 @@ class GalaxyDetailState extends State<GalaxyDetail> {
                     children: <Widget>[
                       _galaxyImage(context),
                       /// 제목
-                      _galaxyTitle(context, widget.official, widget.galaxyName, generateHashTags(context, _hashTags)),
+                      _galaxyTitle(context, widget.official, widget.galaxyName, generateHashTags(context, _hashTags, 1)),
                       /// 탐험단 정보
                       _galaxyInfo(_message, _accumAtt, _accumAttRank, _avgAtt, _avgAttRank, _accumDepo, _accumDepoRank, _avgDepo),
                       _reservationTips(),
@@ -472,7 +472,7 @@ class GalaxyDetailState extends State<GalaxyDetail> {
 
   // /// 탭을 눌렀을 때 시간별 데이터를 가져옴
   // void _getTimeList() async {
-  //   var url = Uri.parse("http://$speckUrl/galaxy/detail/timelist");
+  //   var url = Uri.parse("$speckUrl/galaxy/detail/timelist");
   //   String body = """{
   //     "galaxyNum":${widget.galaxyNum},
   //     "dateInfo":"$_selectedDate"
@@ -800,8 +800,6 @@ class GalaxyDetailState extends State<GalaxyDetail> {
             image: DecorationImage(
                 image: NetworkImage(widget.imagePath),
                 fit: BoxFit.fitWidth,
-
-              // image: NetworkImage(widget.imagePath)
             )
         ),
       ),
@@ -1316,7 +1314,7 @@ class GalaxyDetailState extends State<GalaxyDetail> {
   Future<dynamic> _getDetail(int galaxyNum) async {
     SharedPreferences sp = await SharedPreferences.getInstance();
     String email = sp.getString("email");
-    var url = Uri.parse("http://$speckUrl/galaxy/detail");
+    var url = Uri.parse("$speckUrl/galaxy/detail");
     String body = '''{
       "userEmail": "$email",
       "galaxyNum":$galaxyNum,

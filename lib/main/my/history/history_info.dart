@@ -16,12 +16,18 @@ import 'package:speck_app/util/util.dart';
 import 'history_event.dart';
 import 'my_history.dart';
 
-class HistoryInfo extends StatelessWidget {
+class HistoryInfo extends StatefulWidget {
   final int type;
   final int bookInfo;
-
-  HistoryInfo({Key key,@required this.type, @required this.bookInfo})
+  final String imagePath;
+  HistoryInfo({Key key,@required this.type, @required this.bookInfo, @required this.imagePath})
       : super(key: key);
+  @override
+  _HistoryInfoState createState() => _HistoryInfoState();
+}
+
+class _HistoryInfoState extends State<HistoryInfo> {
+
 
   UICriteria _uiCriteria = new UICriteria();
 
@@ -205,12 +211,12 @@ class HistoryInfo extends StatelessWidget {
       aspectRatio: 375/215,
       child: Container(
         decoration: BoxDecoration(
-          border: Border(bottom: BorderSide(color: greyD8D8D8, width: 0.5))
+            border: Border(bottom: BorderSide(color: greyD8D8D8, width: 0.5))
         ),
         child: Column(
           children: <Widget>[
             title(context, "공식 갤럭시"),
-            reservedGalaxyInfo(context, DateTime.parse(_startDate), DateTime.parse(_endDate), _galaxyName, type, _totalCount, _attendCount, timeNum),
+            reservedGalaxyInfo(context, DateTime.parse(_startDate), DateTime.parse(_endDate), _galaxyName, widget.type, _totalCount, _attendCount, timeNum, widget.imagePath),
             authTime(context, _canAuthTime(timeNum)),
           ],
         ),
@@ -238,7 +244,7 @@ class HistoryInfo extends StatelessWidget {
       aspectRatio: 375/11.8,
       child: Container(
         decoration: BoxDecoration(
-          border: Border(bottom: BorderSide(color: Colors.white))
+            border: Border(bottom: BorderSide(color: Colors.white))
         ),
       ),
     );
@@ -250,12 +256,13 @@ class HistoryInfo extends StatelessWidget {
 
   Widget _markerBuilder(BuildContext context, DateTime one, List<HistoryEvent> event) {
     for (int i = 0; i < event.length; i++) {
+      print(event[i].color);
       return Container(
         width: _uiCriteria.calendarMarkerSize,
         height: _uiCriteria.calendarMarkerSize,
         decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: mainColor
+            color: event[i].color
         ),
       );
     }
@@ -347,7 +354,7 @@ class HistoryInfo extends StatelessWidget {
       aspectRatio: 375/210,
       child: Container(
         decoration: BoxDecoration(
-          border: Border(bottom: BorderSide(color: greyD8D8D8, width: 0.5))
+            border: Border(bottom: BorderSide(color: greyD8D8D8, width: 0.5))
         ),
         child: Column(
           children: <Widget>[
@@ -396,34 +403,34 @@ class HistoryInfo extends StatelessWidget {
       child: Container(
         alignment: Alignment.topCenter,
         child: AspectRatio(
-          aspectRatio: 375/72,
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: _uiCriteria.horizontalPadding),
-            decoration: BoxDecoration(
-              color: greyF0F0F1
-            ),
-            child: Column(
-              children: <Widget>[
-                Spacer(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text("회수한 보증금", style: TextStyle(fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize1, color: mainColor, letterSpacing: 0.8),),
-                    Text("${getDeposit.toString().replaceAllMapped(new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}원", style: TextStyle(fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize1, color: mainColor, letterSpacing: 0.8),),
-                  ],
-                ),
-                Spacer(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text("총상금", style: TextStyle(fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize1, color: mainColor, letterSpacing: 0.8),),
-                    Text("${getReward.toString().replaceAllMapped(new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}원", style: TextStyle(fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize1, color: mainColor, letterSpacing: 0.8),),
-                  ],
-                ),
-                Spacer(),
-              ],
-            ),
-          )
+            aspectRatio: 375/72,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: _uiCriteria.horizontalPadding),
+              decoration: BoxDecoration(
+                  color: greyF0F0F1
+              ),
+              child: Column(
+                children: <Widget>[
+                  Spacer(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text("회수한 보증금", style: TextStyle(fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize1, color: mainColor, letterSpacing: 0.8),),
+                      Text("${getDeposit.toString().replaceAllMapped(new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}원", style: TextStyle(fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize1, color: mainColor, letterSpacing: 0.8),),
+                    ],
+                  ),
+                  Spacer(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text("총상금", style: TextStyle(fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize1, color: mainColor, letterSpacing: 0.8),),
+                      Text("${getReward.toString().replaceAllMapped(new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}원", style: TextStyle(fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize1, color: mainColor, letterSpacing: 0.8),),
+                    ],
+                  ),
+                  Spacer(),
+                ],
+              ),
+            )
         ),
       ),
     );
@@ -498,9 +505,9 @@ class HistoryInfo extends StatelessWidget {
           child: MaterialButton(
             disabledColor: greyB3B3BC,
             color: mainColor,
-            onPressed: (type == 1)
-            ? null
-            : () {
+            onPressed: (widget.type == 1)
+                ? null
+                : () {
               showDialog(
                   barrierColor: Colors.black.withOpacity(0.2),
                   barrierDismissible: false,
@@ -528,7 +535,7 @@ class HistoryInfo extends StatelessWidget {
                                         Spacer(flex: 235,),
                                         Text("정말 취소하시겠어요?", style: TextStyle(letterSpacing: 0.7, color: mainColor, fontSize: _uiCriteria.screenWidth * 0.042, fontWeight: FontWeight.w700),),
                                         Spacer(flex: 50),
-                                        Text((type == 0)?"취소시 스펙 캐시로 환급됩니다.":"취소시 예약데이터가 삭제됩니다.", style: TextStyle(letterSpacing: 0.5, color: greyAAAAAA, fontSize: _uiCriteria.textSize5, fontWeight: FontWeight.w700),),
+                                        Text((widget.type == 0)?"취소시 스펙 캐시로 환급됩니다.":"취소시 예약데이터가 삭제됩니다.", style: TextStyle(letterSpacing: 0.5, color: greyAAAAAA, fontSize: _uiCriteria.textSize5, fontWeight: FontWeight.w700),),
                                         Spacer(flex: 245,)
                                       ],
                                     ))),
@@ -560,10 +567,10 @@ class HistoryInfo extends StatelessWidget {
                                               alignment: Alignment.center,
                                               child: Text("예약취소", style: TextStyle(letterSpacing: 0.7, color: Color(0XFFe7535c), fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize2),)),
                                           onTap:() async {
-                                            int pre = (type == -1)?1:0;
-                                            var url = Uri.parse("http://$speckUrl/bookingdelete");
+                                            int pre = (widget.type == -1)?1:0;
+                                            var url = Uri.parse("$speckUrl/bookingdelete");
                                             String body = ''' {
-                                             "bookinfo" : $bookInfo,
+                                             "bookinfo" : ${widget.bookInfo},
                                              "pre" : $pre
                                             } ''';
                                             Map<String, String> header = {
@@ -584,7 +591,8 @@ class HistoryInfo extends StatelessWidget {
                                             }
                                             Navigator.pop(context);
                                           } ,
-                                        )),
+                                        )
+                                    ),
                                   ],
                                 ),
                               ),
@@ -593,7 +601,8 @@ class HistoryInfo extends StatelessWidget {
                         ),
                       ),
                     );
-                  });
+                  }
+              );
             },
             elevation: 0,
             shape: RoundedRectangleBorder(
@@ -622,7 +631,7 @@ class HistoryInfo extends StatelessWidget {
             color: greyAAAAAA,
             letterSpacing: 0.5),),
         SizedBox(height: constraint.maxHeight * 0.0216,),
-        Text("- 환불은 24시간 내에 이루어집니다.", style: TextStyle(
+        Text("- 환불 금액은 스펙 캐시로 즉시 환급됩니다.", style: TextStyle(
             fontSize: _uiCriteria.textSize5,
             fontWeight: FontWeight.w500,
             color: greyAAAAAA,
@@ -631,214 +640,10 @@ class HistoryInfo extends StatelessWidget {
     );
   }
 
-  void _showCancelDialog(BuildContext context) {
-    showDialog(
-        barrierColor: Colors.black.withOpacity(0.2),
-        barrierDismissible: false,
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            insetPadding: EdgeInsets.symmetric(horizontal: _uiCriteria.screenWidth * 0.152),
-            contentPadding: EdgeInsets.zero,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-            elevation: 0,
-            content: AspectRatio(
-              aspectRatio: 260/122,
-              child: Column(
-                children: [
-                  Expanded(
-                      flex: 82,
-                      child: Container(
-                          decoration: BoxDecoration(
-                              border: Border(bottom: BorderSide(color: greyD8D8D8, width: 0.5))
-                          ),
-                          alignment: Alignment.center,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Spacer(flex: 235,),
-                              Text("정말 취소하시겠어요?", style: TextStyle(letterSpacing: 0.7, color: mainColor, fontSize: _uiCriteria.screenWidth * 0.042, fontWeight: FontWeight.w700),),
-                              Spacer(flex: 50),
-                              Text("취소시 스펙 캐시로 환급됩니다.", style: TextStyle(letterSpacing: 0.5, color: greyAAAAAA, fontSize: _uiCriteria.textSize5, fontWeight: FontWeight.w700),),
-                              Spacer(flex: 245,)
-                            ],
-                          ))),
-                  Expanded(
-                    flex: 39,
-                    child: Container(
-                      child: Row(
-                        children: <Widget>[
-                          Expanded(
-                            child: GestureDetector(
-                                onTap: () {
-                                  Navigator.pop(context);
-                                },
-                                child: Container(
-                                    decoration: BoxDecoration(
-                                        border: Border(right: BorderSide(color: greyD8D8D8, width: 0.5))
-                                    ),
-                                    alignment: Alignment.center,
-                                    child: Text("취소", style: TextStyle(letterSpacing: 0.7, color: Color(0XFF3478F6), fontSize: _uiCriteria.textSize2, fontWeight: FontWeight.w700),)
-                                )
-                            ),
-                          ),
-                          Expanded(
-                              child: GestureDetector(
-                                child: Container(
-                                    decoration: BoxDecoration(
-                                        border: Border(left: BorderSide(color: greyD8D8D8, width: 0.5))
-                                    ),
-                                    alignment: Alignment.center,
-                                    child: Text("예약취소", style: TextStyle(letterSpacing: 0.7, color: Color(0XFFe7535c), fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize2),)),
-                                onTap:() async {
-                                  var url = Uri.parse("http://$speckUrl/bookingdelete");
-                                  String body = ''' {
-                            "bookinfo" : $bookInfo}
-                            } ''';
-                                  Map<String, String> header = {
-                                    "Content-Type" : "application/json"
-                                  };
-
-                                  var response = await http.post(url, headers: header, body: body);
-                                  var result = jsonDecode(utf8.decode(response.bodyBytes));
-                                  var statusCode = result["statusCode"];
-                                  print("result $result");
-                                  if (statusCode == 202) {
-                                    errorToast("예약이 취소되었습니다.");
-                                    Navigator.pop(context);
-                                  }
-                                  else {
-                                    errorToast("다시 시도해주세요.");
-                                  }
-                                  Navigator.pop(context);
-                                } ,
-                              )),
-                        ],
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-          );
-        });
-  }
-
-  Widget _cancelDialog(BuildContext context) {
-    AlertDialog dialog = new AlertDialog(
-      insetPadding: EdgeInsets.symmetric(horizontal: _uiCriteria.screenWidth * 0.152),
-      contentPadding: EdgeInsets.zero,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-      elevation: 0,
-      content: AspectRatio(
-        aspectRatio: 260/122,
-        child: Column(
-          children: [
-            Expanded(
-                flex: 82,
-                child: Container(
-                    decoration: BoxDecoration(
-                        border: Border(bottom: BorderSide(color: greyD8D8D8, width: 0.5))
-                    ),
-                    alignment: Alignment.center,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Spacer(flex: 235,),
-                        Text("정말 취소하시겠어요?", style: TextStyle(letterSpacing: 0.7, color: mainColor, fontSize: _uiCriteria.screenWidth * 0.042, fontWeight: FontWeight.w700),),
-                        Spacer(flex: 50),
-                        Text("취소시 스펙 캐시로 환급됩니다.", style: TextStyle(letterSpacing: 0.5, color: greyAAAAAA, fontSize: _uiCriteria.textSize5, fontWeight: FontWeight.w700),),
-                        Spacer(flex: 245,)
-                      ],
-                    ))),
-            Expanded(
-              flex: 39,
-              child: Container(
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: GestureDetector(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: Container(
-                              decoration: BoxDecoration(
-                                  border: Border(right: BorderSide(color: greyD8D8D8, width: 0.5))
-                              ),
-                              alignment: Alignment.center,
-                              child: Text("취소", style: TextStyle(letterSpacing: 0.7, color: Color(0XFF3478F6), fontSize: _uiCriteria.textSize2, fontWeight: FontWeight.w700),)
-                          )
-                      ),
-                    ),
-                    Expanded(
-                        child: GestureDetector(
-                          child: Container(
-                              decoration: BoxDecoration(
-                                  border: Border(left: BorderSide(color: greyD8D8D8, width: 0.5))
-                              ),
-                              alignment: Alignment.center,
-                              child: Text("예약취소", style: TextStyle(letterSpacing: 0.7, color: Color(0XFFe7535c), fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize2),)),
-                          onTap:() async {
-                            var url = Uri.parse("http://$speckUrl/bookingdelete");
-                            String body = ''' {
-                            "bookinfo" : $bookInfo}
-                            } ''';
-                            Map<String, String> header = {
-                              "Content-Type" : "application/json"
-                            };
-
-                            var response = await http.post(url, headers: header, body: body);
-                            var result = jsonDecode(utf8.decode(response.bodyBytes));
-                            var statusCode = result["statusCode"];
-                            print("result $result");
-                            if (statusCode == 202) {
-                              errorToast("예약이 취소되었습니다.");
-                              Navigator.pop(context);
-                            }
-                            else {
-                              errorToast("다시 시도해주세요.");
-                            }
-                            Navigator.pop(context);
-                          } ,
-                        )),
-                  ],
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-    return dialog;
-  }
-
-  void _cancel(BuildContext context) async {
-    var url = Uri.parse("http://$speckUrl/bookingdelete");
-    String body = ''' {
-      "bookinfo" : $bookInfo}
-    } ''';
-    Map<String, String> header = {
-      "Content-Type" : "application/json"
-    };
-
-    var response = await http.post(url, headers: header, body: body);
-    var result = jsonDecode(utf8.decode(response.bodyBytes));
-    var statusCode = result["statusCode"];
-    print("result $result");
-    if (statusCode == 202) {
-      errorToast("예약이 취소되었습니다.");
-      Navigator.pop(context);
-    }
-    else {
-      errorToast("다시 시도해주세요.");
-    }
-    Navigator.pop(context);
-  }
-
   dynamic _getData() async {
-    var url = Uri.parse("http://$speckUrl/mypage/mygalaxyDetail");
+    var url = Uri.parse("$speckUrl/mypage/mygalaxyDetail");
     String body = '''{
-      "bookinfo" : $bookInfo
+      "bookinfo" : ${widget.bookInfo}
     }''';
     print("body $body");
     Map<String, String> header = {
@@ -847,10 +652,10 @@ class HistoryInfo extends StatelessWidget {
 
     var response = await http.post(url, headers: header, body: body);
     var result = jsonDecode(utf8.decode(response.bodyBytes));
-    print(result);
+    print("result $result");
     return result;
   }
-  
+
   void _setData(dynamic data) {
     _checkList = data["calendarList"];
     dynamic result = data["myGalaxyDetail"];
@@ -871,5 +676,6 @@ class HistoryInfo extends StatelessWidget {
     _lastDayDay = DateTime(DateTime.parse(_endDate).year, DateTime.parse(_endDate).month + 1, 0).toLocal().difference(x1).inDays;
     _paymentId = result["paymentId"];
   }
-  
+
 }
+

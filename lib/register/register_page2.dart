@@ -148,19 +148,6 @@ class RegisterPageState2 extends State<RegisterPage2> {
                       child: _isRequested
                           ? AutoSizeText("재요청", maxLines: 1, style: TextStyle(letterSpacing: 0.7, color: _isAuthenticated?greyB3B3BC:Colors.white, fontSize: _uiCriteria.textSize2,fontWeight: FontWeight.w700,))
                           : AutoSizeText("인증요청", maxLines: 1, minFontSize: 10,style: TextStyle(letterSpacing: 0.7, fontSize: _uiCriteria.textSize2,color: Colors.white,fontWeight: FontWeight.w700,)),
-                          // : Text("인증요청", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
-                      // onPressed: (!_pNumIsNotEmpty)
-                      //     ? null
-                      //     : (_isAuthenticated)
-                      //   ? null
-                      //   : () {
-                      //   setState(() {
-                      //     _isTryAuthenticate = false;
-                      //     _isAuthenticated = false;
-                      //   });
-                      //   _authTimer.startTimer();
-                      //   _requestAuth();
-                      // }
                         onPressed: (_pNumIsNotEmpty)
                         ? (_isAuthenticated)
                         ? null
@@ -645,8 +632,6 @@ class RegisterPageState2 extends State<RegisterPage2> {
   List<bool> _isChecked;
   FocusNode _authNumFocus;
   FocusNode _pNumFocus;
-  String _dtReceiveAuth;
-  String _isTimeOut;
   String _labelPNum;
   FontWeight _pNumFW;
   bool _allAgree;
@@ -672,7 +657,6 @@ class RegisterPageState2 extends State<RegisterPage2> {
     _isChecked = [false, false, false, false, false];
     _authNumFocus = new FocusNode();
     _pNumFocus = new FocusNode();
-    _isTimeOut = "";
     _labelPNum = "전화번호";
     _pNumFW = FontWeight.w700;
     _allAgree = false;
@@ -695,10 +679,6 @@ class RegisterPageState2 extends State<RegisterPage2> {
     AuthTimer authTimer = Provider.of<AuthTimer>(context, listen: false);
     TodoRegister todoRegister = new TodoRegister();
     print("현재 시간: ${DateTime.now()}");
-    print(_dtReceiveAuth);
-    Future<String> future = todoRegister.isTimeout(_dtReceiveAuth);
-    await future.then((value) => _isTimeOut = value, onError: (e) => print(e));
-    print("시간초과? $_isTimeOut");
     setState(() {
       _isTryAuthenticate = true;
     });
@@ -732,7 +712,7 @@ class RegisterPageState2 extends State<RegisterPage2> {
                 flex: 294,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: _isAuthenticated?greyF5F5F6:Colors.transparent,
+                    color: (_isOver)?greyF5F5F6:_isAuthenticated?greyF5F5F6:Colors.transparent,
                     borderRadius: BorderRadius.circular(3.5)
                   ),
                   child: TextField(
@@ -740,7 +720,7 @@ class RegisterPageState2 extends State<RegisterPage2> {
                       maxLines: null,
                       minLines: null,
                       style: TextStyle(letterSpacing: 0.7, fontSize: _uiCriteria.textSize2, color: _isAuthenticated? greyB3B3BC : mainColor, fontWeight: FontWeight.w500),
-                      enabled: (_isAuthenticated)?false:true,
+                      enabled: (_isOver)?false:(_isAuthenticated)?false:true,
                       onChanged: (String value) {
                         if (value.length == 0) {
                           setState(() {
@@ -816,30 +796,44 @@ class RegisterPageState2 extends State<RegisterPage2> {
   void _requestAuth() async {
     TodoRegister todoRegister = new TodoRegister();
     String phoneNumber = _pNumController.text;
-    Future<dynamic> future = todoRegister.getAuthNumber(phoneNumber);
-    await future.then((value) {
-      _authStatus = value["status"];
-      _authNum = value["code"];
-    }, onError: (e) => print(e));
-
-    // 인증번호 요청 시도
-    setState(() {
-      _isTryGetAuth = true;
+    int statusCode;
+    dynamic result;
+    Future getAuthNum = todoRegister.getAuthNumber(phoneNumber);
+    await getAuthNum.then((value) {
+      result = value;
     });
 
-    if (_authStatus.toString() == "500") {
-      setState(() {
-        _labelPNum = "이미 등록된 전화번호예요.";
-        _pNumFW = FontWeight.bold;
-        _isRequested = false;
-      });
-    } else if (_authStatus.toString() == "202"){
-      _dtReceiveAuth = DateTime.now().toString();
-      setState(() {
-        _labelPNum = "전화번호";
-        _isRequested = true;
-      });
+    print(result);
+    statusCode = result["status"]["statusCode"];
+
+    if (statusCode == 202) {
+      _labelPNum = "전화번호";
+      _isRequested = true;
+      _isTryGetAuth = true;
+      _authNum = result["code"];
       FocusScope.of(context).requestFocus(_authNumFocus);
+      setState((){});
+    }
+    else if (statusCode == 300) {
+      _labelPNum = "이미 등록된 전화번호예요.";
+      _pNumFW = FontWeight.bold;
+      _isTryGetAuth = true;
+      _isRequested = false;
+      setState(() {});
+    }
+    else if (statusCode == 305) {
+      _labelPNum = "전화번호를 확인해주세요.";
+      _pNumFW = FontWeight.bold;
+      _isTryGetAuth = true;
+      _isRequested = false;
+      setState(() {});
+    }
+    else {
+      _labelPNum = "다시 한번 시도해주세요.";
+      _pNumFW = FontWeight.bold;
+      _isTryGetAuth = true;
+      _isRequested = false;
+      setState(() {});
     }
   }
 
@@ -863,8 +857,7 @@ class RegisterPageState2 extends State<RegisterPage2> {
         : "N";
     String sex = _sex ?? "N";
     registerState.setPhoneNumber(pNum);
-    registerState.setBirthday1(birthday1);
-    registerState.setBirthday2(birthday2);
+    registerState.setBirthday(birthday2);
     registerState.setGender(sex);
     registerState.setService(_service);
     registerState.setPersonalInformationCollection(_personal);
@@ -874,13 +867,6 @@ class RegisterPageState2 extends State<RegisterPage2> {
     print("event $_event");
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => RegisterPage3()));
-
-    // 휴대폰 인증 안했으면
-    // if (!_isRequested) {
-    //   FocusScope.of(context).requestFocus(_pNumFocus);
-    // } else {
-    //   FocusScope.of(context).requestFocus(_authNumFocus);
-    // }
   }
   void _connectNotion(String url) async{
     await launch(url);

@@ -193,7 +193,7 @@ class _MainPlanState extends State<MainPlan> {
   Future<dynamic> _getGalaxyInfo(int categoryId) async {
     SharedPreferences sp = await SharedPreferences.getInstance();
     String email = sp.getString("email");
-    var url = Uri.parse("http://$speckUrl/galaxy");
+    var url = Uri.parse("$speckUrl/galaxy");
     print("카테고리 $categoryId");
     String body = '''{
       "userEmail" : "$email",
@@ -236,7 +236,7 @@ class _MainPlanState extends State<MainPlan> {
       String imgUrl = info["imgUrl"];
       List<dynamic> timeList = info["timeList"];
 
-      List<Widget> hashTags = generateHashTags(context, hts);
+      List<Widget> hashTags = generateHashTags(context, hts, 0);
 
       widgets.add(
           GestureDetector(
@@ -281,21 +281,20 @@ class _MainPlanState extends State<MainPlan> {
                                     decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(6.9),
                                         image: DecorationImage(
-                                          // image: NetworkImage(imagePath,),
                                             image: NetworkImage(imgUrl),
-                                            fit: BoxFit.cover
+                                            fit: BoxFit.fitWidth
                                         )
                                     )
                                 ),
-                                Container(
-                                    padding: EdgeInsets.symmetric(vertical: constraint.maxHeight * 0.0188, horizontal: constraint.maxWidth * 0.0421),
-                                    margin: EdgeInsets.only(top: constraint.maxHeight * 0.0283, right: constraint.maxWidth * 0.036),
-                                    decoration: BoxDecoration(
-                                        color: (official == 1)?mainColor.withOpacity(0.9):greyD8D8D8.withOpacity(0.9),
-                                        borderRadius: BorderRadius.circular(3.5)
-                                    ),
-                                    child: Text((official == 1)?"자유 장소":"지정 장소", maxLines: 1,style: TextStyle(color: Colors.white, fontSize: _uiCriteria.textSize5, fontWeight: FontWeight.w700),)
-                                )
+                                // Container(
+                                //     padding: EdgeInsets.symmetric(vertical: constraint.maxHeight * 0.0188, horizontal: constraint.maxWidth * 0.0421),
+                                //     margin: EdgeInsets.only(top: constraint.maxHeight * 0.0283, right: constraint.maxWidth * 0.036),
+                                //     decoration: BoxDecoration(
+                                //         color: (official == 1)?mainColor.withOpacity(0.9):greyD8D8D8.withOpacity(0.9),
+                                //         borderRadius: BorderRadius.circular(3.5)
+                                //     ),
+                                //     child: Text((official == 1)?"자유 장소":"지정 장소", maxLines: 1,style: TextStyle(color: Colors.white, fontSize: _uiCriteria.textSize5, fontWeight: FontWeight.w700),)
+                                // )
                               ],
                             ),
                             SizedBox(
@@ -332,7 +331,8 @@ class _MainPlanState extends State<MainPlan> {
                               height: constraint.maxHeight * 0.05,
                             ),
                             Wrap(
-                              runSpacing: constraint.maxHeight * 0.004,
+                              spacing: uiCriteria.screenWidth * 0.016,
+                              runSpacing: constraint.maxHeight * 0.01,
                               children: hashTags,
                             )
                           ],
@@ -610,7 +610,7 @@ class _MainPlanState extends State<MainPlan> {
   void _transferData(String type) async {
     String data;
     SharedPreferences sp = await SharedPreferences.getInstance();
-    var url = Uri.parse("http://$speckUrl/home/insert/galaxy");
+    var url = Uri.parse("$speckUrl/home/insert/galaxy");
     String body;
     Map<String, String> header = {
       "Content-Type" : "application/json"

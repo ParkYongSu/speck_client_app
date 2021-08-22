@@ -187,7 +187,7 @@ class _SetSexState extends State<SetSex> {
     SharedPreferences sp = await SharedPreferences.getInstance();
     String email = sp.getString("email");
     String gender = (_selectedIndex == -1)?"N":(_selectedIndex == 0)?"M":"W";
-    Uri url = Uri.parse("http://$speckUrl/update/gender");
+    Uri url = Uri.parse("$speckUrl/update/gender");
     String body = '''{
       "email" :  "$email",
       "gender" : "$gender"
