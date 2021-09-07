@@ -82,21 +82,19 @@ class _SetPhoneNumberState extends State<SetPhoneNumber> {
     _uiCriteria.init(context);
     _ss = Provider.of<SettingState>(context, listen: false);
 
-    return MaterialApp(
-      title: "연락처 설정",
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        resizeToAvoidBottomInset: false,
-        backgroundColor: Colors.white,
-        appBar: _appBar(context),
-        body: _setPhoneNumber(),
-      ),
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      backgroundColor: Colors.white,
+
+      appBar: _appBar(context),
+      body: _setPhoneNumber(),
     );
   }
 
   Widget _appBar(BuildContext context) {
     return AppBar(
       elevation: 0,
+      automaticallyImplyLeading: false,
       backgroundColor: mainColor,
       centerTitle: true,
       titleSpacing: 0,
@@ -110,7 +108,7 @@ class _SetPhoneNumberState extends State<SetPhoneNumber> {
           Container(
               alignment: Alignment.center,
               width: _uiCriteria.screenWidth,
-              child: Text("연락처 설정", style: TextStyle(letterSpacing: 0.8, color: Colors.white, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize1),)),
+              child: Text("연락처 설정", style: TextStyle(letterSpacing: 0.8, color: Colors.white, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize16),)),
           GestureDetector(
               child: Container(
                 decoration: BoxDecoration(

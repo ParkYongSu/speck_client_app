@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
@@ -7,15 +8,19 @@ import 'package:flutter/services.dart';
 import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:naver_map_plugin/naver_map_plugin.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:speck_app/State/banner_state.dart';
 import 'package:speck_app/main.dart';
 import 'package:speck_app/main/main_page.dart';
 import 'package:speck_app/main/my/ticket/ticket_ui.dart';
+import 'package:speck_app/main/tutorial/tutorial_state.dart';
 import 'package:speck_app/ui/ui_color.dart';
 import 'package:speck_app/widget/public_widget.dart';
 import 'package:speech_bubble/speech_bubble.dart';
 import 'package:http/http.dart' as http;
 import 'package:speck_app/util/util.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class GpsAuth extends StatefulWidget {
   @override
@@ -42,7 +47,7 @@ class _GpsAuthState extends State<GpsAuth> with TickerProviderStateMixin, Widget
   bool _isStarted = false;
   bool _isStartTapped = false;
   bool _noticeTextFloated = false;
-  Widget _status = new Text("GPS 측정 시작", style: TextStyle(color: Colors.white, fontSize: uiCriteria.textSize1, fontWeight: FontWeight.w700));
+  Widget _status = new Text("GPS 측정 시작", style: TextStyle(color: Colors.white, fontSize: uiCriteria.textSize16, fontWeight: FontWeight.w700));
 
   AnimationController _manualController;
   Animation<Offset> _manualAnimation;
@@ -64,7 +69,7 @@ class _GpsAuthState extends State<GpsAuth> with TickerProviderStateMixin, Widget
   String _assetName = "";
   LocationTrackingMode _locationTrackingMode;
   int _noticeMark = 0;
-
+  TutorialState _ts;
   @override
   void initState() {
     super.initState();
@@ -99,7 +104,11 @@ class _GpsAuthState extends State<GpsAuth> with TickerProviderStateMixin, Widget
     if (_checkTimer != null && _checkTimer.isActive) {
       _checkTimer.cancel();
     }
+
+    _ts.setTutorialState(0);
   }
+
+
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -108,6 +117,7 @@ class _GpsAuthState extends State<GpsAuth> with TickerProviderStateMixin, Widget
 
   @override
   Widget build(BuildContext context) {
+    _ts = Provider.of<TutorialState>(context, listen: false);
     return WillPopScope(
       onWillPop: () async {
         if (Navigator.of(context).userGestureInProgress)
@@ -166,7 +176,7 @@ class _GpsAuthState extends State<GpsAuth> with TickerProviderStateMixin, Widget
           decoration: BoxDecoration(
               boxShadow: [BoxShadow(color: mainColor.withOpacity(0.3), blurRadius: 20, spreadRadius: 0, offset: Offset(-4, 0))]
           ),
-          child: Text("시작을 누르고 집 밖으로 이동해주세요", style: TextStyle(fontSize: uiCriteria.textSize1, fontWeight: FontWeight.bold, color: mainColor, letterSpacing: 0.8),),
+          child: Text("시작을 누르고 집 밖으로 이동해주세요", style: TextStyle(fontSize: uiCriteria.textSize16, fontWeight: FontWeight.bold, color: mainColor, letterSpacing: 0.8),),
         ),
       ),
     );
@@ -203,7 +213,7 @@ class _GpsAuthState extends State<GpsAuth> with TickerProviderStateMixin, Widget
           decoration: BoxDecoration(
               boxShadow: [BoxShadow(color: mainColor.withOpacity(0.3), blurRadius: 20, spreadRadius: 0, offset: Offset(-4, 0))]
           ),
-          child: Text("왼쪽 하단의 내 위치 버튼을 활성화해주세요", style: TextStyle(fontSize: uiCriteria.textSize1, fontWeight: FontWeight.bold, color: mainColor, letterSpacing: 0.8),),
+          child: Text("왼쪽 하단의 내 위치 버튼을 활성화해주세요", style: TextStyle(fontSize: uiCriteria.textSize16, fontWeight: FontWeight.bold, color: mainColor, letterSpacing: 0.8),),
         ),
       ),
     );
@@ -229,7 +239,7 @@ class _GpsAuthState extends State<GpsAuth> with TickerProviderStateMixin, Widget
           Container(
               alignment: Alignment.center,
               width: uiCriteria.screenWidth,
-              child: Text("GPS 출석 인증", style: TextStyle(letterSpacing: 0.8, color: Colors.white, fontWeight: FontWeight.w700, fontSize: uiCriteria.textSize1),)),
+              child: Text("GPS 출석 인증", style: TextStyle(letterSpacing: 0.8, color: Colors.white, fontWeight: FontWeight.w700, fontSize: uiCriteria.textSize16),)),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
@@ -366,7 +376,7 @@ class _GpsAuthState extends State<GpsAuth> with TickerProviderStateMixin, Widget
                       _isStarted = false;
                       _noticeTextFloated = false;
                       _circles.clear();
-                      _status = Text("GPS 측정 시작", style: TextStyle(color: Colors.white, fontSize: uiCriteria.textSize1, fontWeight: FontWeight.w700));
+                      _status = Text("GPS 측정 시작", style: TextStyle(color: Colors.white, fontSize: uiCriteria.textSize16, fontWeight: FontWeight.w700));
                     });
                   },
                   child: Text("측정 취소", style: TextStyle(color: mainColor, fontSize: uiCriteria.textSize3, fontWeight: FontWeight.w700, letterSpacing: 0.6),)),
@@ -386,7 +396,7 @@ class _GpsAuthState extends State<GpsAuth> with TickerProviderStateMixin, Widget
                         color: mainColor,
                         borderRadius: BorderRadius.circular(33)
                     ),
-                    // child: Text(_status, style: TextStyle(color: Colors.white, fontSize: uiCriteria.textSize1, fontWeight: FontWeight.w700),),
+                    // child: Text(_status, style: TextStyle(color: Colors.white, fontSize: uiCriteria.textSize16, fontWeight: FontWeight.w700),),
                     child: _status,
                   ),
                 ),
@@ -506,17 +516,17 @@ class _GpsAuthState extends State<GpsAuth> with TickerProviderStateMixin, Widget
       _status = Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text("GPS 측정중", style: TextStyle(color: Colors.white, fontSize: uiCriteria.textSize1, fontWeight: FontWeight.w700),),
+          Text("GPS 측정중", style: TextStyle(color: Colors.white, fontSize: uiCriteria.textSize16, fontWeight: FontWeight.w700),),
           Stack(
             children: [
-              Text("..", style: TextStyle(color: Colors.transparent, fontSize: uiCriteria.textSize1, fontWeight: FontWeight.w700),),
+              Text("..", style: TextStyle(color: Colors.transparent, fontSize: uiCriteria.textSize16, fontWeight: FontWeight.w700),),
               AnimatedTextKit(
                 pause: Duration.zero,
                 repeatForever: true,
                 animatedTexts: [
                   TyperAnimatedText(
                       "..",
-                      textStyle: TextStyle(color: Colors.white, fontSize: uiCriteria.textSize1, fontWeight: FontWeight.w700),
+                      textStyle: TextStyle(color: Colors.white, fontSize: uiCriteria.textSize16, fontWeight: FontWeight.w700),
                       speed: Duration(milliseconds: 500))
                 ],
               ),
@@ -548,7 +558,7 @@ class _GpsAuthState extends State<GpsAuth> with TickerProviderStateMixin, Widget
       print("lat $_lat");
       print("lng $_lng");
       _circles.add(CircleOverlay(overlayId: "test", center: LatLng(_lat, _lng), radius: _radius, color: _circleColor, outlineWidth: 1, outlineColor: greyB3B3BC));
-      _status = Text("원을 벗어나세요", style: TextStyle(color: Colors.white, fontSize: uiCriteria.textSize1, fontWeight: FontWeight.w700));
+      _status = Text("원을 벗어나세요", style: TextStyle(color: Colors.white, fontSize: uiCriteria.textSize16, fontWeight: FontWeight.w700));
       _noticeTextFloated = true;
       setState(() {
       });
@@ -584,22 +594,22 @@ class _GpsAuthState extends State<GpsAuth> with TickerProviderStateMixin, Widget
             print("checkTime $_checkTime");
             _circles[0].color = Color(0XFFfcf3b2).withOpacity(0.5);
             if (_checkTime != 0) {
-              // _status = Text("인증까지 $_checkTime초..", style: TextStyle(color: Colors.white, fontSize: uiCriteria.textSize1, fontWeight: FontWeight.w700));
+              // _status = Text("인증까지 $_checkTime초..", style: TextStyle(color: Colors.white, fontSize: uiCriteria.textSize16, fontWeight: FontWeight.w700));
               _status = Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  Text( "인증까지 $_checkTime초",  style: TextStyle(color: Colors.white, fontSize: uiCriteria.textSize1, fontWeight: FontWeight.w700),),
+                  Text( "인증까지 $_checkTime초",  style: TextStyle(color: Colors.white, fontSize: uiCriteria.textSize16, fontWeight: FontWeight.w700),),
                   Stack(
                     children: [
-                      Text( "..",  style: TextStyle(color: Colors.transparent, fontSize: uiCriteria.textSize1, fontWeight: FontWeight.w700),),
+                      Text( "..",  style: TextStyle(color: Colors.transparent, fontSize: uiCriteria.textSize16, fontWeight: FontWeight.w700),),
                       AnimatedTextKit(
                         repeatForever: true,
                         pause: Duration.zero,
                         animatedTexts: [
                           TyperAnimatedText(
                               "..",
-                              textStyle: TextStyle(color: Colors.white, fontSize: uiCriteria.textSize1, fontWeight: FontWeight.w700),
+                              textStyle: TextStyle(color: Colors.white, fontSize: uiCriteria.textSize16, fontWeight: FontWeight.w700),
                               speed: Duration(milliseconds: 500))
                         ],
                       ),
@@ -623,7 +633,7 @@ class _GpsAuthState extends State<GpsAuth> with TickerProviderStateMixin, Widget
           _checkTimer.cancel();
           _checkTime = 5;
           setState(() {
-            _status = Text("원을 벗어나세요", style: TextStyle(color: Colors.white, fontSize: uiCriteria.textSize1, fontWeight: FontWeight.w700));
+            _status = Text("원을 벗어나세요", style: TextStyle(color: Colors.white, fontSize: uiCriteria.textSize16, fontWeight: FontWeight.w700));
             _circles[0].color = Color(0XFF2880eb).withOpacity(0.5);
           });
         }

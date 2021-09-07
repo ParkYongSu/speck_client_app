@@ -8,10 +8,9 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speck_app/Login/Todo/state_time_sort.dart';
 import 'package:speck_app/State/explorer_state.dart';
-import 'package:speck_app/State/explorer_tab_state.dart';
 import 'package:speck_app/Time/return_auth_time.dart';
+import 'package:speck_app/main/explorer/explorer.dart';
 import 'package:speck_app/main/explorer/explorer_detail.dart';
-import 'package:speck_app/main/explorer/explorer_form.dart';
 import 'package:speck_app/ui/ui_color.dart';
 import 'package:speck_app/ui/ui_criteria.dart';
 import 'package:speck_app/widget/public_widget.dart';
@@ -81,19 +80,16 @@ class GalaxyDetailState extends State<GalaxyDetail> {
   Widget build(BuildContext context) {
     _uiCriteria.init(context);
     _es = Provider.of<ExplorerState>(context, listen: false);
-    String imageUrl = widget.imagePath;
     return _galaxyDetail();
   }
 
   Widget _galaxyDetail() {
     return FutureBuilder(
-      // future: _getPopularSortList(context),
       future: _getDetail(widget.galaxyNum),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.hasData == true) {
           _result = snapshot.data;
           _setData(_result);
-          // _popularList = snapshot.data;
           return Container(
             decoration: BoxDecoration(
               color: Colors.white
@@ -204,21 +200,31 @@ class GalaxyDetailState extends State<GalaxyDetail> {
     _es.setGalaxyNum(widget.galaxyNum);
     _es.setImagePath(widget.imagePath);
     _es.setOfficial(widget.official);
-    _es.setRoute(widget.route);
     _es.setSelectedDate(_selectedDate);
     _es.setSelectedDateWeekdayText(_selectedDateWeekdayText);
     _es.setTimeList(_myTimeNumList);
     _es.setTimeNum(timeNum);
-    _es.setTotalPayment(_accumDepo);
   }
 
   Widget _ampm(String time, int timeNum, int att, int total, List<Widget> ampm) {
     return GestureDetector(
-      onTap: (widget.route == 1)
-        ? () => _timeTap1(timeNum)
-        :() {
+      // onTap: (widget.route == 1)
+      //   ? () => _timeTap1(timeNum)
+      //   :() {
+      //   _setExplorerState(timeNum);
+      //   Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (context) => ExplorerForm(route: widget.route,)));
+      // },
+      onTap: () {
         _setExplorerState(timeNum);
-        Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (context) => ExplorerForm(route: widget.route,)));
+        Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (context) =>
+            Explorer(
+              // galaxyName: widget.galaxyName,
+              // imageUrl: widget.imagePath,
+              // galaxyNum: widget.galaxyNum,
+              // official: widget.official,
+              // timeNum: timeNum,
+              // route: 1,
+            )));
       },
       child: Container(
         margin: EdgeInsets.only(left: (ampm.length == 11)?_uiCriteria.horizontalPadding:0, right: _uiCriteria.screenWidth * 0.032),
@@ -270,12 +276,17 @@ class GalaxyDetailState extends State<GalaxyDetail> {
 
   Widget _popular(int timeNum, List<Widget> popularSortList, String time, int att, int total) {
     return GestureDetector(
-      onTap: (widget.route == 1)
-      ? () => _timeTap1(timeNum)
-      :(){
+      // onTap: (widget.route == 1)
+      // ? () => _timeTap1(timeNum)
+      // :(){
+      //   _setExplorerState(timeNum);
+      //   Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (context) => Explorer(galaxyName: widget.galaxyName, imageUrl: widget.imagePath, galaxyNum: widget.galaxyNum, official: widget.official, timeNum: timeNum, route: 1,)));
+      // },
+      onTap: (){
         _setExplorerState(timeNum);
-        Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (context) => ExplorerForm(route: widget.route,)));
-      },
+        Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (context) =>
+            Explorer()));
+        },
       child: Container(
           margin: EdgeInsets.only(left: (popularSortList.length == 4)? _uiCriteria.horizontalPadding : 0, right: _uiCriteria.screenWidth * 0.032),
           width: _uiCriteria.screenWidth * 0.3493,
@@ -307,7 +318,7 @@ class GalaxyDetailState extends State<GalaxyDetail> {
                                               : Colors.transparent, width: 1.5
                                       ))
                                   ),
-                                  child: Text(time, style: TextStyle(letterSpacing: -0.32, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize1)))),
+                                  child: Text(time, style: TextStyle(letterSpacing: -0.32, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize16)))),
                           Stack(
                             alignment: Alignment.center,
                             children: [
@@ -710,7 +721,7 @@ class GalaxyDetailState extends State<GalaxyDetail> {
                         border: Border(bottom: BorderSide(color: Color(0XFFCACAD1), width: 0.5))
                       ),
                       alignment: Alignment.center,
-                      child: Text("정렬", style: TextStyle(fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize1))
+                      child: Text("정렬", style: TextStyle(fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize16))
                     ),
                   ),
                   GestureDetector(
@@ -855,7 +866,7 @@ class GalaxyDetailState extends State<GalaxyDetail> {
                                   maxLines: 1,
                                 ),
                                 SizedBox(
-                                    width: _uiCriteria.textSize1
+                                    width: _uiCriteria.textSize16
                                 ),
                                 Container(
                                   padding: EdgeInsets.symmetric(horizontal: constraint.maxWidth * 0.016, vertical: constraint.maxHeight * 0.0252),
@@ -1048,9 +1059,9 @@ class GalaxyDetailState extends State<GalaxyDetail> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
-                          Image.asset("assets/png/dust_icon.png", height: _uiCriteria.textSize1,),
+                          Image.asset("assets/png/dust_icon.png", height: _uiCriteria.textSize16,),
                           Text("나만의 자유로운 일정 예약 방법", style: TextStyle(letterSpacing: 0.5, color: mainColor, fontSize: _uiCriteria.textSize2, fontWeight: FontWeight.w700),),
-                          Image.asset("assets/png/dust_icon.png", height: _uiCriteria.textSize1,),
+                          Image.asset("assets/png/dust_icon.png", height: _uiCriteria.textSize16,),
                         ]
                     ),
                   ),
@@ -1175,12 +1186,6 @@ class GalaxyDetailState extends State<GalaxyDetail> {
       ),
     );
   } // 인증 시간
-
-  void _timeTap1(int timeNum) {
-    ExplorerTabState ets = Provider.of<ExplorerTabState>(context, listen: false);
-    _setExplorerState(timeNum);
-    ets.setTabIndex2(1);
-  }
 
   Widget _authGPS() {
     return Expanded(

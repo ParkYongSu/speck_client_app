@@ -58,7 +58,7 @@ class _SetAccountState extends State<AccountInfo> {
               Container(
                   alignment: Alignment.center,
                   width: _uiCriteria.screenWidth,
-                  child: Text("계좌 설정", style: TextStyle(letterSpacing: 0.8, color: Colors.white, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize1),)),
+                  child: Text("계좌 설정", style: TextStyle(letterSpacing: 0.8, color: Colors.white, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize16),)),
               GestureDetector(
                   child: Container(
                     decoration: BoxDecoration(

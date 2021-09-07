@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speck_app/Login/Email/email_login_page.dart';
@@ -11,75 +13,93 @@ import 'package:speck_app/Main/my/account/my_account_info.dart';
 import 'package:speck_app/Main/my/setting/setting_all_info.dart';
 import 'package:speck_app/main/home/page_state.dart';
 import 'package:speck_app/main/my/setting/setting_notification.dart';
+import 'package:speck_app/main/my/setting/update_password.dart';
 import 'package:speck_app/ui/ui_color.dart';
 import 'package:speck_app/ui/ui_criteria.dart';
+import 'package:speck_app/version/version_management.dart';
 import 'package:speck_app/widget/public_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 import 'package:speck_app/util/util.dart';
 
-class Settings extends StatelessWidget {
+class Settings extends StatefulWidget {
+  @override
+  _SettingsState createState() => _SettingsState();
+}
+
+class _SettingsState extends State<Settings> {
   final UICriteria _uiCriteria = new UICriteria();
+  String _currentVersion;
+  String _updateVersion;
 
   @override
   Widget build(BuildContext context) {
     _uiCriteria.init(context);
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: "내 설정",
-      home: Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          backgroundColor: mainColor,
-          centerTitle: true,
-          titleSpacing: 0,
-          toolbarHeight: _uiCriteria.appBarHeight,
-          backwardsCompatibility: false,
-          // brightness: Brightness.dark,
-          systemOverlayStyle: SystemUiOverlayStyle(statusBarColor: mainColor, statusBarBrightness: Brightness.dark),
-          title: Stack(
-            alignment: Alignment.centerLeft,
-            children: <Widget>[
-              Container(
-                alignment: Alignment.center,
-                width: _uiCriteria.screenWidth,
-                child: Text("내 설정", style: TextStyle(letterSpacing: 0.8, color: Colors.white, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize1),)),
-              GestureDetector(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.transparent),
+    return FutureBuilder(
+      future: _getCurrentVersion(),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        _currentVersion = snapshot.data;
+        return Scaffold(
+          resizeToAvoidBottomInset: false,
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            elevation: 0,
+            backgroundColor: mainColor,
+            centerTitle: true,
+            titleSpacing: 0,
+            toolbarHeight: _uiCriteria.appBarHeight,
+            backwardsCompatibility: false,
+            // brightness: Brightness.dark,
+            systemOverlayStyle: SystemUiOverlayStyle(statusBarColor: mainColor, statusBarBrightness: Brightness.dark),
+            title: Stack(
+              alignment: Alignment.centerLeft,
+              children: <Widget>[
+                Container(
+                    alignment: Alignment.center,
+                    width: _uiCriteria.screenWidth,
+                    child: Text("내 설정", style: TextStyle(letterSpacing: 0.8, color: Colors.white, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize16),)),
+                GestureDetector(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.transparent),
+                      ),
+                      child: Icon(Icons.chevron_left_rounded,
+                          color: Colors.white, size: _uiCriteria.screenWidth * 0.1),
                     ),
-                    child: Icon(Icons.chevron_left_rounded,
-                        color: Colors.white, size: _uiCriteria.screenWidth * 0.1),
-                  ),
-                  onTap: () {
-                    Navigator.pop(context);
-                  }),
-            ],
+                    onTap: () {
+                      Navigator.pop(context);
+                    }),
+              ],
+            ),
           ),
-        ),
-        body: Container(
-          width: _uiCriteria.screenWidth,
-          height: _uiCriteria.totalHeight,
-          padding: EdgeInsets.symmetric(vertical: _uiCriteria.totalHeight * 0.0283),
-          decoration: BoxDecoration(
-            color: greyF0F0F1
+          body: Container(
+            width: _uiCriteria.screenWidth,
+            height: _uiCriteria.totalHeight,
+            padding: EdgeInsets.symmetric(vertical: _uiCriteria.totalHeight * 0.0283),
+            decoration: BoxDecoration(
+                color: greyF0F0F1
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                _userSettingTitle(context),
+                _userSettingList(context),
+                _serviceInfoTitle(context),
+                _serviceInfoList(context),
+                _logOutButton(context),
+                _withdrawal(context),
+              ],
+            ),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              _userSettingTitle(context),
-              _userSettingList(context),
-              _serviceInfoTitle(context),
-              _serviceInfoList(context),
-              _logOutButton(context),
-              _withdrawal(context),
-            ],
-          ),
-        ),
-      ),
+        );
+      },
     );
+  }
+
+  Future<String> _getCurrentVersion() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    return packageInfo.version;
   }
 
   Widget _userSettingTitle(BuildContext context) {
@@ -91,7 +111,7 @@ class Settings extends StatelessWidget {
 
   Widget _userSettingList(BuildContext context) {
     return AspectRatio(
-      aspectRatio: 375/111,
+      aspectRatio: 375/148,
       child: Column(
         children: <Widget>[
           Expanded(
@@ -141,7 +161,7 @@ class Settings extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: _uiCriteria.horizontalPadding),
                 decoration: BoxDecoration(
                     color: Colors.white,
-                    border: Border(bottom: BorderSide(color: greyD8D8D8, width: 0.5))
+                    border: Border(bottom: BorderSide(color: greyD8D8D8.withOpacity(0.5), width: 0.5))
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -152,6 +172,26 @@ class Settings extends StatelessWidget {
                 ),
               ),
               onTap: () => _navigateSetAccount(context),
+            ),
+          ),
+          Expanded(
+            child: GestureDetector(
+              child: Container(
+                width: _uiCriteria.screenWidth,
+                padding: EdgeInsets.symmetric(horizontal: _uiCriteria.horizontalPadding),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border(bottom: BorderSide(color: greyD8D8D8, width: 0.5))
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("비밀번호 변경", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w500),),
+                    Icon(Icons.arrow_forward_ios_rounded, size: _uiCriteria.textSize2, color: greyB3B3BC,)
+                  ],
+                ),
+              ),
+              onTap: () => _navigateUpdatePasswordPage(context),
             ),
           ),
         ],
@@ -167,7 +207,7 @@ class Settings extends StatelessWidget {
 
   Widget _serviceInfoList(BuildContext context) {
     return AspectRatio(
-      aspectRatio: 375/74,
+      aspectRatio: 375/111,
       child: Column(
         children: <Widget>[
           Expanded(
@@ -210,36 +250,37 @@ class Settings extends StatelessWidget {
               ),
             ),
           ),
-          // Expanded(
-          //   child: GestureDetector(
-          //     child: Container(
-          //       width: _uiCriteria.screenWidth,
-          //       padding: EdgeInsets.symmetric(horizontal: _uiCriteria.horizontalPadding),
-          //       decoration: BoxDecoration(
-          //           color: Colors.white,
-          //           border: Border(bottom: BorderSide(color: greyD8D8D8, width: 0.5))
-          //       ),
-          //       child: Row(
-          //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //         children: [
-          //           Row(
-          //               children: <Widget>[
-          //                 Text("버전 정보",style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w500),),
-          //                 Text(" 1.0.0", style: TextStyle(letterSpacing: 0.6, color: greyAAAAAA, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w500),)
-          //               ]
-          //           ),
-          //           Row(
-          //             children: [
-          //               Text("최신버전", style: TextStyle(letterSpacing: 0.6, color: greyAAAAAA, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w500),),
-          //               SizedBox(width: _uiCriteria.screenWidth * 0.032,),
-          //               Icon(Icons.arrow_forward_ios_rounded, size: _uiCriteria.textSize2, color: greyB3B3BC,),
-          //             ],
-          //           )
-          //         ],
-          //       ),
-          //     ),
-          //   ),
-          // ),
+          Expanded(
+            child: GestureDetector(
+              onTap: _versionCheck,
+              child: Container(
+                width: _uiCriteria.screenWidth,
+                padding: EdgeInsets.symmetric(horizontal: _uiCriteria.horizontalPadding),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border(bottom: BorderSide(color: greyD8D8D8, width: 0.5))
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                        children: <Widget>[
+                          Text("버전 정보",style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w500),),
+                          Text(" $_currentVersion", style: TextStyle(letterSpacing: 0.6, color: greyAAAAAA, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w500),)
+                        ]
+                    ),
+                    Row(
+                      children: [
+                        Text("최신버전", style: TextStyle(letterSpacing: 0.6, color: greyAAAAAA, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w500),),
+                        SizedBox(width: _uiCriteria.screenWidth * 0.032,),
+                        Icon(Icons.arrow_forward_ios_rounded, size: _uiCriteria.textSize2, color: greyB3B3BC,),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -445,10 +486,15 @@ class Settings extends StatelessWidget {
     Navigator.push(context, MaterialPageRoute(builder: (context) => AccountInfo()));
   }
 
+  /// 비밀번호 설정페이지로 이동
+  void _navigateUpdatePasswordPage(BuildContext context) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => UpdatePasswordPage()));
+  }
+
   void _connectNotion(String url) async{
     await launch(url);
   }
-  
+
   /// 기존서버
   void _logout(BuildContext context) async {
     SharedPreferences sp = await SharedPreferences.getInstance();
@@ -522,4 +568,89 @@ class Settings extends StatelessWidget {
 
     }
   }
+
+  void _versionCheck() async {
+    _updateVersion = (Platform.isAndroid)?remoteConfig.getString("update_version_android"):remoteConfig.getString("update_version_ios");
+    print("currentVersion $_currentVersion");
+    print("updateVersion $_updateVersion");
+    List<String> cList = _currentVersion.split(".");
+    List<String> uList = _updateVersion.split(".");
+
+    for (int i = 0; i < 3; i++) {
+      int currentNum = int.parse(cList[i]);
+      int updateNum = int.parse(uList[i]);
+      print(currentNum);
+      print(updateNum);
+      if (currentNum < updateNum) {
+        String url = Platform.isAndroid?"https://play.google.com/store/apps/details?id=com.paidagogos.speck":"https://apps.apple.com/us/app/speck/id1575646552";
+        launch(url);
+        break;
+      }
+      else {
+        _showDialog();
+        break;
+      }
+    }
+
+  }
+
+  void _showDialog() {
+    showDialog(
+      barrierColor: Colors.black.withOpacity(0.2),
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return _versionInfo();
+      });
+  }
+
+  Widget _versionInfo() {
+    TextStyle style = TextStyle(color: mainColor, fontSize: uiCriteria.textSize2, letterSpacing: 0.6, fontWeight: FontWeight.w700);
+
+    return AlertDialog(
+      elevation: 0,
+      insetPadding: EdgeInsets.symmetric(horizontal: uiCriteria.screenWidth * 0.152),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0)
+      ),
+      backgroundColor: Colors.white,
+      contentPadding: EdgeInsets.zero,
+      content: AspectRatio(
+        aspectRatio: 260/120,
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              flex: 619,
+              child: Container(
+                alignment: Alignment.center,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                    border: Border(bottom: BorderSide(color: greyD8D8D8, width: 0.5))
+                ),
+                child: Text("현재 최신버전을 사용하고 있어요", style: style,)
+              ),
+            ),
+            Expanded(
+              flex: 371,
+              child: Material(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.white,
+                child: InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                        alignment: Alignment.center,
+                        child: Text("확인", style: style,))
+                ),
+              ),
+            )
+          ],
+        )
+      ),
+    );
+  }
 }
+

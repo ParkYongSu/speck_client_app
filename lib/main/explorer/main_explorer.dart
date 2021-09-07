@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:speck_app/State/explorer_state.dart';
-import 'package:speck_app/State/explorer_tab_state.dart';
 import 'package:speck_app/Time/return_auth_time.dart';
 import 'package:speck_app/main/explorer/explorer.dart';
 import 'package:speck_app/ui/ui_color.dart';
@@ -23,12 +22,10 @@ class _MainExplorerState extends State<MainExplorer> {
   List<Widget> _galaxyList = [];
   ExplorerState _es;
   int _route = 1;
-  ExplorerTabState _ets;
   @override
   Widget build(BuildContext context) {
-    _ets = Provider.of<ExplorerTabState>(context);
     _uiCriteria.init(context);
-    _es = Provider.of<ExplorerState>(context, listen: false);
+
 
     return FutureBuilder(
         future: _getExplorerList(context),
@@ -216,7 +213,7 @@ class _MainExplorerState extends State<MainExplorer> {
     // }
     return GestureDetector(
       onTap: () {
-        _navigateExplorer(official, galaxyName, todayReserve, message, imgUrl, galaxyNum, hashTags, avgAtt, avgAttRank, timeList, timeNum, bookInfo);
+        _navigateExplorer(official, galaxyName, todayReserve, message, avgAttRank, timeList, timeNum);
       },
       child: AspectRatio(
         aspectRatio: 166/240,
@@ -440,7 +437,7 @@ class _MainExplorerState extends State<MainExplorer> {
     // }
 
     return GestureDetector(
-      onTap: () => _navigateExplorer(official, galaxyName, todayReserve, message, imgUrl, galaxyNum, hashTags, avgAtt, avgAttRank, timeList, timeNum, bookInfo),
+      onTap: () => _navigateExplorer(official, galaxyName, todayReserve, message, avgAttRank, timeList, timeNum, ),
       child: AspectRatio(
         aspectRatio: 375 / 391,
         child: Container(
@@ -507,30 +504,22 @@ class _MainExplorerState extends State<MainExplorer> {
     );
   }
 
-
-  void _navigateExplorer(int official, String galaxyName, int todayReserve, String message,
-      String imgUrl, int galaxyNum, List<Widget> hashTags, int avgAtt, int avgAttRank,
-      List<dynamic> timeList, int timeNum, int bookInfo) {
-    _ets.setTabIndex1(1);
+  void _setExplorerData(int official, String galaxyName, int todayReserve, String imgUrl, int galaxyNum, List<dynamic> timeList, int timeNum) {
     String selectedDate = DateTime.now().toString().substring(0, 10);
+    _es = Provider.of<ExplorerState>(context, listen: false);
     _es.setGalaxyName(galaxyName);
     _es.setGalaxyNum(galaxyNum);
     _es.setImagePath(imgUrl);
     _es.setOfficial(official);
-    _es.setRoute(_route);
     _es.setSelectedDate(selectedDate);
     _es.setSelectedDateWeekdayText("오늘");
     _es.setTimeList(timeList);
     _es.setTimeNum(timeNum);
-    _es.setBookInfo(bookInfo);
-    // _es.setSumPerson(_accumAtt);
-    // _es.setTotalPayment(_accumDepo);
+  }
+
+  void _navigateExplorer(int official, String galaxyName, int todayReserve, String imgUrl, int galaxyNum, List<dynamic> timeList, int timeNum) {
+    _setExplorerData(official, galaxyName, todayReserve, imgUrl, galaxyNum, timeList, timeNum);
     Navigator.push(context, MaterialPageRoute(builder: (context)
-    => Explorer(
-        galaxyName: galaxyName,
-        imageUrl: imgUrl,
-        galaxyNum: galaxyNum,
-        official: official,
-        timeNum: timeNum)));
+    => Explorer()));
   }
 }

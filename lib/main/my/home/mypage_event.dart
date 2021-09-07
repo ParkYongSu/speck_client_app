@@ -79,7 +79,7 @@ Map<DateTime, List<Event>> getEventSource(List<dynamic> infoList, int index) {
           int official = calendar["official"];
           String galaxyName = calendar["galaxyName"];
           int groupNum = calendar["groupnum"];
-          int bookInfo = calendar["bookInfo"];
+          int bookInfo = calendar["bookinfo"];
           value.add(Event(dateTime, official, galaxyName, groupNum, bookInfo, timeNum));
 
         }
@@ -92,7 +92,7 @@ Map<DateTime, List<Event>> getEventSource(List<dynamic> infoList, int index) {
           String galaxyName = calendar["galaxyName"];
           int attendValue = calendar["attendvalue"];
           int groupNum = calendar["groupnum"];
-          int bookInfo = calendar["bookInfo"];
+          int bookInfo = calendar["bookinfo"];
           int attendCount;
           int totalCount;
           int attRate;

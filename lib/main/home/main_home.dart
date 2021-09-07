@@ -15,6 +15,10 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:speck_app/main/explorer/explorer.dart';
+import 'package:speck_app/main/notify/notification_state.dart';
+import 'package:speck_app/main/tutorial/main_tutorial.dart';
+import 'package:speck_app/main/tutorial/tutorial.dart';
+import 'package:speck_app/main/tutorial/tutorial_state.dart';
 import 'package:speck_app/ui/ui_color.dart';
 import 'package:speck_app/ui/ui_criteria.dart';
 import 'package:speck_app/util/util.dart';
@@ -40,6 +44,9 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
   int _route;
   PageState _pageState;
   BannerState _bs;
+  NotificationState _ns;
+  TutorialState _ts;
+  GlobalKey _cardKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -48,9 +55,10 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
     _cardTime = Provider.of<CardTime>(context, listen: true);
     /// 배너
     _bannerState = Provider.of<BannerState>(context, listen: false);
-    _es = Provider.of<ExplorerState>(context, listen: false);
     _route = 1;
     _bs = Provider.of<BannerState>(context, listen: false);
+    _ns = Provider.of<NotificationState>(context, listen: false);
+    _ts = Provider.of<TutorialState>(context, listen: true);
 
     return Container(
       alignment: Alignment.center,
@@ -63,6 +71,25 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
           future: _infoWidget(context),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.hasData == true) {
+              WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+
+                if (_sp.getBool("tutorialMain") == null && !_ts.getTutorialOpened()) {
+                  _ts.setTutorialOpened(true);
+                  showDialog(
+                      barrierColor: Colors.black.withOpacity(0.7),
+                      context: context,
+                      builder: (BuildContext context) {
+                        return MainTutorial(renderBox: _getCardPosition(_cardKey),);
+                      }
+                  ).whenComplete(() async{
+                    await _sp.setBool("tutorialMain", true);
+                    if (_ts.getTutorialState() == 1) {
+                      _pageState.setIndex(1);
+                      _ts.setTutorialState(0);
+                    }
+                  });
+                }
+              });
               return snapshot.data;
             }
             else {
@@ -90,6 +117,7 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
   int _character;
   List<int> _timeList = [];
   int _userId;
+
   @override
   void initState() {
     super.initState();
@@ -150,6 +178,13 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
     _userEmail = _sp.getString("email");
     _userId = _sp.getInt("userId");
 
+    /// 알림 받아오기
+    Future getNotification = _getNotification();
+    await getNotification.then((value) {
+      _ns.setNotificationList(value);
+      print(_ns.isExistNew(value));
+    });
+
     List<Widget> items = [];
     var url = Uri.parse("$speckUrl/maincard");
     String body = '''{
@@ -158,8 +193,6 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
     Map<String, String> header = {
       "Content-Type":"application/json",
     };
-    print(body);
-    print(header);
     var response = await http.post(url, headers: header, body: body);
     var utf = utf8.decode(response.bodyBytes);
     dynamic result = jsonDecode(utf);
@@ -221,6 +254,7 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
       }
       else {
         _selectionSort(homeExplorerVOS); // 최신순 정렬
+        print("6*******************************");
 
         for (int i = 0; i < homeExplorerVOS.length; i++) {
 
@@ -455,6 +489,7 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
               ),
               SizedBox(height: _uiCriteria.totalHeight * 0.015),
               CarouselSlider(
+                  key: _cardKey,
                   items: items,
                   options: CarouselOptions(
                     autoPlay: true,
@@ -498,9 +533,11 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
   }
 
   void _checkBanner2() {
-    if (_bs.getEventStatus() == 1) {
-      _bs.setEventStatus(0);
-      _showBanner();
+    if (_sp.getBool("tutorialMain") != null && _ts.getTutorialState() == 0) {
+      if (_bs.getEventStatus() == 1) {
+        _bs.setEventStatus(0);
+        _showBanner();
+      }
     }
   }
 
@@ -552,7 +589,7 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
                     } ,
                     child: Container(
                       alignment: Alignment.center,
-                      child: Text("오늘 그만보기", style: TextStyle(color: Colors.white, fontSize: uiCriteria.textSize2, fontWeight: FontWeight.w700, letterSpacing: 1.12),))),
+                      child: Text("3일간 보지 않기", style: TextStyle(color: Colors.white, fontSize: uiCriteria.textSize2, fontWeight: FontWeight.w700, letterSpacing: 1.12),))),
                 ),
                 Container(
                   width: 2,
@@ -965,21 +1002,47 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
     );
   }
 
-  void _cardTap(String galaxyName, String imagePath, int galaxyNum, int official, int timeNum) {
+  void _setExplorerData(String galaxyName, String imagePath, int galaxyNum, int official, int timeNum) {
+    _es = Provider.of<ExplorerState>(context, listen: false);
     _es.setGalaxyName(galaxyName);
     _es.setGalaxyNum(galaxyNum);
     _es.setImagePath(imagePath);
     _es.setOfficial(official);
-    _es.setRoute(_route);
     _es.setSelectedDate(DateTime.now().toString().substring(0, 10));
     _es.setSelectedDateWeekdayText("오늘");
     _es.setTimeNum(timeNum);
     _es.setTimeList(_timeList);
-    Navigator.push((context), MaterialPageRoute(builder: (context) => Explorer(
-        galaxyName: galaxyName,
-        imageUrl: imagePath,
-        galaxyNum: galaxyNum,
-        official: official,
-        timeNum: timeNum,)));
+  }
+
+  void _cardTap(String galaxyName, String imagePath, int galaxyNum, int official, int timeNum) {
+    _setExplorerData(galaxyName, imagePath, galaxyNum, official, timeNum);
+    Navigator.push((context), MaterialPageRoute(builder: (context) => Explorer()));
+  }
+
+  /// 알림 데이터 받아오기
+  Future<List<dynamic>> _getNotification() async {
+    print("알림 데이터 받기");
+    var url = Uri.parse("$speckUrl/user/notification");
+    String body = """{
+      "email" : "${_sp.getString("email")}"
+    }""";
+    Map<String, String> header = {
+      "Content-Type" : "application/json"
+    };
+    var response = await http.post(url, headers: header, body: body);
+    var result = jsonDecode(utf8.decode(response.bodyBytes));
+    print(result);
+    return Future(() {
+      return result;
+    });
+  }
+
+
+  _getCardPosition(GlobalKey key) {
+    RenderBox _viewBox = key.currentContext.findRenderObject();
+    // Offset offset = _viewBox.localToGlobal(Offset.zero);
+    print(_viewBox.size.width);
+    print(_viewBox.size.height);
+    return _viewBox;
   }
 }

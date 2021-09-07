@@ -136,8 +136,8 @@ class _MyHistoryState extends State<MyHistory> with TickerProviderStateMixin {
 
 
     var response = await http.post(url, body: body, headers: header);
-    print(response);
     var result = jsonDecode(utf8.decode(response.bodyBytes));
+    print(result);
     return Future(() {
       return result;
     });
@@ -315,7 +315,7 @@ class _MyHistoryState extends State<MyHistory> with TickerProviderStateMixin {
             )
         ),
       ),
-      onTap: () => _navigateHistoryInfo(index, bookInfo, imagePath),
+      onTap: () => _navigateHistoryInfo(bookInfo, index),
     );
   }
 
@@ -344,9 +344,8 @@ class _MyHistoryState extends State<MyHistory> with TickerProviderStateMixin {
   }
 
 
-  void _navigateHistoryInfo(int type, int bookInfo, String imagePath) {
-    print(type);
-    Navigator.push(context, MaterialPageRoute(builder: (context) => HistoryInfo(type: type, bookInfo: bookInfo, imagePath: imagePath,)));
+  void _navigateHistoryInfo(int bookInfo, int type) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => HistoryInfo(bookInfo: bookInfo, type: type,)));
   }
 
   void _sort(List<dynamic> list) {

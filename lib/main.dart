@@ -18,7 +18,6 @@ import 'package:speck_app/State/account_state.dart';
 import 'package:speck_app/State/auth_status.dart';
 import 'package:speck_app/State/banner_state.dart';
 import 'package:speck_app/State/explorer_state.dart';
-import 'package:speck_app/State/explorer_tab_state.dart';
 import 'package:speck_app/State/page_navi_state.dart';
 import 'package:speck_app/State/plan_info.dart';
 import 'package:speck_app/State/recommend_state.dart';
@@ -34,6 +33,9 @@ import 'package:speck_app/firebase/check_token.dart';
 import 'package:speck_app/firebase/firebase_init.dart';
 import 'package:speck_app/firebase/token_init_state.dart';
 import 'package:speck_app/kakao/kakao_share.dart';
+import 'package:speck_app/main/notify/notification_state.dart';
+import 'package:speck_app/main/tutorial/tutorial.dart';
+import 'package:speck_app/main/tutorial/tutorial_state.dart';
 import 'package:speck_app/ui/ui_color.dart';
 import 'package:speck_app/ui/ui_criteria.dart';
 import 'package:speck_app/util/util.dart';
@@ -56,10 +58,10 @@ void main() async {
   KakaoShareManager manager = new KakaoShareManager();
   manager.initializeKakaoSDK();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+   );
   firebaseSettings();
   FirebaseMessaging.onBackgroundMessage(showNotification);
-  // getAppVersion();
   initializeDateFormatting().then((_) => runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (context) => PageNaviState()),
@@ -72,17 +74,18 @@ void main() async {
       ChangeNotifierProvider(create: (context) => Notice()),
       ChangeNotifierProvider(create: (context) => GalaxySortName(),), // 갤럭시 분류
       ChangeNotifierProvider(create: (context) => TimeSort()),
-      ChangeNotifierProvider(create: (context) => PageState()),
       ChangeNotifierProvider(create: (context) => CardTime()),
       ChangeNotifierProvider(create: (context) => BannerState()),
       ChangeNotifierProvider(create: (context) => AuthStatus()),
-      ChangeNotifierProvider(create: (context) => ExplorerTabState()),
       ChangeNotifierProvider(create: (context) => ExplorerState()),
       ChangeNotifierProvider(create: (context) => SettingState()),
       ChangeNotifierProvider(create: (context) => MyInfoTimer(),),
       ChangeNotifierProvider(create: (context) => AccountState()),
       ChangeNotifierProvider(create: (context) => RecommendBannerState()),
-      ChangeNotifierProvider(create: (context) => TokenInitState())
+      ChangeNotifierProvider(create: (context) => TokenInitState()),
+      ChangeNotifierProvider(create: (context) => NotificationState()),
+      ChangeNotifierProvider(create: (context) => PageState()),
+      ChangeNotifierProvider(create: (context) => TutorialState())
     ],
     child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -131,8 +134,8 @@ class SpeckAppState extends State<SpeckApp> {
     await future.then((value) => _connectionState = value, onError: (e) => print(e));
   }
 
-  Future<dynamic>_bannerData() async {
-    var url = Uri.parse("http://13.209.138.39:8080/home");
+  Future<dynamic> _bannerData() async {
+    var url = Uri.parse("$speckUrl/home");
     String body = '''{
       "userEmail" : "${_sp.getString("email")}"
     }''';
@@ -163,19 +166,28 @@ class SpeckAppState extends State<SpeckApp> {
   }
 
   Future<Widget> _checkIsNewVersion() async {
+    _sp = await SharedPreferences.getInstance();
     Future grc = getRemoteConfig();
     RemoteConfig remoteConfig;
     await grc.then((value) => remoteConfig = value);
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     String currentVersion = packageInfo.version;
     String updateVersion = (Platform.isAndroid)?remoteConfig.getString("update_version_android"):remoteConfig.getString("update_version_ios");
+    print("currentVersion $currentVersion");
     print("updateVersion $updateVersion");
-    if (currentVersion.compareTo(updateVersion) == 0) {
-      return _splashAction();
+    List<String> cList = currentVersion.split(".");
+    List<String> uList = updateVersion.split(".");
+
+    for (int i = 0; i < 3; i++) {
+      int currentNum = int.parse(cList[i]);
+      int updateNum = int.parse(uList[i]);
+      print(currentNum);
+      print(updateNum);
+      if (currentNum < updateNum) {
+        return VersionErrorPage();
+      }
     }
-    else {
-      return VersionErrorPage();
-    }
+    return _splashAction();
   }
 
 
@@ -220,8 +232,6 @@ class SpeckAppState extends State<SpeckApp> {
     if (_connectionState == 0) {
       return NetworkErrorPage();
     }
-
-    _sp = await SharedPreferences.getInstance();
     String email = _sp.getString("email");
     String token = _sp.getString("token");
     // 최근 토큰 갱신 날짜를 가져옴
@@ -253,6 +263,11 @@ class SpeckAppState extends State<SpeckApp> {
           await _sp.setString("token", newToken.substring(0, newToken.length)); // 새로운 토큰 저장
           await _sp.setString("tokenUpdateDate", current.toString()); // 토큰 갱신날짜 update
           _checkBanner();
+          if (_sp.getBool("tutorialStory") == null) {
+            return Future<Widget>(() {
+              return Tutorial(route: 1);
+            });
+          }
           return Future<Widget>(() {
             return MainNavigation();
           });
@@ -270,6 +285,11 @@ class SpeckAppState extends State<SpeckApp> {
         print("result34232 $result");
         if (result == 1) {
           _checkBanner();
+          if (_sp.getBool("tutorialStory") == null) {
+            return Future<Widget>(() {
+              return Tutorial(route: 1);
+            });
+          }
           return Future<Widget>(() {
             return MainNavigation();
           });
@@ -281,9 +301,9 @@ class SpeckAppState extends State<SpeckApp> {
         }
       }
     }
-    // 토큰이 없으면 로그인 페이지로
+    // 토큰이 없으면 튜토리얼 페이지로
     return Future(() {
-      return EmailLoginPage();
+      return Tutorial(route: 0,);
     });
   }
 }

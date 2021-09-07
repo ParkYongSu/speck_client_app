@@ -45,24 +45,20 @@ class SetCharacterState extends State<SetCharacter> {
     _uiCriteria.init(context);
     _ss = Provider.of<SettingState>(context, listen: false);
 
-    return MaterialApp(
-      title: "캐릭터 설정",
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: _appBar(context),
-        backgroundColor: Colors.white,
-        body: Container(
-          padding: EdgeInsets.only(left: _uiCriteria.horizontalPadding, right: _uiCriteria.horizontalPadding, top: _uiCriteria.verticalPadding, bottom: _uiCriteria.totalHeight * 0.039),
-          decoration: BoxDecoration(
-              color: Colors.white
-          ),
-          child: Column(
-            children: <Widget>[
-              _title(context),
-              _characterList(context),
-              _nextButton(context)
-            ],
-          ),
+    return Scaffold(
+      appBar: _appBar(context),
+      backgroundColor: Colors.white,
+      body: Container(
+        padding: EdgeInsets.only(left: _uiCriteria.horizontalPadding, right: _uiCriteria.horizontalPadding, top: _uiCriteria.verticalPadding, bottom: _uiCriteria.totalHeight * 0.039),
+        decoration: BoxDecoration(
+            color: Colors.white
+        ),
+        child: Column(
+          children: <Widget>[
+            _title(context),
+            _characterList(context),
+            _nextButton(context)
+          ],
         ),
       ),
     );
@@ -70,6 +66,7 @@ class SetCharacterState extends State<SetCharacter> {
 
   Widget _appBar(BuildContext context) {
     return AppBar(
+      automaticallyImplyLeading: false,
       elevation: 0,
       backgroundColor: mainColor,
       centerTitle: true,
@@ -84,7 +81,7 @@ class SetCharacterState extends State<SetCharacter> {
           Container(
               alignment: Alignment.center,
               width: _uiCriteria.screenWidth,
-              child: Text("캐릭터 설정", style: TextStyle(letterSpacing: 0.8, color: Colors.white, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize1),)),
+              child: Text("캐릭터 설정", style: TextStyle(letterSpacing: 0.8, color: Colors.white, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize16),)),
           GestureDetector(
               child: Container(
                 decoration: BoxDecoration(
@@ -111,7 +108,7 @@ class SetCharacterState extends State<SetCharacter> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Text("캐릭터 스타일 선택", style: TextStyle(color: mainColor, fontSize: _uiCriteria.textSize2, fontWeight: FontWeight.w500, letterSpacing: 0.7),),
-              Text("원하는 캐릭터를 선택해주세요", style: TextStyle(color: mainColor, fontSize: _uiCriteria.textSize1, fontWeight: FontWeight.bold, letterSpacing: 0.8),)
+              Text("원하는 캐릭터를 선택해주세요", style: TextStyle(color: mainColor, fontSize: _uiCriteria.textSize16, fontWeight: FontWeight.bold, letterSpacing: 0.8),)
             ],
           ),
         ),
@@ -183,7 +180,7 @@ class SetCharacterState extends State<SetCharacter> {
                             child: Image.asset(_imageList[index]),
                           ),
                           SizedBox(height: constraint.maxHeight * 0.0781,),
-                          Text(name, style: TextStyle(color: mainColor, fontSize: _uiCriteria.textSize1, fontWeight: FontWeight.bold, letterSpacing: 0.8),),
+                          Text(name, style: TextStyle(color: mainColor, fontSize: _uiCriteria.textSize16, fontWeight: FontWeight.bold, letterSpacing: 0.8),),
                           SizedBox(height: constraint.maxHeight * 0.0108,),
                           Text(pref, style: TextStyle(color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w500, letterSpacing: 0.6),),
                         ],

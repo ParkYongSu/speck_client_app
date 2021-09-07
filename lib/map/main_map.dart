@@ -332,7 +332,7 @@ class MainMapState extends State<MainMap> {
                             "${searchingWordState.getSearchingWord()}",
                             style: TextStyle(
                                 letterSpacing: 0.8,
-                                fontSize: _uiCriteria.textSize1,
+                                fontSize: _uiCriteria.textSize16,
                                 fontWeight: FontWeight.w700,
                                 color: Colors.white),
                           );
@@ -728,7 +728,7 @@ class MainMapState extends State<MainMap> {
                                             letterSpacing: 0.6
                                         ),
                                       ),
-                                      Icon(Icons.keyboard_arrow_right, color: Colors.transparent, size: _uiCriteria.textSize1)
+                                      Icon(Icons.keyboard_arrow_right, color: Colors.transparent, size: _uiCriteria.textSize16)
                                     ],
                                   ),
                                   SizedBox(
@@ -768,7 +768,7 @@ class MainMapState extends State<MainMap> {
                                                 letterSpacing: 0.6
                                             ),
                                           ),
-                                          Icon(Icons.keyboard_arrow_right, color: greyD8D8D8, size: _uiCriteria.textSize1)
+                                          Icon(Icons.keyboard_arrow_right, color: greyD8D8D8, size: _uiCriteria.textSize16)
                                         ]
                                     )
                                   ),
@@ -1153,7 +1153,7 @@ class MainMapState extends State<MainMap> {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: <Widget>[
-                                  Icon(Icons.call, color: Colors.white, size: _uiCriteria.textSize1,),
+                                  Icon(Icons.call, color: Colors.white, size: _uiCriteria.textSize16,),
                                   SizedBox(width: constraint.maxWidth * 0.048,),
                                   Text("$_phoneNumber", style: TextStyle(color: Colors.white, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w700, letterSpacing: 0.6),)
                                 ]

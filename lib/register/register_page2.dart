@@ -327,7 +327,7 @@ class RegisterPageState2 extends State<RegisterPage2> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
-                                    Icon(Icons.check_circle_rounded, color: (_allAgree)?mainColor:greyD8D8D8, size: _uiCriteria.textSize1,),
+                                    Icon(Icons.check_circle_rounded, color: (_allAgree)?mainColor:greyD8D8D8, size: _uiCriteria.textSize16,),
                                     SizedBox(width: _uiCriteria.screenWidth * 0.027),
                                     Text("약관에 모두 동의",
                                         style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w500)),
@@ -349,7 +349,7 @@ class RegisterPageState2 extends State<RegisterPage2> {
                                         onTap: _serviceCheck,
                                         child: Row(
                                           children: <Widget>[
-                                            Icon(Icons.check_circle, color: (_allAgree)?mainColor:(_serviceAgree)?mainColor:greyD8D8D8, size: _uiCriteria.textSize1,),
+                                            Icon(Icons.check_circle, color: (_allAgree)?mainColor:(_serviceAgree)?mainColor:greyD8D8D8, size: _uiCriteria.textSize16,),
                                             SizedBox(width: _uiCriteria.screenWidth * 0.027),
                                             Text("이용약관 동의",
                                                 style: TextStyle(letterSpacing: 0.6, color: mainColor,fontWeight: FontWeight.w500, fontSize: _uiCriteria.textSize3
@@ -381,7 +381,7 @@ class RegisterPageState2 extends State<RegisterPage2> {
                                       onTap: _personalCheck,
                                       child: Row(
                                         children: <Widget>[
-                                          Icon(Icons.check_circle, color: (_allAgree)?mainColor:(_personalInformationCollectionAgree)?mainColor:greyD8D8D8, size: _uiCriteria.textSize1,),
+                                          Icon(Icons.check_circle, color: (_allAgree)?mainColor:(_personalInformationCollectionAgree)?mainColor:greyD8D8D8, size: _uiCriteria.textSize16,),
                                           SizedBox(width: _uiCriteria.screenWidth * 0.027),
                                           Text("개인정보 수집 및 이용동의",
                                               style: TextStyle(
@@ -418,7 +418,7 @@ class RegisterPageState2 extends State<RegisterPage2> {
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.start,
                                         children: <Widget>[
-                                          Icon(Icons.check_circle, color: (_allAgree)?mainColor:(_receiveEventInformationAgree)?mainColor:greyD8D8D8, size: _uiCriteria.textSize1,),
+                                          Icon(Icons.check_circle, color: (_allAgree)?mainColor:(_receiveEventInformationAgree)?mainColor:greyD8D8D8, size: _uiCriteria.textSize16,),
                                           SizedBox(width: _uiCriteria.screenWidth * 0.027),
                                           Text("이벤트 정보 수신 동의",
                                               style: TextStyle(
@@ -488,7 +488,7 @@ class RegisterPageState2 extends State<RegisterPage2> {
                   ),
                 ),
                 Text("회원가입",
-                    style: TextStyle(letterSpacing: 0.7, fontSize: _uiCriteria.textSize1, color: Colors.white, fontWeight: FontWeight.w700,)),
+                    style: TextStyle(letterSpacing: 0.7, fontSize: _uiCriteria.textSize16, color: Colors.white, fontWeight: FontWeight.w700,)),
               ]
           ),
           backgroundColor: mainColor,

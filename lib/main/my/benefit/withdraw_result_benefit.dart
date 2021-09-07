@@ -95,7 +95,7 @@ class BenefitWithdrawResult extends StatelessWidget {
           Container(
               alignment: Alignment.center,
               width: _uiCriteria.screenWidth,
-              child: Text("상금 출금하기", style: TextStyle(letterSpacing: 0.8, color: Colors.white, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize1),)),
+              child: Text("상금 출금하기", style: TextStyle(letterSpacing: 0.8, color: Colors.white, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize16),)),
 
         ],
       ),

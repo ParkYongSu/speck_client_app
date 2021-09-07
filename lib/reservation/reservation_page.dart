@@ -19,21 +19,16 @@ import 'package:speech_bubble/speech_bubble.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class Reservation extends StatefulWidget {
-  final String schoolName; // 학교이름
+  final String galaxyName; // 학교이름
   final String imagePath; // 프로필
-  final String accumulativePayment; // 누적 상금
-  //final int allMembers; // 모든인원
-  // final int days; // 갤럭시가 만들어진지 얼마나 지났는지
   final int galaxyNum; // 학교아이디
-  // final String time;
   final int timeNum;
   final int official;
 
   Reservation(
       {Key key,
-      @required this.schoolName,
+      @required this.galaxyName,
       @required this.imagePath,
-      @required this.accumulativePayment,
       @required this.galaxyNum,
       @required this.timeNum,
       @required this.official})
@@ -81,7 +76,7 @@ class _ReservationState extends State<Reservation> {
               Text("예약하기",
                   style: TextStyle(
                     letterSpacing: 0.8,
-                    fontSize: _uiCriteria.textSize1,
+                    fontSize: _uiCriteria.textSize16,
                     color: Colors.white,
                     fontWeight: FontWeight.w700,
                   )
@@ -171,8 +166,8 @@ class _ReservationState extends State<Reservation> {
                                   children: <Widget>[
                                     Text(
                                       (widget.official == 1)
-                                          ? "[공식] ${widget.schoolName}($_time)"
-                                          : "${widget.schoolName}($_time)",
+                                          ? "[공식] ${widget.galaxyName}($_time)"
+                                          : "${widget.galaxyName}($_time)",
                                       style: TextStyle(
                                           letterSpacing: 0.24,
                                           color: mainColor,
@@ -362,7 +357,7 @@ class _ReservationState extends State<Reservation> {
                                               "$_startDate",
                                               style: TextStyle(
                                                   letterSpacing: 0.8,
-                                                  fontSize: _uiCriteria.textSize1,
+                                                  fontSize: _uiCriteria.textSize16,
                                                   color: (_isStartSelected)?mainColor:greyAAAAAA,
                                                   fontWeight: FontWeight.w700),
                                             ),
@@ -370,7 +365,7 @@ class _ReservationState extends State<Reservation> {
                                               "$_endDate",
                                               style: TextStyle(
                                                   letterSpacing: 0.8,
-                                                  fontSize: _uiCriteria.textSize1,
+                                                  fontSize: _uiCriteria.textSize16,
                                                   color: (_isEndSelected)?mainColor:greyAAAAAA,
                                                   fontWeight: FontWeight.w700),
                                             ),
@@ -941,7 +936,7 @@ class _ReservationState extends State<Reservation> {
                                             color: greyAAAAAA,
                                             fontWeight: FontWeight.w700,
                                             fontSize: _uiCriteria.textSize2)),
-                                    Image.asset("assets/png/question_mark.png", height: _uiCriteria.textSize1,)
+                                    Image.asset("assets/png/question_mark.png", height: _uiCriteria.textSize16,)
                                   ],
                                 ),
                                 onTap: () {
@@ -1081,7 +1076,7 @@ class _ReservationState extends State<Reservation> {
                                       children: <Widget>[
                                         Image.asset(
                                           "assets/png/dust_won_fill.png",
-                                          height: _uiCriteria.textSize1,
+                                          height: _uiCriteria.textSize16,
                                         ),
                                         Text(
                                           "상금 계산은 하루를 기준으로 이루어져요!",
@@ -1093,7 +1088,7 @@ class _ReservationState extends State<Reservation> {
                                         ),
                                         Image.asset(
                                           "assets/png/dust_won_fill.png",
-                                          height: _uiCriteria.textSize1,
+                                          height: _uiCriteria.textSize16,
                                         ),
                                       ]),
                                 ),
@@ -1318,7 +1313,7 @@ class _ReservationState extends State<Reservation> {
                                                 style: TextStyle(
                                                     letterSpacing: 0.8,
                                                     color: mainColor,
-                                                    fontSize: _uiCriteria.textSize1,
+                                                    fontSize: _uiCriteria.textSize16,
                                                     fontWeight: FontWeight.w700)),
                                             (_isDateSelected && _correctMoney)
                                                 ?Text("${_totalPayment.replaceAllMapped(
@@ -1329,13 +1324,13 @@ class _ReservationState extends State<Reservation> {
                                                 style: TextStyle(
                                                     letterSpacing: 0.8,
                                                     color: mainColor,
-                                                    fontSize: _uiCriteria.textSize1,
+                                                    fontSize: _uiCriteria.textSize16,
                                                     fontWeight: FontWeight.w700))
                                                 : Text("0원",
                                                 style: TextStyle(
                                                     letterSpacing: 0.8,
                                                     color: mainColor,
-                                                    fontSize: _uiCriteria.textSize1,
+                                                    fontSize: _uiCriteria.textSize16,
                                                     fontWeight: FontWeight.w700))
                                           ],
                                         ),
@@ -2347,7 +2342,7 @@ class _ReservationState extends State<Reservation> {
   void _reservationByCash() async {
     print(int.parse(_speckCash));
     print(int.parse(_totalPayment));
-    if (int.parse(_speckCash) > int.parse(_totalPayment)) {
+    if (int.parse(_speckCash) >= int.parse(_totalPayment)) {
       Future future = _request();
       int statusCode;
       await future.then((value) => statusCode = value).onError((error, stackTrace) => print("error: $error"));
@@ -2520,7 +2515,7 @@ class _ReservationState extends State<Reservation> {
 
   void _navigateNext() {
     Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => ReservationComplete(
-      schoolName: widget.schoolName,
+      schoolName: widget.galaxyName,
       imagePath: widget.imagePath,
       time: _time,
       canAuthTime: _canAuthTime,

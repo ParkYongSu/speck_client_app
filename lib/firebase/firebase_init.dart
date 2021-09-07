@@ -1,9 +1,13 @@
 import 'dart:io';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:speck_app/main/home/page_state.dart';
+import 'package:speck_app/main/main_page.dart';
 
 FirebaseMessaging firebaseMessaging;
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
@@ -11,10 +15,12 @@ FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 /// notification setting
 void firebaseSettings() async {
   _localNotificationSetting();
+  // FirebaseOptions firebaseOptions = new FirebaseOptions(apiKey: "AIzaSyD76dAMLAyLWosh7tjuBl629_mtwMaNy6c", appId: "1:687330380704:android:c28864c56c8d1bd9b7b2c5", messagingSenderId: "687330380704", projectId: "paidagogosspeck");
   SharedPreferences sp = await SharedPreferences.getInstance();
   firebaseMessaging = FirebaseMessaging.instance;
   firebaseMessaging.requestPermission();
   firebaseMessaging.getToken().then((value) async {
+    print("valueeeee $value");
     await sp.setString("fcmToken", value); // fcm 토큰을 저장
   });
 
@@ -26,12 +32,11 @@ void firebaseSettings() async {
     firebaseMessaging.subscribeToTopic("newGalaxy");
   }
 
-  FirebaseMessaging.onMessage.listen((RemoteMessage event) async {
+  FirebaseMessaging.onMessage.listen((RemoteMessage event) {
     showNotification(event);
   });
 
-  FirebaseMessaging.onMessageOpenedApp.listen((message) {
-    print('Message clicked!');
+  FirebaseMessaging.onMessageOpenedApp.listen((event) {
   });
 }
 
@@ -65,3 +70,4 @@ Future<void> showNotification(RemoteMessage message) async {
   var details = NotificationDetails(android: androidNotificationDetails, iOS: iOSPlatformChannelSpecifics);
   await flutterLocalNotificationsPlugin.show(0, title, body, details);
 }
+

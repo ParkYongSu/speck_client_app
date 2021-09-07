@@ -223,7 +223,7 @@ class _MainPlanState extends State<MainPlan> {
     galaxy = result["galaxyList"];// 서버에서 갤럭시 정보를 가져와서 리스트에 저장
     int count = galaxy.length;// 총 갤럭시 수
     print(count);
-
+    _todayReservationSort(galaxy);
     for (int i = 0; i < count; i++) {
       dynamic info = galaxy[i];
       String galaxyName = info["galaxyName"]; // 학교이름
@@ -720,5 +720,19 @@ class _MainPlanState extends State<MainPlan> {
     );
 
     return dialog;
+  }
+
+  void _todayReservationSort(List<dynamic> list) {
+    for (int i = 0; i < list.length - 1; i++) {
+      int max = i;
+      for (int j = i + 1; j < list.length; j++) {
+        if (list[max]["todayReserve"] < list[j]["todayReserve"]) {
+          max = j;
+        }
+      }
+      dynamic temp = list[i];
+      list[i] = list[max];
+      list[max] = temp;
+    }
   }
 }

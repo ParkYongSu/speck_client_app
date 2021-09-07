@@ -29,20 +29,17 @@ class SetBirthdayState extends State<SetBirthday> {
     _uiCriteria.init(context);
     _ss = Provider.of<SettingState>(context, listen: false);
 
-    return MaterialApp(
-      title: "생년월일 설정 페이지",
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: _appBar(context),
-        backgroundColor: Colors.white,
-        body: _setBirthday(),
-      ),
+    return  Scaffold(
+      resizeToAvoidBottomInset: false,
+      appBar: _appBar(context),
+      backgroundColor: Colors.white,
+      body: _setBirthday(),
     );
   }
 
   Widget _appBar(BuildContext context) {
     return AppBar(
+      automaticallyImplyLeading: false,
       elevation: 0,
       backgroundColor: mainColor,
       centerTitle: true,
@@ -57,7 +54,7 @@ class SetBirthdayState extends State<SetBirthday> {
           Container(
               alignment: Alignment.center,
               width: _uiCriteria.screenWidth,
-              child: Text("생년월일 설정", style: TextStyle(letterSpacing: 0.8, color: Colors.white, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize1),)),
+              child: Text("생년월일 설정", style: TextStyle(letterSpacing: 0.8, color: Colors.white, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize16),)),
           GestureDetector(
               child: Container(
                 decoration: BoxDecoration(

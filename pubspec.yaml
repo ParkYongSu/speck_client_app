@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.4+9
+version: 1.0.6+11
 
 environment:
   sdk: ">=2.5.0 <3.0.0"
@@ -65,7 +65,7 @@ dependencies:
   permission_handler: ^8.0.1
   flutter_animated_dialog: ^2.0.0
   animated_text_kit: ^4.2.1
-  firebase_core: ^1.4.0
+  firebase_core: ^1.6.0
   firebase_messaging: ^10.0.4
   firebase_remote_config: 0.10.0+3
   flutter_local_notifications: ^8.1.1+1
@@ -86,8 +86,21 @@ flutter:
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
-
+  fonts:
+    - family: NanumSquareRoundB
+      fonts:
+        - asset: assets/font/NanumSquareRoundB.ttf
+    - family: NanumSquareRoundEB
+      fonts:
+        - asset: assets/font/NanumSquareRoundEB.ttf
+    - family: NanumSquareRoundL
+      fonts:
+        - asset: assets/font/NanumSquareRoundL.ttf
+    - family: NanumSquareRoundR
+      fonts:
+        - asset: assets/font/NanumSquareRoundR.ttf
   uses-material-design: true
+
 
 flutter_native_splash:
   color: "#1F1D1E"
@@ -124,10 +137,5 @@ flutter_native_splash:
   #         weight: 700
   #
 
-  fonts:
-    - family: NanumSquare
-      fonts:
-        fonts:
-          - asset: assets/fonts/NanumSquareR.ttf
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

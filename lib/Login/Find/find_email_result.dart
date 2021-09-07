@@ -45,7 +45,7 @@ class FindEmailResultPage extends StatelessWidget {
                   ),
                 ),
                 Text("이메일 찾기",
-                    style: TextStyle(letterSpacing: 0.8, fontSize: _uiCriteria.textSize1, color: Colors.white, fontWeight: FontWeight.w700)),
+                    style: TextStyle(letterSpacing: 0.8, fontSize: _uiCriteria.textSize16, color: Colors.white, fontWeight: FontWeight.w700)),
               ]
           ),
         ),

@@ -15,6 +15,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speck_app/Login/Todo/todo_login.dart';
 import 'package:speck_app/main/home/page_state.dart';
+import 'package:speck_app/main/tutorial/tutorial.dart';
 import 'package:speck_app/route/route_builder.dart';
 import 'package:speck_app/ui/ui_color.dart';
 import 'package:speck_app/ui/ui_criteria.dart';
@@ -73,7 +74,7 @@ class EmailLoginPageState extends State<EmailLoginPage> {
                 Text("이메일로 로그인",
                     style: TextStyle(
                       letterSpacing: 0.8,
-                      fontSize: _uiCriteria.textSize1,
+                      fontSize: _uiCriteria.textSize16,
                       color: Colors.white,
                       fontWeight: FontWeight.w700,
                     )),
@@ -351,7 +352,12 @@ class EmailLoginPageState extends State<EmailLoginPage> {
         _resultMessage = "";
         _result = true;
       });
-      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => MainNavigation()), (route) => false);
+      if (_sp.getBool("tutorialStory") == null) {
+        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => Tutorial(route: 1)), (route) => false);
+      }
+      else {
+        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => MainNavigation()), (route) => false);
+      }
     }
     else {
       FocusScope.of(context).unfocus();

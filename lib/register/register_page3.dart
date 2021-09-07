@@ -63,7 +63,7 @@ class _RegisterPage3State extends State<RegisterPage3> {
                   ),
                 ),
                 Text("회원가입",
-                    style: TextStyle(letterSpacing: 0.7, fontSize: _uiCriteria.textSize1, color: Colors.white, fontWeight: FontWeight.w700,)),
+                    style: TextStyle(letterSpacing: 0.7, fontSize: _uiCriteria.textSize16, color: Colors.white, fontWeight: FontWeight.w700,)),
               ]
           ),
         ),
@@ -94,7 +94,7 @@ class _RegisterPage3State extends State<RegisterPage3> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Text("캐릭터 스타일 선택", style: TextStyle(color: mainColor, fontSize: _uiCriteria.textSize2, fontWeight: FontWeight.w500, letterSpacing: 0.7),),
-              Text("원하는 캐릭터를 선택해주세요", style: TextStyle(color: mainColor, fontSize: _uiCriteria.textSize1, fontWeight: FontWeight.bold, letterSpacing: 0.8),)
+              Text("원하는 캐릭터를 선택해주세요", style: TextStyle(color: mainColor, fontSize: _uiCriteria.textSize16, fontWeight: FontWeight.bold, letterSpacing: 0.8),)
             ],
           ),
         ),
@@ -170,7 +170,7 @@ class _RegisterPage3State extends State<RegisterPage3> {
                         ),
                         Spacer(flex: 145,),
                         // SizedBox(height: constraint.maxHeight * 0.0781,),
-                        Text(name, style: TextStyle(color: mainColor, fontSize: _uiCriteria.textSize1, fontWeight: FontWeight.bold, letterSpacing: 0.8),),
+                        Text(name, style: TextStyle(color: mainColor, fontSize: _uiCriteria.textSize16, fontWeight: FontWeight.bold, letterSpacing: 0.8),),
                         // SizedBox(height: constraint.maxHeight * 0.0108,),
                         Spacer(flex: 40,),
                         FittedBox(

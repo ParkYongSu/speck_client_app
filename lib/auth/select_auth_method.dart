@@ -98,7 +98,7 @@ class _AuthMethodState extends State<AuthMethod> {
                       Spacer(flex: 240,),
                       Image.asset(image),
                       Spacer(flex: 169,),
-                      Text(title1, style: TextStyle(color: mainColor, fontSize: uiCriteria.textSize1, fontWeight: FontWeight.bold, letterSpacing: 0.8),),
+                      Text(title1, style: TextStyle(color: mainColor, fontSize: uiCriteria.textSize16, fontWeight: FontWeight.bold, letterSpacing: 0.8),),
                       Spacer(flex: 40,),
                       Text(title2, style: TextStyle(color: greyAAAAAA, fontSize: uiCriteria.textSize3, fontWeight: FontWeight.w500, letterSpacing: 0.6),),
                       Spacer(flex: 110,)

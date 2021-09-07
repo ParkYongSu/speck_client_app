@@ -57,7 +57,7 @@ class RegisterPageState1 extends State<RegisterPage1> {
                   Text("회원가입",
                       style: TextStyle(
                         letterSpacing: 0.8,
-                        fontSize: _uiCriteria.textSize1,
+                        fontSize: _uiCriteria.textSize16,
                         color: Colors.white,
                         fontWeight: FontWeight.w700,
                       )

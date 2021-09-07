@@ -188,7 +188,7 @@ class BenefitInfoState extends State<BenefitInfo> {
           Container(
               alignment: Alignment.center,
               width: _uiCriteria.screenWidth,
-              child: Text("나의 상금", style: TextStyle(letterSpacing: 0.8, color: Colors.white, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize1),)),
+              child: Text("나의 상금", style: TextStyle(letterSpacing: 0.8, color: Colors.white, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize16),)),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -215,7 +215,7 @@ class BenefitInfoState extends State<BenefitInfo> {
                                 color: greyD8D8D8,
                                 fontWeight: FontWeight.w700,
                                 fontSize: _uiCriteria.textSize3)),
-                        Image.asset("assets/png/question_mark.png", height: _uiCriteria.textSize1,)
+                        Image.asset("assets/png/question_mark.png", height: _uiCriteria.textSize16,)
                       ],
                     ),
                   ),
@@ -867,8 +867,8 @@ class BenefitInfoState extends State<BenefitInfo> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text("출금 가능한 상금", style: TextStyle(fontSize: _uiCriteria.textSize1, letterSpacing: 0.8, fontWeight: FontWeight.bold, color: mainColor),),
-                  Text("${_available.toString().replaceAllMapped(new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}원", style: TextStyle(fontSize: _uiCriteria.textSize1, letterSpacing: 0.8, fontWeight: FontWeight.bold, color: mainColor),),
+                  Text("출금 가능한 상금", style: TextStyle(fontSize: _uiCriteria.textSize16, letterSpacing: 0.8, fontWeight: FontWeight.bold, color: mainColor),),
+                  Text("${_available.toString().replaceAllMapped(new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}원", style: TextStyle(fontSize: _uiCriteria.textSize16, letterSpacing: 0.8, fontWeight: FontWeight.bold, color: mainColor),),
                 ],
               ),
             ),

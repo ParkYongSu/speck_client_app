@@ -45,14 +45,14 @@ class FindPasswordResultPage extends StatelessWidget {
                     Text("비밀번호 찾기",
                         style: TextStyle(
                           letterSpacing: 0.8,
-                          fontSize: _uiCriteria.textSize1,
+                          fontSize: _uiCriteria.textSize16,
                           color: Colors.white,
                           fontWeight: FontWeight.w800,
                         )),
                   ]
               ),
               // title: Text("비밀번호 찾기",
-              //     style: TextStyle(fontSize: _uiCriteria.textSize1, color: Colors.black, fontWeight: FontWeight.w700)),
+              //     style: TextStyle(fontSize: _uiCriteria.textSize16, color: Colors.black, fontWeight: FontWeight.w700)),
 
             ),
           body: Container(

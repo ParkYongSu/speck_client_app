@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:speck_app/Main/my/history/my_history.dart';
 import 'package:speck_app/Main/my/setting/setting_all_info.dart';
 import 'package:speck_app/Main/my/speckcash/cash_info.dart';
+import 'package:speck_app/main/my/history/history_info.dart';
 import 'package:speck_app/main/my/home/mypage_event.dart';
 import 'package:speck_app/main/my/ticket/ticket_info.dart';
 import 'package:speck_app/ui/ui_color.dart';
@@ -118,7 +119,7 @@ class _MainMyPageState extends State<MainMyPage> with TickerProviderStateMixin{
                                             SizedBox(
                                               height: constraint.maxHeight * 0.04317,
                                             ),
-                                            Text(_nickname, style: TextStyle(letterSpacing: 1.12, color: Colors.white, fontSize: _uiCriteria.textSize1, fontWeight: FontWeight.w700)),
+                                            Text(_nickname, style: TextStyle(letterSpacing: 1.12, color: Colors.white, fontSize: _uiCriteria.textSize16, fontWeight: FontWeight.w700)),
                                           ],
                                         ),
                                       ),
@@ -303,32 +304,35 @@ class _MainMyPageState extends State<MainMyPage> with TickerProviderStateMixin{
                                 shrinkWrap: true,
                                 itemCount: value.length,
                                 itemBuilder: (BuildContext context, int index) {
-                                  return Container(
-                                    margin: EdgeInsets.symmetric(vertical: _uiCriteria.totalHeight * 0.0147),
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(6.9),
-                                        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.16), spreadRadius: 0, blurRadius: 6, offset: Offset(0, 3))]
-                                    ),
-                                    child: AspectRatio(
-                                        aspectRatio: 343/61,
-                                        child: LayoutBuilder(
-                                          builder: (BuildContext context, BoxConstraints constraint) {
-                                            return Container(
-                                              padding: EdgeInsets.symmetric(horizontal: constraint.maxWidth * 0.0349),
-                                              child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: <Widget>[
-                                                  Spacer(),
-                                                  Text("${value[index].dateTime.month}월 ${value[index].dateTime.day}일 인증예정", style: TextStyle(color: mainColor, fontWeight: FontWeight.w500, fontSize: _uiCriteria.textSize5, letterSpacing: 0.4),),
-                                                  Spacer(),
-                                                  Text("${(value[index].official == 1)?"[공식] ":""}${value[index].galaxyName} - ${value[index].time} 탐험단", style: TextStyle(color: mainColor, fontWeight: FontWeight.w700, letterSpacing: 0.6, fontSize: _uiCriteria.textSize3),),
-                                                  Spacer(),
-                                                ],
-                                              ),
-                                            );
-                                          },
-                                        )
+                                  return GestureDetector(
+                                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => HistoryInfo(bookInfo: value[index].bookInfo))),
+                                    child: Container(
+                                      margin: EdgeInsets.symmetric(vertical: _uiCriteria.totalHeight * 0.0147),
+                                      decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(6.9),
+                                          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.16), spreadRadius: 0, blurRadius: 6, offset: Offset(0, 3))]
+                                      ),
+                                      child: AspectRatio(
+                                          aspectRatio: 343/61,
+                                          child: LayoutBuilder(
+                                            builder: (BuildContext context, BoxConstraints constraint) {
+                                              return Container(
+                                                padding: EdgeInsets.symmetric(horizontal: constraint.maxWidth * 0.0349),
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: <Widget>[
+                                                    Spacer(),
+                                                    Text("${value[index].dateTime.month}월 ${value[index].dateTime.day}일 인증예정", style: TextStyle(color: mainColor, fontWeight: FontWeight.w500, fontSize: _uiCriteria.textSize5, letterSpacing: 0.4),),
+                                                    Spacer(),
+                                                    Text("${(value[index].official == 1)?"[공식] ":""}${value[index].galaxyName} - ${value[index].time} 탐험단", style: TextStyle(color: mainColor, fontWeight: FontWeight.w700, letterSpacing: 0.6, fontSize: _uiCriteria.textSize3),),
+                                                    Spacer(),
+                                                  ],
+                                                ),
+                                              );
+                                            },
+                                          )
+                                      ),
                                     ),
                                   );
                                 },
@@ -385,8 +389,8 @@ class _MainMyPageState extends State<MainMyPage> with TickerProviderStateMixin{
                                                       children: [
                                                         Text("${(value[index].official == 1)?"[공식] ":""}${value[index].galaxyName} - ${value[index].time} 탐험단 ", style: TextStyle(color: mainColor, fontWeight: FontWeight.w700, letterSpacing: 0.6, fontSize: _uiCriteria.textSize3),),
                                                         (value[index].attendValue == 1)
-                                                        ? Icon(Icons.check_circle, color: mainColor, size: _uiCriteria.textSize1,)
-                                                        : Icon(Icons.cancel, color: greyD8D8D8, size: _uiCriteria.textSize1,)
+                                                        ? Icon(Icons.check_circle, color: mainColor, size: _uiCriteria.textSize16,)
+                                                        : Icon(Icons.cancel, color: greyD8D8D8, size: _uiCriteria.textSize16,)
                                                       ],
                                                     ),
                                                     Spacer(),
@@ -583,13 +587,14 @@ class _MainMyPageState extends State<MainMyPage> with TickerProviderStateMixin{
     String body = """ {
       "userEmail":"$userEmail"
     } """;
-
+    print(body);
     Map<String, String> header = {
       "Content-Type":"application/json"
     };
 
     var response = await http.post(url, body: body, headers: header);
     var result = jsonDecode(utf8.decode(response.bodyBytes));
+    print(result);
     return result;
   }
 

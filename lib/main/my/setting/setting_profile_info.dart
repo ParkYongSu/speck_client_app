@@ -72,10 +72,7 @@ class _SetProfileState extends State<SetProfile> {
     _uiCriteria.init(context);
     _ss = Provider.of<SettingState>(context, listen: false);
 
-    return MaterialApp(
-      title: "프로필 설정",
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
+    return Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: Colors.white,
         appBar: _appBar(context),
@@ -103,7 +100,6 @@ class _SetProfileState extends State<SetProfile> {
             }
           },
         )
-      ),
     );
   }
 
@@ -114,6 +110,7 @@ class _SetProfileState extends State<SetProfile> {
 
   Widget _appBar(BuildContext context) {
     return AppBar(
+      automaticallyImplyLeading: false,
       elevation: 0,
       backgroundColor: mainColor,
       centerTitle: true,
@@ -128,7 +125,7 @@ class _SetProfileState extends State<SetProfile> {
           Container(
               alignment: Alignment.center,
               width: _uiCriteria.screenWidth,
-              child: Text("프로필 설정", style: TextStyle(letterSpacing: 0.8, color: Colors.white, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize1),)),
+              child: Text("프로필 설정", style: TextStyle(letterSpacing: 0.8, color: Colors.white, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize16),)),
           GestureDetector(
               child: Container(
                 decoration: BoxDecoration(

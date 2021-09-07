@@ -60,7 +60,7 @@ class PlacePhotoViewState extends State<PlacePhotoView> {
                           onTap: () => Navigator.pop(context)),
                       RichText(
                         text: TextSpan(
-                          style: TextStyle(fontSize: _uiCriteria.textSize1),
+                          style: TextStyle(fontSize: _uiCriteria.textSize16),
                           children: <TextSpan>[
                             TextSpan(text: "$_page", style: TextStyle(fontWeight: FontWeight.w700, color: Colors.white)),
                             TextSpan(text:  " / ${widget.count}", style: TextStyle(fontWeight: FontWeight.w500, color: greyB3B3BC))
@@ -74,7 +74,7 @@ class PlacePhotoViewState extends State<PlacePhotoView> {
                 Text("${widget.placeName}",
                     style: TextStyle(
                       letterSpacing: 0.8,
-                      fontSize: _uiCriteria.textSize1,
+                      fontSize: _uiCriteria.textSize16,
                       color: Colors.white,
                       fontWeight: FontWeight.w700,
                     )

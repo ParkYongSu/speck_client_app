@@ -56,7 +56,7 @@ class ReservationComplete extends StatelessWidget {
       title: Container(
           alignment: Alignment.center,
           width: _uiCriteria.screenWidth,
-          child: Text("출석 예약 완료", style: TextStyle(letterSpacing: 0.8, color: Colors.white, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize1),)),
+          child: Text("출석 예약 완료", style: TextStyle(letterSpacing: 0.8, color: Colors.white, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize16),)),
     );
   }
 

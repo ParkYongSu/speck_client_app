@@ -42,34 +42,30 @@ class ProfileInfoState extends State<ProfileInfo> {
     _uiCriteria.init(context);
     _ss = Provider.of<SettingState>(context, listen: true);
 
-    return MaterialApp(
-      title: "프로필 정보",
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-          appBar: _appBar(context),
-          backgroundColor: greyF0F0F1,
-          body: FutureBuilder(
-            future: _getUserData(),
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (snapshot.hasData) {
-                _userInfo = snapshot.data;
-                // _userInfo = ["용수", "꼬미", "010-3213-3510", "남자", "1996.04.13"];
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    _title("나의 정보"),
-                    _myInfoList(),
-                    _title("선택 정보"),
-                    _selectedInfoList()
-                  ],
-                );
-              }
-              else {
-                return loader(context, 0);
-              }
-            },
-          )
-      ),
+    return  Scaffold(
+        appBar: _appBar(context),
+        backgroundColor: greyF0F0F1,
+        body: FutureBuilder(
+          future: _getUserData(),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.hasData) {
+              _userInfo = snapshot.data;
+              // _userInfo = ["용수", "꼬미", "010-3213-3510", "남자", "1996.04.13"];
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  _title("나의 정보"),
+                  _myInfoList(),
+                  _title("선택 정보"),
+                  _selectedInfoList()
+                ],
+              );
+            }
+            else {
+              return loader(context, 0);
+            }
+          },
+        )
     );
   }
 
@@ -112,6 +108,7 @@ class ProfileInfoState extends State<ProfileInfo> {
 
   Widget _appBar(BuildContext context) {
     return AppBar(
+      automaticallyImplyLeading: false,
       elevation: 0,
       backgroundColor: mainColor,
       centerTitle: true,
@@ -126,7 +123,7 @@ class ProfileInfoState extends State<ProfileInfo> {
           Container(
               alignment: Alignment.center,
               width: _uiCriteria.screenWidth,
-              child: Text("프로필 설정", style: TextStyle(letterSpacing: 0.8, color: Colors.white, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize1),)),
+              child: Text("프로필 설정", style: TextStyle(letterSpacing: 0.8, color: Colors.white, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize16),)),
           GestureDetector(
               child: Container(
                 decoration: BoxDecoration(

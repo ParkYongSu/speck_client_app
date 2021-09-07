@@ -299,6 +299,7 @@ Widget barcode(BoxConstraints constraint) {
 }
 
 Widget attendTimePlanet(BoxConstraints constraint, String attendTime) {
+  print("attendTime1 $attendTime");
   DateTime dt = DateTime.parse(attendTime);
   String at = "${dt.hour.toString().padLeft(2, "0")}:${dt.minute.toString().padLeft(2, "0")}";
   return Container(

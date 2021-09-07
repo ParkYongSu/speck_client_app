@@ -9,7 +9,6 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speck_app/State/auth_status.dart';
 import 'package:speck_app/Time/card_time.dart';
-import 'package:speck_app/auth/todo_auth.dart';
 import 'package:speck_app/main.dart';
 import 'package:speck_app/main/my/ticket/ticket_ui.dart';
 import 'package:speck_app/ui/ui_color.dart';
@@ -28,7 +27,6 @@ class QrScanner extends StatefulWidget {
 class QrScannerState extends State<QrScanner> {
   QRViewController _qrViewController;
   final GlobalKey _qrKey = new GlobalKey();
-  TodoAuth todoAuth = new TodoAuth();
   UICriteria _uiCriteria = new UICriteria();
   String _placeName;
   int _attCount;

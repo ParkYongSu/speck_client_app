@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 import 'package:speck_app/Time/return_auth_time.dart';
+import 'package:speck_app/main/home/page_state.dart';
 import 'package:speck_app/ui/ui_color.dart';
 import 'package:speck_app/ui/ui_criteria.dart';
 
@@ -196,7 +198,7 @@ Widget rule(BuildContext context) {
                       children: <Widget>[
                         Image.asset(
                           "assets/png/dust_won_fill.png",
-                          height: uiCriteria.textSize1,
+                          height: uiCriteria.textSize16,
                         ),
                         Text(
                           "상금 계산은 하루를 기준으로 이루어져요!",
@@ -208,7 +210,7 @@ Widget rule(BuildContext context) {
                         ),
                         Image.asset(
                           "assets/png/dust_won_fill.png",
-                          height: uiCriteria.textSize1,
+                          height: uiCriteria.textSize16,
                         ),
                       ]),
                 ),
@@ -445,7 +447,7 @@ Widget appBar(BuildContext context, String title) {
         Container(
             alignment: Alignment.center,
             width: uiCriteria.screenWidth,
-            child: Text(title, style: TextStyle(letterSpacing: 0.8, color: Colors.white, fontWeight: FontWeight.w700, fontSize: uiCriteria.textSize1),)),
+            child: Text(title, style: TextStyle(letterSpacing: 0.8, color: Colors.white, fontWeight: FontWeight.w700, fontSize: uiCriteria.textSize16),)),
         GestureDetector(
             child: Container(
               decoration: BoxDecoration(
@@ -554,3 +556,5 @@ List<Widget> generateHashTags(BuildContext context, List<dynamic> hts, int index
 void errorToast(String title) {
   Fluttertoast.showToast(msg: title, gravity: ToastGravity.CENTER, fontSize: uiCriteria.textSize2);
 }
+
+

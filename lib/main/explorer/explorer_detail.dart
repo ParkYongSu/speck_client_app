@@ -15,9 +15,9 @@ import 'package:speck_app/util/util.dart';
 import 'package:speck_app/widget/public_widget.dart';
 
 class ExplorerDetail extends StatefulWidget {
-  final int route;
-
-  const ExplorerDetail({Key key, @required this.route}) : super(key: key);
+  // final int route;
+  //
+  // const ExplorerDetail({Key key, @required this.route}) : super(key: key);
   @override
   _ExplorerDetailState createState() => _ExplorerDetailState();
 }
@@ -44,8 +44,6 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
   int _todayCount;
   String _galaxyName; // 학교이름
   String _imagePath; // 프로필
-  String _totalPayment; // 누적 보증
-  int _sumPerson; // 누적인원
   int _galaxyNum; // 학교아이디
   int _timeNum;
   int _official;
@@ -82,26 +80,17 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
   @override
   void dispose() {
     super.dispose();
-    _myInfoTimer.stopTimer();
+    if (!_myInfoTimer.getIsRunning()) {
+      _myInfoTimer.stopTimer();
+    }
   }
 
-  final UICriteria _uiCriteria = new UICriteria();
   ExplorerState _es;
 
   @override
   Widget build(BuildContext context) {
-    _uiCriteria.init(context);
-    _es = Provider.of<ExplorerState>(context, listen: false);
-    _galaxyName = _es.getGalaxyName(); // 학교이름
-    _imagePath = _es.getImagePath();// 프로필
-    _totalPayment = _es.getTotalPayment(); // 누적 보증
-    _sumPerson = _es.getSumPerson(); // 누적인원
-    _galaxyNum = _es.getGalaxyNum(); // 학교아이디
-    _timeNum = _es.getTimeNum();
-    _official = _es.getOfficial();
-    _selectedDate = _es.getSelectedDate();
-    _selectedDateWeekdayText = _es.getSelectedDateWeekdayText();
-    _timeList = _es.getTimeList();
+    _getExplorerData();
+
     _time = getAuthTime(_timeNum);
     _selectedDateText = "${DateTime.parse(_selectedDate).year}.${DateTime.parse(_selectedDate).month}.${DateTime.parse(_selectedDate).day}";
     _current = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
@@ -119,11 +108,11 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
                     color: mainColor
                 ),
                 alignment: Alignment.center,
-                width: _uiCriteria.screenWidth,
-                height: _uiCriteria.totalHeight,
+                width: uiCriteria.screenWidth,
+                height: uiCriteria.totalHeight,
                 child: Container(
-                    width: _uiCriteria.screenWidth * 0.0666,
-                    height: _uiCriteria.screenWidth * 0.0666,
+                    width: uiCriteria.screenWidth * 0.0666,
+                    height: uiCriteria.screenWidth * 0.0666,
                     child: CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                     )
@@ -132,6 +121,18 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
           }
         }
       );
+  }
+  
+  void _getExplorerData() {
+    _es = Provider.of<ExplorerState>(context, listen: false);
+    _galaxyName = _es.getGalaxyName(); // 학교이름
+    _imagePath = _es.getImagePath();// 프로필
+    _galaxyNum = _es.getGalaxyNum(); // 학교아이디
+    _timeNum = _es.getTimeNum();
+    _official = _es.getOfficial();
+    _selectedDate = _es.getSelectedDate();
+    _selectedDateWeekdayText = _es.getSelectedDateWeekdayText();
+    _timeList = _es.getTimeList();
   }
 
   void _selectionSort(List<dynamic> userList) {
@@ -167,7 +168,6 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
     for (int i = 0; i < explorerTodayList.length; i++) {
       _allCount += 1;
       dynamic user = explorerTodayList[i];
-      String imagePath = user["imgPath"];
       String nickname = user["nickName"];
       int characterIndex = user["character"];
       int attendValue = user["attendvalue"];
@@ -198,8 +198,8 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           Container(
-            width: _uiCriteria.screenWidth * 0.1554,
-            height: _uiCriteria.screenWidth * 0.1538,
+            width: uiCriteria.screenWidth * 0.1554,
+            height: uiCriteria.screenWidth * 0.1538,
             decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 image: DecorationImage(
@@ -210,9 +210,9 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
             ),
           ),
           Spacer(flex: 20,),
-          Text(nickname, style: TextStyle(letterSpacing: 0.6, color: mainColor, fontWeight: FontWeight.w600, fontSize: _uiCriteria.textSize3)),
+          Text(nickname, style: TextStyle(letterSpacing: 0.6, color: mainColor, fontWeight: FontWeight.w600, fontSize: uiCriteria.textSize3)),
           Spacer(flex: 6,),
-          Text("출석 $countAtt", style: TextStyle(letterSpacing: 0.5, fontWeight: FontWeight.w600, fontSize: _uiCriteria.textSize5, color: greyAAAAAA),),
+          Text("출석 $countAtt", style: TextStyle(letterSpacing: 0.5, fontWeight: FontWeight.w600, fontSize: uiCriteria.textSize5, color: greyAAAAAA),),
         ]
     );
   }
@@ -237,9 +237,9 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
             ],
           ),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: _uiCriteria.horizontalPadding, vertical: _uiCriteria.totalHeight * 0.0283),
-            width: _uiCriteria.screenWidth,
-            height: _uiCriteria.totalHeight,
+            padding: EdgeInsets.symmetric(horizontal: uiCriteria.horizontalPadding, vertical: uiCriteria.totalHeight * 0.0283),
+            width: uiCriteria.screenWidth,
+            height: uiCriteria.totalHeight,
             child: Container(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -253,19 +253,19 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
                           Row(
                             children: [
                               (_official == 1)
-                                  ? Text("[공식] $_galaxyName ", style: TextStyle(letterSpacing: 0.9, color: Colors.white, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize4))
-                                  : Text("$_galaxyName ", style: TextStyle(letterSpacing: 0.9, color: Colors.white, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize4)),
+                                  ? Text("[공식] $_galaxyName ", style: TextStyle(letterSpacing: 0.9, color: Colors.white, fontWeight: FontWeight.w700, fontSize: uiCriteria.textSize4))
+                                  : Text("$_galaxyName ", style: TextStyle(letterSpacing: 0.9, color: Colors.white, fontWeight: FontWeight.w700, fontSize: uiCriteria.textSize4)),
                               InkWell(
                                 onTap: () {
                                   _showTimeTable(context);
                                 },
                                 child: Container(
-                                  padding: EdgeInsets.symmetric(horizontal: _uiCriteria.screenWidth * 0.02, vertical: _uiCriteria.screenWidth * 0.005),
+                                  padding: EdgeInsets.symmetric(horizontal: uiCriteria.screenWidth * 0.02, vertical: uiCriteria.screenWidth * 0.005),
                                   decoration: BoxDecoration(
                                       border: Border.all(color: Colors.white, width :1.5),
                                       borderRadius: BorderRadius.circular(6.9)
                                   ),
-                                  child: Text( "$_time", style: TextStyle(letterSpacing: 0.7, color: Colors.white, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize2),),
+                                  child: Text( "$_time", style: TextStyle(letterSpacing: 0.7, color: Colors.white, fontWeight: FontWeight.w700, fontSize: uiCriteria.textSize2),),
                                 ),
                               )
                             ],
@@ -277,7 +277,7 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
                                 children: <Widget>[
                                   RichText(
                                       text: TextSpan(
-                                          style: TextStyle(letterSpacing: 0.6, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w700),
+                                          style: TextStyle(letterSpacing: 0.6, fontSize: uiCriteria.textSize3, fontWeight: FontWeight.w700),
                                           children: <TextSpan>[
                                             TextSpan(text: "평균 출석률", style: TextStyle(color: greyD8D8D8),),
                                             TextSpan(text: " ${double.parse(rate.toStringAsFixed(1))}%  ", style: TextStyle(color: Colors.white))
@@ -286,12 +286,12 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
                                   ),
                                   Container(
                                     width: 1,
-                                    height: _uiCriteria.textSize3,
+                                    height: uiCriteria.textSize3,
                                     color: greyD8D8D8,
                                   ),
                                   RichText(
                                       text: TextSpan(
-                                          style: TextStyle(letterSpacing: 0.6, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w700),
+                                          style: TextStyle(letterSpacing: 0.6, fontSize: uiCriteria.textSize3, fontWeight: FontWeight.w700),
                                           children: <TextSpan>[
                                             TextSpan(text: "  평균 출석 인원", style: TextStyle(color: greyD8D8D8),),
                                             TextSpan(text: " $attendNum명", style: TextStyle(color: Colors.white))
@@ -314,7 +314,8 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
                   AspectRatio(aspectRatio: 375/10),
                   /// 받침
                   Container(
-                    height: (widget.route == 0)?(uiCriteria.totalHeight - uiCriteria.appBarHeight) * 0.55 : (uiCriteria.totalHeight - uiCriteria.appBarHeight - uiCriteria.totalHeight * 0.049) * 0.55,
+                    // height: (widget.route == 0)?(uiCriteria.totalHeight - uiCriteria.appBarHeight) * 0.55 : (uiCriteria.totalHeight - uiCriteria.appBarHeight - uiCriteria.totalHeight * 0.049) * 0.55,
+                    height: (uiCriteria.totalHeight - uiCriteria.appBarHeight - uiCriteria.totalHeight * 0.049) * 0.55,
                   )
                 ],
               ),
@@ -423,7 +424,7 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
     return AspectRatio(
       aspectRatio: 375/40,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: _uiCriteria.screenWidth * 0.020),
+        padding: EdgeInsets.symmetric(horizontal: uiCriteria.screenWidth * 0.020),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
@@ -437,7 +438,7 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
                     ),
                     child: Icon(Icons.chevron_left_sharp, color: mainColor,))),
             RichText(text: TextSpan(
-                style: TextStyle(color: mainColor, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize2),
+                style: TextStyle(color: mainColor, fontWeight: FontWeight.w700, fontSize: uiCriteria.textSize2),
                 children: <TextSpan>[
                   TextSpan(text: _selectedDateText),
                   TextSpan(text: "  $_selectedDateWeekdayText", style: TextStyle(color: Color(0XFFE7535C)))
@@ -470,7 +471,7 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
             border: Border(bottom: BorderSide(color: greyD8D8D8, width: 0.5))
         ),
         child: Container(
-            width: _uiCriteria.screenWidth * 0.1733,
+            width: uiCriteria.screenWidth * 0.1733,
             height: 2,
             color: greyD8D8D8.withOpacity(0.5)
         ),
@@ -513,7 +514,7 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
               padding: EdgeInsets.all(constraint.maxHeight * 0.1018),
               child: Image.asset("assets/png/my_info.png", color: (!_timeList.contains(_timeNum))?greyAAAAAA:(_myInfo)?Colors.white:mainColor),),
             SizedBox(height: constraint.maxHeight * 0.0630),
-            Text("나의 정보", style: TextStyle(letterSpacing: 0.6, color: (!_timeList.contains(_timeNum))?greyAAAAAA:mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w700),)
+            Text("나의 정보", style: TextStyle(letterSpacing: 0.6, color: (!_timeList.contains(_timeNum))?greyAAAAAA:mainColor, fontSize: uiCriteria.textSize3, fontWeight: FontWeight.w700),)
           ]
       ),
     );
@@ -550,7 +551,7 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
               padding: EdgeInsets.all(constraint.maxHeight * 0.0991),
               child: Image.asset("assets/png/my_reward.png",color: (_benefit)?Colors.white:mainColor),),
             SizedBox(height: constraint.maxHeight * 0.0630),
-            Text("상금", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w700),)
+            Text("상금", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: uiCriteria.textSize3, fontWeight: FontWeight.w700),)
           ]
       ),
     );
@@ -577,7 +578,7 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
                 padding: EdgeInsets.all(constraint.maxHeight * 0.0991),
                 child: Image.asset("assets/png/add_friends.png" ,color: (_invite)?Colors.white:mainColor)),
             SizedBox(height: constraint.maxHeight * 0.0630),
-            Text("친구초대", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w700),)
+            Text("친구초대", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: uiCriteria.textSize3, fontWeight: FontWeight.w700),)
           ]
       ),
     );
@@ -625,14 +626,13 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
           child: AspectRatio(
             aspectRatio: 375/40,
             child: Container(
-                padding: EdgeInsets.symmetric(horizontal: _uiCriteria.horizontalPadding),
+                padding: EdgeInsets.symmetric(horizontal: uiCriteria.horizontalPadding),
                 child: MaterialButton(
                   onPressed: () {
                     Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (context) => Reservation(
                       galaxyNum: _galaxyNum,
                       imagePath: _imagePath,
-                      accumulativePayment: _totalPayment,
-                      schoolName: _galaxyName,
+                      galaxyName: _galaxyName,
                       timeNum: _timeNum,
                       official: _official,
                     )));
@@ -642,7 +642,7 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(3.5),
                   ),
-                  child: Text("추가 예약하기", style: TextStyle(letterSpacing: 0.7, color: Colors.white, fontSize: _uiCriteria.textSize2, fontWeight: FontWeight.w700,),
+                  child: Text("출석 예약하기", style: TextStyle(letterSpacing: 0.7, color: Colors.white, fontSize: uiCriteria.textSize2, fontWeight: FontWeight.w700,),
                   ),
                 )
             ),
@@ -655,7 +655,7 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
     return AspectRatio(
       aspectRatio: 375/40,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: _uiCriteria.horizontalPadding),
+        padding: EdgeInsets.symmetric(horizontal: uiCriteria.horizontalPadding),
         alignment: Alignment.center,
         decoration: BoxDecoration(
             border: Border(bottom: BorderSide(color: greyD8D8D8, width: 0.5))
@@ -666,16 +666,16 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
             RichText(
               text: TextSpan(
                   children: <TextSpan>[
-                    TextSpan(text: "총 $_attCount명 탐험중", style: TextStyle(letterSpacing: 0.7, color: mainColor, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize2),),
-                    TextSpan(text: " /$_todayCount명", style: TextStyle(letterSpacing: 0.6, color: greyAAAAAA, fontSize: _uiCriteria.textSize3),)
+                    TextSpan(text: "총 $_attCount명 탐험중", style: TextStyle(letterSpacing: 0.7, color: mainColor, fontWeight: FontWeight.w700, fontSize: uiCriteria.textSize2),),
+                    TextSpan(text: " /$_todayCount명", style: TextStyle(letterSpacing: 0.6, color: greyAAAAAA, fontSize: uiCriteria.textSize3),)
                   ]
               ),
             ),
             RichText(
               text: TextSpan(
                   children: <TextSpan>[
-                    TextSpan(text: "탐험단 순위", style: TextStyle(letterSpacing: 0.7, color: mainColor, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize2)),
-                    TextSpan(text: " $_explorerRank위", style: TextStyle(letterSpacing: 0.7, color:Color(0XFFE7535C), fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize2))
+                    TextSpan(text: "탐험단 순위", style: TextStyle(letterSpacing: 0.7, color: mainColor, fontWeight: FontWeight.w700, fontSize: uiCriteria.textSize2)),
+                    TextSpan(text: " $_explorerRank위", style: TextStyle(letterSpacing: 0.7, color:Color(0XFFE7535C), fontWeight: FontWeight.w700, fontSize: uiCriteria.textSize2))
                   ]
               ),
             ),
@@ -694,7 +694,7 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
       ),
       child: RichText(
         text: TextSpan(
-          style: TextStyle(fontSize: _uiCriteria.textSize2, color: mainColor, letterSpacing: 0.7, fontWeight: FontWeight.w500),
+          style: TextStyle(fontSize: uiCriteria.textSize2, color: mainColor, letterSpacing: 0.7, fontWeight: FontWeight.w500),
           children: <TextSpan>[
             TextSpan(text: "$nickname", style: TextStyle(fontWeight: FontWeight.w700)),
             TextSpan(text: "님은 지금",),
@@ -745,13 +745,13 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text("출석 횟수", style: TextStyle(color: mainColor, fontSize: _uiCriteria.textSize3, letterSpacing: 0.6, fontWeight: FontWeight.w500),),
+        Text("출석 횟수", style: TextStyle(color: mainColor, fontSize: uiCriteria.textSize3, letterSpacing: 0.6, fontWeight: FontWeight.w500),),
         SizedBox(height: constraint.maxHeight * 0.0234,),
-        Text("보증금", style: TextStyle(color: mainColor, fontSize: _uiCriteria.textSize3, letterSpacing: 0.6, fontWeight: FontWeight.w500),),
+        Text("보증금", style: TextStyle(color: mainColor, fontSize: uiCriteria.textSize3, letterSpacing: 0.6, fontWeight: FontWeight.w500),),
         SizedBox(height: constraint.maxHeight * 0.0234,),
-        Text("누적 상금", style: TextStyle(color: mainColor, fontSize: _uiCriteria.textSize3, letterSpacing: 0.6, fontWeight: FontWeight.w500),),
+        Text("누적 상금", style: TextStyle(color: mainColor, fontSize: uiCriteria.textSize3, letterSpacing: 0.6, fontWeight: FontWeight.w500),),
         SizedBox(height: constraint.maxHeight * 0.0234,),
-        Text("더스트", style: TextStyle(color: mainColor, fontSize: _uiCriteria.textSize3, letterSpacing: 0.6, fontWeight: FontWeight.w500),),
+        Text("더스트", style: TextStyle(color: mainColor, fontSize: uiCriteria.textSize3, letterSpacing: 0.6, fontWeight: FontWeight.w500),),
       ],
     );
   }
@@ -766,8 +766,8 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
         RichText(
           text: TextSpan(
             children: <TextSpan>[
-              TextSpan(text: "$myAttendCount회", style: TextStyle(color: mainColor, fontWeight: FontWeight.w700, letterSpacing: 0.6, fontSize: _uiCriteria.textSize3)),
-              TextSpan(text: " /$totalAttendCount회($rate%)", style: TextStyle(color: greyAAAAAA, fontWeight: FontWeight.w500, letterSpacing: 0.5, fontSize: _uiCriteria.textSize5)),
+              TextSpan(text: "$myAttendCount회", style: TextStyle(color: mainColor, fontWeight: FontWeight.w700, letterSpacing: 0.6, fontSize: uiCriteria.textSize3)),
+              TextSpan(text: " /$totalAttendCount회($rate%)", style: TextStyle(color: greyAAAAAA, fontWeight: FontWeight.w500, letterSpacing: 0.5, fontSize: uiCriteria.textSize5)),
             ]
           ),
         ),
@@ -775,19 +775,19 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
         RichText(
           text: TextSpan(
               children: <TextSpan>[
-                TextSpan(text: "${myDeposit.toString().replaceAllMapped(new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}원", style: TextStyle(color: mainColor, fontWeight: FontWeight.w700, letterSpacing: 0.6, fontSize: _uiCriteria.textSize3)),
-                TextSpan(text: " /${totalDeposit.toString().replaceAllMapped(new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}원", style: TextStyle(color: greyAAAAAA, fontWeight: FontWeight.w500, letterSpacing: 0.5, fontSize: _uiCriteria.textSize5)),
+                TextSpan(text: "${myDeposit.toString().replaceAllMapped(new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}원", style: TextStyle(color: mainColor, fontWeight: FontWeight.w700, letterSpacing: 0.6, fontSize: uiCriteria.textSize3)),
+                TextSpan(text: " /${totalDeposit.toString().replaceAllMapped(new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}원", style: TextStyle(color: greyAAAAAA, fontWeight: FontWeight.w500, letterSpacing: 0.5, fontSize: uiCriteria.textSize5)),
               ]
           ),
         ),
         SizedBox(height: constraint.maxHeight * 0.0234,),
-        Text("${accumPrize.toString().replaceAllMapped(new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}원", style: TextStyle(color: mainColor, fontWeight: FontWeight.w700, letterSpacing: 0.6, fontSize: _uiCriteria.textSize3)),
+        Text("${accumPrize.toString().replaceAllMapped(new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}원", style: TextStyle(color: mainColor, fontWeight: FontWeight.w700, letterSpacing: 0.6, fontSize: uiCriteria.textSize3)),
         SizedBox(height: constraint.maxHeight * 0.0234,),
         RichText(
           text: TextSpan(
               children: <TextSpan>[
-                TextSpan(text: "$myDust", style: TextStyle(color: mainColor, fontWeight: FontWeight.w700, letterSpacing: 0.6, fontSize: _uiCriteria.textSize3)),
-                TextSpan(text: " /${totalDust.toString().replaceAllMapped(new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ", style: TextStyle(color: greyAAAAAA, fontWeight: FontWeight.w500, letterSpacing: 0.5, fontSize: _uiCriteria.textSize5)),
+                TextSpan(text: "$myDust", style: TextStyle(color: mainColor, fontWeight: FontWeight.w700, letterSpacing: 0.6, fontSize: uiCriteria.textSize3)),
+                TextSpan(text: " /${totalDust.toString().replaceAllMapped(new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} ", style: TextStyle(color: greyAAAAAA, fontWeight: FontWeight.w500, letterSpacing: 0.5, fontSize: uiCriteria.textSize5)),
               ]
           ),
         ),
@@ -811,7 +811,7 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
         ),
         child: RichText(
           text: TextSpan(
-            style: TextStyle(color: (_myInfoTimer.getTime() <= 600)?Color(0XFFE7535C):mainColor, fontSize: _uiCriteria.textSize2, fontWeight: FontWeight.w500, letterSpacing: 0.7),
+            style: TextStyle(color: (_myInfoTimer.getTime() <= 600)?Color(0XFFE7535C):mainColor, fontSize: uiCriteria.textSize2, fontWeight: FontWeight.w500, letterSpacing: 0.7),
             children: <TextSpan>[
               TextSpan(text: "나의 출석까지 남은 시간 "),
               TextSpan(text: "${h.toString().padLeft(2,"0")}:${m.toString().padLeft(2,"0")}:${s.toString().padLeft(2,"0")}", style: TextStyle(fontWeight: FontWeight.bold)),
@@ -824,7 +824,7 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
   /// 내정보
   Widget _myInformation() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: _uiCriteria.horizontalPadding),
+      padding: EdgeInsets.symmetric(horizontal: uiCriteria.horizontalPadding),
       child: AspectRatio(
         aspectRatio: 343/255.7,
         child: FutureBuilder(
@@ -917,8 +917,8 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
                 child: Container(
                     alignment: Alignment.center,
                     child: Container(
-                        width: _uiCriteria.screenWidth * 0.06666,
-                        height: _uiCriteria.screenWidth * 0.06666,
+                        width: uiCriteria.screenWidth * 0.06666,
+                        height: uiCriteria.screenWidth * 0.06666,
                         child: CircularProgressIndicator(
                           valueColor: AlwaysStoppedAnimation<Color>(mainColor),
                         ))));
@@ -960,13 +960,13 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
                     greyBar(),
                     _checkedUserTitle(),
                     GridView.builder(
-                        padding: EdgeInsets.symmetric(vertical: _uiCriteria.totalHeight * 0.04),
+                        padding: EdgeInsets.symmetric(vertical: uiCriteria.totalHeight * 0.04),
                         physics: NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
                         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                           maxCrossAxisExtent: 150,
                           childAspectRatio: 1.16,
-                          mainAxisSpacing: _uiCriteria.totalHeight * 0.05,
+                          mainAxisSpacing: uiCriteria.totalHeight * 0.05,
                         ),
                         itemCount: _usersList.length,
                         itemBuilder: (BuildContext context, int index) {
@@ -993,8 +993,8 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
     //       });
     //     }
     //   },
-    //   minHeight: _uiCriteria.totalHeight * 0.5209,
-    //   maxHeight: _uiCriteria.totalHeight,
+    //   minHeight: uiCriteria.totalHeight * 0.5209,
+    //   maxHeight: uiCriteria.totalHeight,
     //   borderRadius: (_panelOpened)?null:BorderRadius.only(topRight: Radius.circular(13.8), topLeft: Radius.circular(13.8)),
     //   panel: Column(
     //       children: <Widget>[
@@ -1013,7 +1013,7 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
     //         // Expanded(
     //         //   child: SingleChildScrollView(
     //         //     child: Container(
-    //         //       width: _uiCriteria.screenWidth,
+    //         //       width: uiCriteria.screenWidth,
     //         //       child: Column(
     //         //         children: <Widget>[
     //         //           _threeButton(),
@@ -1026,13 +1026,13 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
     //         //           greyBar(),
     //         //           _checkedUserTitle(),
     //         //           GridView.builder(
-    //         //               padding: EdgeInsets.symmetric(vertical: _uiCriteria.totalHeight * 0.04),
+    //         //               padding: EdgeInsets.symmetric(vertical: uiCriteria.totalHeight * 0.04),
     //         //               physics: NeverScrollableScrollPhysics(),
     //         //               shrinkWrap: true,
     //         //               gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
     //         //                 maxCrossAxisExtent: 150,
     //         //                 childAspectRatio: 1.16,
-    //         //                 mainAxisSpacing: _uiCriteria.totalHeight * 0.05,
+    //         //                 mainAxisSpacing: uiCriteria.totalHeight * 0.05,
     //         //               ),
     //         //               itemCount: _usersList.length,
     //         //               itemBuilder: (BuildContext context, int index) {
@@ -1077,7 +1077,7 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
       child: Container(
         child: RichText(
           text: TextSpan(
-              style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w700),
+              style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: uiCriteria.textSize3, fontWeight: FontWeight.w700),
               children: <TextSpan>[
                 TextSpan(text: "${DateTime.parse(_selectedDate).month}/${DateTime.parse(_selectedDate).day} "),
                 TextSpan(text: (book == 0)?"상금 보기    ": "나의 상금    "),
@@ -1140,7 +1140,7 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
           builder: (BuildContext context, BoxConstraints constraint) {
             return Container(
               alignment: Alignment.topCenter,
-              padding: EdgeInsets.symmetric(horizontal: _uiCriteria.horizontalPadding),
+              padding: EdgeInsets.symmetric(horizontal: uiCriteria.horizontalPadding),
               margin: EdgeInsets.only(bottom: constraint.maxHeight * 0.07639),
               child: Container(
                   decoration: BoxDecoration(
@@ -1163,7 +1163,7 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
                                 children: <Widget>[
                                   Container(
                                     alignment: Alignment.centerLeft,
-                                    child: Text("모든 갤럭시의 $_time 탐험단", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w700))
+                                    child: Text("모든 갤럭시의 $_time 탐험단", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: uiCriteria.textSize3, fontWeight: FontWeight.w700))
                                   ),
                                   SizedBox(height: constraint.maxHeight * 0.0341),
                                   Expanded(
@@ -1180,8 +1180,8 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
                                                       child:  Row(
                                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                         children: <Widget>[
-                                                          Text("평균 출석률", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w500)),
-                                                          Text("$totalAvgAttRate%", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w700))
+                                                          Text("평균 출석률", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: uiCriteria.textSize3, fontWeight: FontWeight.w500)),
+                                                          Text("$totalAvgAttRate%", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: uiCriteria.textSize3, fontWeight: FontWeight.w700))
                                                         ],
                                                       )
                                                   ),
@@ -1193,8 +1193,8 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
                                                     child: Row(
                                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                       children: <Widget>[
-                                                        Text("누적 보증금", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w500)),
-                                                        Text("$totalAccumDeposit원", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w700))
+                                                        Text("누적 보증금", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: uiCriteria.textSize3, fontWeight: FontWeight.w500)),
+                                                        Text("$totalAccumDeposit원", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: uiCriteria.textSize3, fontWeight: FontWeight.w700))
                                                       ],
                                                     ),
                                                   ),
@@ -1213,8 +1213,8 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
                                                       child:  Row(
                                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                         children: <Widget>[
-                                                          Text("평균 출석인원", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w500)),
-                                                          Text("$totalAvgAtt명", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w700))
+                                                          Text("평균 출석인원", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: uiCriteria.textSize3, fontWeight: FontWeight.w500)),
+                                                          Text("$totalAvgAtt명", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: uiCriteria.textSize3, fontWeight: FontWeight.w700))
                                                         ],
                                                       )
                                                   ),
@@ -1226,8 +1226,8 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
                                                     child: Row(
                                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                       children: <Widget>[
-                                                        Text("오늘 보증금", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w500)),
-                                                        Text("$totalAccumDepositByDate원", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w700))
+                                                        Text("오늘 보증금", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: uiCriteria.textSize3, fontWeight: FontWeight.w500)),
+                                                        Text("$totalAccumDepositByDate원", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: uiCriteria.textSize3, fontWeight: FontWeight.w700))
                                                       ],
                                                     ),
                                                   ),
@@ -1245,8 +1245,8 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
                                                       child:  Row(
                                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                         children: <Widget>[
-                                                          Text("누적 출석인원", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w500)),
-                                                          Text("$totalAccumAtt명",  style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w700))
+                                                          Text("누적 출석인원", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: uiCriteria.textSize3, fontWeight: FontWeight.w500)),
+                                                          Text("$totalAccumAtt명",  style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: uiCriteria.textSize3, fontWeight: FontWeight.w700))
                                                         ],
                                                       )
                                                   ),
@@ -1256,7 +1256,7 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
                                                   flex: 165,
                                                   child: Container(
                                                       alignment: Alignment.centerLeft,
-                                                      child: Text("평균적으로 하루에 $totalAvgDepositByDate원을 걸었어요", style: TextStyle(fontSize: _uiCriteria.textSize5, color: greyAAAAAA, fontWeight: FontWeight.w500))),
+                                                      child: Text("평균적으로 하루에 $totalAvgDepositByDate원을 걸었어요", style: TextStyle(fontSize: uiCriteria.textSize5, color: greyAAAAAA, fontWeight: FontWeight.w500))),
                                                 )
                                               ]
                                           ),
@@ -1276,7 +1276,7 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
                                 children: <Widget>[
                                   Container(
                                     alignment: Alignment.centerLeft,
-                                    child: Text("\'$_galaxyName\'의 $_time 탐험단", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w700)),
+                                    child: Text("\'$_galaxyName\'의 $_time 탐험단", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: uiCriteria.textSize3, fontWeight: FontWeight.w700)),
                                   ),
                                   SizedBox(height: constraint.maxHeight * 0.0341),
                                   Expanded(
@@ -1293,8 +1293,8 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
                                                       child:  Row(
                                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                         children: <Widget>[
-                                                          Text("평균 출석률", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w500)),
-                                                          Text("$expAvgAttRate%", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w700))
+                                                          Text("평균 출석률", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: uiCriteria.textSize3, fontWeight: FontWeight.w500)),
+                                                          Text("$expAvgAttRate%", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: uiCriteria.textSize3, fontWeight: FontWeight.w700))
                                                         ],
                                                       )
                                                   ),
@@ -1306,8 +1306,8 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
                                                     child: Row(
                                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                       children: <Widget>[
-                                                        Text("누적 보증금", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w500)),
-                                                        Text("$expAccumDeposit원", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w700))
+                                                        Text("누적 보증금", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: uiCriteria.textSize3, fontWeight: FontWeight.w500)),
+                                                        Text("$expAccumDeposit원", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: uiCriteria.textSize3, fontWeight: FontWeight.w700))
                                                       ],
                                                     ),
                                                   ),
@@ -1326,8 +1326,8 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
                                                       child:  Row(
                                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                         children: <Widget>[
-                                                          Text("평균 출석인원", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w500)),
-                                                          Text("$expAvgAtt명",style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w700))
+                                                          Text("평균 출석인원", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: uiCriteria.textSize3, fontWeight: FontWeight.w500)),
+                                                          Text("$expAvgAtt명",style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: uiCriteria.textSize3, fontWeight: FontWeight.w700))
                                                         ],
                                                       )
                                                   ),
@@ -1339,8 +1339,8 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
                                                     child:Row(
                                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                       children: <Widget>[
-                                                        Text("오늘 보증금", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w500)),
-                                                        Text("$expAccumDepositByDate원", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w700))
+                                                        Text("오늘 보증금", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: uiCriteria.textSize3, fontWeight: FontWeight.w500)),
+                                                        Text("$expAccumDepositByDate원", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: uiCriteria.textSize3, fontWeight: FontWeight.w700))
                                                       ],
                                                     ),
                                                   ),
@@ -1358,8 +1358,8 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
                                                       child:  Row(
                                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                         children: <Widget>[
-                                                          Text("누적 출석인원", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w500)),
-                                                          Text("$expAccumAtt명", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w700))
+                                                          Text("누적 출석인원", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: uiCriteria.textSize3, fontWeight: FontWeight.w500)),
+                                                          Text("$expAccumAtt명", style: TextStyle(letterSpacing: 0.6, color: mainColor, fontSize: uiCriteria.textSize3, fontWeight: FontWeight.w700))
                                                         ],
                                                       )
                                                   ),
@@ -1369,7 +1369,7 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
                                                   flex: 165,
                                                   child: Container(
                                                       alignment: Alignment.centerLeft,
-                                                      child: Text("평균적으로 하루에 $expAvgDepositByDate원을 걸었어요", style: TextStyle(color: greyAAAAAA, fontSize: _uiCriteria.textSize5,  fontWeight: FontWeight.w500))),
+                                                      child: Text("평균적으로 하루에 $expAvgDepositByDate원을 걸었어요", style: TextStyle(color: greyAAAAAA, fontSize: uiCriteria.textSize5,  fontWeight: FontWeight.w500))),
                                                 )
                                               ]
                                           ),
@@ -1465,7 +1465,7 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
                                     ?Border.all(color: mainColor, width: 1.5)
                                     :Border.all(color: greyB3B3BC, width: 0.5)
                             ),
-                            child: AutoSizeText("$time", maxLines: 1, style: TextStyle(color: mainColor, fontSize: _uiCriteria.textSize2, fontWeight: FontWeight.w700),)
+                            child: AutoSizeText("$time", maxLines: 1, style: TextStyle(color: mainColor, fontSize: uiCriteria.textSize2, fontWeight: FontWeight.w700),)
                         ),
                       ),
                       (_timeList.contains(id))
@@ -1563,7 +1563,7 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
                                     ?Border.all(color: mainColor, width: 1.5)
                                     :Border.all(color: greyB3B3BC, width: 0.5)
                             ),
-                            child: AutoSizeText("$time", maxLines: 1, style: TextStyle(letterSpacing: 0.7,color: mainColor, fontSize: _uiCriteria.textSize2, fontWeight: FontWeight.w700),)
+                            child: AutoSizeText("$time", maxLines: 1, style: TextStyle(letterSpacing: 0.7,color: mainColor, fontSize: uiCriteria.textSize2, fontWeight: FontWeight.w700),)
                         ),
                       ),
                       (_timeList.contains(id))
@@ -1595,7 +1595,7 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(6.9)
       ),
-      insetPadding: EdgeInsets.symmetric(horizontal: _uiCriteria.horizontalPadding),
+      insetPadding: EdgeInsets.symmetric(horizontal: uiCriteria.horizontalPadding),
       child: AspectRatio(
         aspectRatio: 343/364,
         child: LayoutBuilder(
@@ -1614,7 +1614,7 @@ class _ExplorerDetailState extends State<ExplorerDetail> {
                     decoration: BoxDecoration(
                       border: Border(bottom: BorderSide(color: greyD8D8D8, width: 0.5))
                     ),
-                    child: Text("탐험단 둘러보기", style: TextStyle(color: mainColor, fontSize: _uiCriteria.textSize2, fontWeight: FontWeight.w700),),
+                    child: Text("탐험단 둘러보기", style: TextStyle(color: mainColor, fontSize: uiCriteria.textSize2, fontWeight: FontWeight.w700),),
                   ),
                   Expanded(
                     child: Container(

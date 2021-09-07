@@ -14,13 +14,14 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:speck_app/util/util.dart';
 
 import 'history_event.dart';
-import 'my_history.dart';
 
 class HistoryInfo extends StatefulWidget {
-  final int type;
   final int bookInfo;
-  final String imagePath;
-  HistoryInfo({Key key,@required this.type, @required this.bookInfo, @required this.imagePath})
+  final int type;
+
+  HistoryInfo({Key key,
+    @required this.bookInfo,
+    this.type})
       : super(key: key);
   @override
   _HistoryInfoState createState() => _HistoryInfoState();
@@ -50,6 +51,8 @@ class _HistoryInfoState extends State<HistoryInfo> {
   List<dynamic> _checkList;
   int _lastDayDay;
   int _paymentId;
+  String _imagePath;
+  int _type;
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +113,7 @@ class _HistoryInfoState extends State<HistoryInfo> {
           Container(
               alignment: Alignment.center,
               width: _uiCriteria.screenWidth,
-              child: Text("탐험중인 갤럭시", style: TextStyle(letterSpacing: 0.8, color: Colors.white, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize1),)),
+              child: Text("탐험중인 갤럭시", style: TextStyle(letterSpacing: 0.8, color: Colors.white, fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize16),)),
           GestureDetector(
               child: Container(
                 decoration: BoxDecoration(
@@ -216,7 +219,7 @@ class _HistoryInfoState extends State<HistoryInfo> {
         child: Column(
           children: <Widget>[
             title(context, "공식 갤럭시"),
-            reservedGalaxyInfo(context, DateTime.parse(_startDate), DateTime.parse(_endDate), _galaxyName, widget.type, _totalCount, _attendCount, timeNum, widget.imagePath),
+            reservedGalaxyInfo(context, DateTime.parse(_startDate), DateTime.parse(_endDate), _galaxyName, _type, _totalCount, _attendCount, timeNum, _imagePath),
             authTime(context, _canAuthTime(timeNum)),
           ],
         ),
@@ -250,8 +253,8 @@ class _HistoryInfoState extends State<HistoryInfo> {
     );
   }
 
-  List<HistoryEvent> _getReservationEventsForDay(DateTime day, List<dynamic> infoList) {
-    return getHistoryEvents(infoList)[day] ?? [];
+  List<HistoryEvent> _getReservationEventsForDay(DateTime day, List<dynamic> infoList, int type) {
+    return getHistoryEvents(infoList, type)[day] ?? [];
   }
 
   Widget _markerBuilder(BuildContext context, DateTime one, List<HistoryEvent> event) {
@@ -282,7 +285,8 @@ class _HistoryInfoState extends State<HistoryInfo> {
         rowHeight: _uiCriteria.screenWidth * 0.1307,
         calendarFormat: CalendarFormat.month,
         eventLoader:  (DateTime dateTime) {
-          return _getReservationEventsForDay(dateTime, checkList);
+          print("type $_type");
+          return _getReservationEventsForDay(dateTime, checkList, _type);
         },
         calendarBuilders: CalendarBuilders(
             markerBuilder: _markerBuilder,
@@ -415,16 +419,16 @@ class _HistoryInfoState extends State<HistoryInfo> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Text("회수한 보증금", style: TextStyle(fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize1, color: mainColor, letterSpacing: 0.8),),
-                      Text("${getDeposit.toString().replaceAllMapped(new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}원", style: TextStyle(fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize1, color: mainColor, letterSpacing: 0.8),),
+                      Text("회수한 보증금", style: TextStyle(fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize16, color: mainColor, letterSpacing: 0.8),),
+                      Text("${getDeposit.toString().replaceAllMapped(new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}원", style: TextStyle(fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize16, color: mainColor, letterSpacing: 0.8),),
                     ],
                   ),
                   Spacer(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Text("총상금", style: TextStyle(fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize1, color: mainColor, letterSpacing: 0.8),),
-                      Text("${getReward.toString().replaceAllMapped(new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}원", style: TextStyle(fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize1, color: mainColor, letterSpacing: 0.8),),
+                      Text("총상금", style: TextStyle(fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize16, color: mainColor, letterSpacing: 0.8),),
+                      Text("${getReward.toString().replaceAllMapped(new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}원", style: TextStyle(fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize16, color: mainColor, letterSpacing: 0.8),),
                     ],
                   ),
                   Spacer(),
@@ -505,7 +509,7 @@ class _HistoryInfoState extends State<HistoryInfo> {
           child: MaterialButton(
             disabledColor: greyB3B3BC,
             color: mainColor,
-            onPressed: (widget.type == 1)
+            onPressed: (_type == 1)
                 ? null
                 : () {
               showDialog(
@@ -535,7 +539,7 @@ class _HistoryInfoState extends State<HistoryInfo> {
                                         Spacer(flex: 235,),
                                         Text("정말 취소하시겠어요?", style: TextStyle(letterSpacing: 0.7, color: mainColor, fontSize: _uiCriteria.screenWidth * 0.042, fontWeight: FontWeight.w700),),
                                         Spacer(flex: 50),
-                                        Text((widget.type == 0)?"취소시 스펙 캐시로 환급됩니다.":"취소시 예약데이터가 삭제됩니다.", style: TextStyle(letterSpacing: 0.5, color: greyAAAAAA, fontSize: _uiCriteria.textSize5, fontWeight: FontWeight.w700),),
+                                        Text((_type == 0)?"취소시 스펙 캐시로 환급됩니다.":"취소시 예약데이터가 삭제됩니다.", style: TextStyle(letterSpacing: 0.5, color: greyAAAAAA, fontSize: _uiCriteria.textSize5, fontWeight: FontWeight.w700),),
                                         Spacer(flex: 245,)
                                       ],
                                     ))),
@@ -567,7 +571,7 @@ class _HistoryInfoState extends State<HistoryInfo> {
                                               alignment: Alignment.center,
                                               child: Text("예약취소", style: TextStyle(letterSpacing: 0.7, color: Color(0XFFe7535c), fontWeight: FontWeight.w700, fontSize: _uiCriteria.textSize2),)),
                                           onTap:() async {
-                                            int pre = (widget.type == -1)?1:0;
+                                            int pre = (_type == -1)?1:0;
                                             var url = Uri.parse("$speckUrl/bookingdelete");
                                             String body = ''' {
                                              "bookinfo" : ${widget.bookInfo},
@@ -672,10 +676,36 @@ class _HistoryInfoState extends State<HistoryInfo> {
     _getDust = result["getDust"];
     _getDeposit = result["getDeposit"];
     _getReward = result["getReward"];
+    _imagePath = result["imgUrl"];
     DateTime x1 = DateTime(DateTime.parse(_endDate).year, DateTime.parse(_endDate).month, 0).toUtc();
     _lastDayDay = DateTime(DateTime.parse(_endDate).year, DateTime.parse(_endDate).month + 1, 0).toLocal().difference(x1).inDays;
     _paymentId = result["paymentId"];
+    (widget.type != null)
+    ? _type = widget.type
+    : _type = _setType(_startDate, _endDate, _timeNum);
   }
 
+  int _setType(String startDate, String endDate, int timeNum) {
+    String time = getAuthTime(timeNum);
+    DateTime current = DateTime.now();
+    if (current.isAfter(DateTime.parse(startDate)) && current.isBefore(DateTime.parse(endDate + " " + time))) {
+      return 1;
+    }
+    else if (current.isAfter(DateTime.parse(endDate + " " + time))) {
+
+      return 1;
+    }
+    else {
+      DateTime start = DateTime.parse(startDate);
+      int dDay = DateTime(start.year,start.month,start.day, 0, 0, 0, 0)
+          .difference(DateTime(current.year, current.month, current.day, 0, 0, 0, 0)).inDays;
+      if (dDay == 0) {
+        return 1;
+      }
+      else {
+        return 0;
+      }
+    }
+  }
 }
 

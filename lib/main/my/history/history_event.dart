@@ -9,38 +9,38 @@ class HistoryEvent {
   DateTime dateTime;
   int attendValue;
   Color color;
+  int type;
 
-  HistoryEvent(DateTime dateTime, int attendValue) {
+  HistoryEvent(DateTime dateTime, int attendValue, int type) {
     this.dateTime = dateTime;
     this.attendValue = attendValue;
-    this.color = (attendValue == 1)?mainColor:greyD8D8D8;
+    this.color = (type == 0)?Color(0XFFE7535C):(attendValue == 1)?mainColor:greyD8D8D8;
+    print(color);
   }
 }
 
-LinkedHashMap<DateTime, List<HistoryEvent>> getHistoryEvents(List<dynamic> infoList) {
+LinkedHashMap<DateTime, List<HistoryEvent>> getHistoryEvents(List<dynamic> infoList, int type) {
   if (infoList.isNotEmpty) {
     Map<DateTime, List<HistoryEvent>> events = LinkedHashMap<DateTime, List<HistoryEvent>>(
         equals: isSameDay,
         hashCode: hashCode
     );
-    events.addAll(getHistoryEventSource(infoList));
+    events.addAll(getHistoryEventSource(infoList, type));
     return events;
   }
   return LinkedHashMap();
 }
 
-Map<DateTime, List<HistoryEvent>> getHistoryEventSource(List<dynamic> infoList) {
+Map<DateTime, List<HistoryEvent>> getHistoryEventSource(List<dynamic> infoList, int type) {
   Map<DateTime, List<HistoryEvent>> eventSource = Map.fromIterable(List.generate(infoList.length, (index) => index),
       key: (item) => DateTime.parse(infoList[item]["dateinfo"]),
       value: (item) {
         List<HistoryEvent> value = [];
         dynamic info = infoList[item];
         DateTime dateTime = DateTime.parse(info["dateinfo"]);
-        int attendValue = info["attendValue"];
-        if (dateTime.isAfter(DateTime(DateTime.now().year, DateTime.now().month))
-            || isSameDay(dateTime, DateTime(DateTime.now().year, DateTime.now().month))) {
-          value.add(HistoryEvent(dateTime, attendValue ));
-        }
+        int attendValue = info["attendvalue"];
+        value.add(HistoryEvent(dateTime, attendValue, type));
+
         return value;
       }
   );
