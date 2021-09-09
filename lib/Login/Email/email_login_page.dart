@@ -352,7 +352,7 @@ class EmailLoginPageState extends State<EmailLoginPage> {
         _resultMessage = "";
         _result = true;
       });
-      if (_sp.getBool("tutorialStory") == null) {
+      if (_sp.getBool("tutorialStory4") == null) {
         Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => Tutorial(route: 1)), (route) => false);
       }
       else {

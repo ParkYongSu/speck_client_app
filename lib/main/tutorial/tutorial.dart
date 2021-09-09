@@ -305,7 +305,7 @@ class _TutorialState extends State<Tutorial> {
     else {
       Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => MainNavigation()), (route) => false);
     }
-    await _sp.setBool("tutorialStory", true);
+    await _sp.setBool("tutorialStory4", true);
   }
 
   Widget _tutorialStart() {

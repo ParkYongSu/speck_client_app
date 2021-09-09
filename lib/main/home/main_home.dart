@@ -72,8 +72,7 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.hasData == true) {
               WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-
-                if (_sp.getBool("tutorialMain") == null && !_ts.getTutorialOpened()) {
+                if (_sp.getBool("tutorialMain3") == null && !_ts.getTutorialOpened()) {
                   _ts.setTutorialOpened(true);
                   showDialog(
                       barrierColor: Colors.black.withOpacity(0.7),
@@ -82,10 +81,12 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
                         return MainTutorial(renderBox: _getCardPosition(_cardKey),);
                       }
                   ).whenComplete(() async{
-                    await _sp.setBool("tutorialMain", true);
+                    await _sp.setBool("tutorialMain3", true);
                     if (_ts.getTutorialState() == 1) {
+                      print("*******************************************");
                       _pageState.setIndex(1);
                       _ts.setTutorialState(0);
+                      print("pageState: ${_pageState.getIndex()}");
                     }
                   });
                 }
@@ -212,6 +213,7 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
             GestureDetector(
                 onTap: () {
                   _pageState.setIndex(1);
+                  print("시발 좀");
                   // Navigator.push(context,
                   //     MaterialPageRoute(builder: (context) => MakePlanPage()));
                 },
@@ -255,7 +257,6 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
       else {
         _selectionSort(homeExplorerVOS); // 최신순 정렬
         print("6*******************************");
-
         for (int i = 0; i < homeExplorerVOS.length; i++) {
 
           dynamic info = homeExplorerVOS[i];
@@ -533,7 +534,7 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
   }
 
   void _checkBanner2() {
-    if (_sp.getBool("tutorialMain") != null && _ts.getTutorialState() == 0) {
+    if (_sp.getBool("tutorialMain3") != null && _ts.getTutorialState() == 0) {
       if (_bs.getEventStatus() == 1) {
         _bs.setEventStatus(0);
         _showBanner();
@@ -554,6 +555,7 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
 
   Widget _banner() {
     AlertDialog dialog = new AlertDialog(
+      elevation: 0,
       backgroundColor: Colors.transparent,
       contentPadding: EdgeInsets.zero,
       insetPadding: EdgeInsets.symmetric(horizontal: uiCriteria.screenWidth * 0.0986),

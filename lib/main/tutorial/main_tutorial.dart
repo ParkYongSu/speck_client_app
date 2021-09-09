@@ -153,14 +153,11 @@ class _MainTutorialState extends State<MainTutorial> {
   void _pressCancel() async {
     _ts.setTutorialState(0);
     Navigator.pop(context);
-    // SharedPreferences sp = await SharedPreferences.getInstance();
-    // sp.setBool("tutorial", true);
   }
 
   void _pressTop() async {
     _ts.setTutorialState(1);
+    print("tutorialState : ${_ts.getTutorialState()}");
     Navigator.pop(context);
-    // SharedPreferences sp = await SharedPreferences.getInstance();
-    // sp.setBool("tutorial", true);
   }
 }

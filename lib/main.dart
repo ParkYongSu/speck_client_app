@@ -263,7 +263,7 @@ class SpeckAppState extends State<SpeckApp> {
           await _sp.setString("token", newToken.substring(0, newToken.length)); // 새로운 토큰 저장
           await _sp.setString("tokenUpdateDate", current.toString()); // 토큰 갱신날짜 update
           _checkBanner();
-          if (_sp.getBool("tutorialStory") == null) {
+          if (_sp.getBool("tutorialStory4") == null) {
             return Future<Widget>(() {
               return Tutorial(route: 1);
             });
@@ -285,7 +285,7 @@ class SpeckAppState extends State<SpeckApp> {
         print("result34232 $result");
         if (result == 1) {
           _checkBanner();
-          if (_sp.getBool("tutorialStory") == null) {
+          if (_sp.getBool("tutorialStory4") == null) {
             return Future<Widget>(() {
               return Tutorial(route: 1);
             });

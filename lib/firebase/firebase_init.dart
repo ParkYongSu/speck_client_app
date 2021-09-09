@@ -20,7 +20,6 @@ void firebaseSettings() async {
   firebaseMessaging = FirebaseMessaging.instance;
   firebaseMessaging.requestPermission();
   firebaseMessaging.getToken().then((value) async {
-    print("valueeeee $value");
     await sp.setString("fcmToken", value); // fcm 토큰을 저장
   });
 
@@ -60,10 +59,8 @@ void _localNotificationSetting() async {
 
 Future<void> showNotification(RemoteMessage message) async {
   String title, body;
-
   title = message.notification.title;
   body = message.notification.body;
-  print(message.data);
   var androidNotificationDetails = AndroidNotificationDetails('dexterous.com.flutter.local_notifications', title, body, importance: Importance.max, priority: Priority.max);
   var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
 

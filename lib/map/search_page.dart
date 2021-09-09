@@ -84,18 +84,17 @@ class SearchPageState extends State<SearchPage> {
                             print(5);
                             _isSearchBarNotEmpty = true;
                             Future future = _getAutoWordList(value);
-                            await future.then((value) => _containedWordList = value);
-
+                            await future.then((value) {
+                              _containedWordList = value;
+                            });
                             if (_containedWordList.isEmpty) {
                               _isContains = false;
                             }
                             else {
+                              print(123456789);
                               _isContains = true;
                               _autoTileList = _createAutoTileList(_containedWordList);
                             }
-
-                            print("containedWordList $_containedWordList");
-                            print(_isContains);
                           }
                           // 비어있으면
                           else {
@@ -243,15 +242,12 @@ class SearchPageState extends State<SearchPage> {
 
   ///자동완성 리스트를 서버로부터 가져옴
   Future<List<dynamic>> _getAutoWordList(String word) async {
+    print("*******************");
     var url = Uri.parse("$speckUrl/auto/complete");
-    SharedPreferences sp = await SharedPreferences.getInstance();
-    // Map<String, String> header = {
-    //   "member-token" : "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkeWR0bjM1MTBAbmF2ZXIuY29tIiwiZXhwIjoxNjMxODIxMDY3fQ.Q7z0m0Sp45If8CNfcbJsGTUL1Xh6jnH3qlZDIjK2cVw",
-    //   "member-email" : "dydtn3510@naver.com"
-    // };
     String body = """{
       "word" : "$word"
     }""";
+    print(body);
     Map<String, String> header = {
       "Content-Type" : "application/json"
     };
@@ -548,21 +544,6 @@ class SearchPageState extends State<SearchPage> {
     });
   }
 
-  List<String> _getContainedWord(String value) {
-    // 검색어를 포함하는 리스트 생성
-    List<String> contain = [];
-    for (int i = 0; i < _autoWordList.length; i++) {
-      if (_autoWordList[i].contains(value)) {
-        contain.add(_autoWordList[i]);
-        setState(() {
-          _isContains = true;
-        });
-      }
-    }
-    print(_isContains);
-    return contain;
-  }
-
   List<Widget> _createAutoTileList(List<dynamic> list) {
     List<Widget> examList = [];
     // 포함하는 문자열 리스트 기반으로 자동완성 위젯 생성
@@ -610,7 +591,6 @@ class SearchPageState extends State<SearchPage> {
           )
       );
     }
-    print(examList.length);
     return examList;
   }
 }

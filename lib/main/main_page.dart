@@ -46,17 +46,11 @@ class _MainNavigationState extends State<MainNavigation> {
   PageState _ps;
   NotificationState _ns;
   TutorialState _ts;
-  // SharedPreferences _sp;
 
   @override
   void initState() {
     super.initState();
-    // _getSharedPreferences();
   }
-
-  // void _getSharedPreferences() async {
-  //   _sp = await SharedPreferences.getInstance();
-  // }
 
   @override
   void dispose() {
@@ -68,7 +62,6 @@ class _MainNavigationState extends State<MainNavigation> {
   Widget build(BuildContext context) {
     _uiCriteria.init(context);
     _cardTime = Provider.of<CardTime>(context, listen: false);
-    // _ps = Provider.of<PageState>(context, listen: true);
     _ns = Provider.of<NotificationState>(context, listen: true);
     _ts = Provider.of<TutorialState>(context, listen: true);
 
@@ -105,7 +98,6 @@ class _MainNavigationState extends State<MainNavigation> {
                 centerTitle: true,
                 titleSpacing: 0,
                 backwardsCompatibility: false,
-                // brightness: Brightness.dark,
                 systemOverlayStyle: SystemUiOverlayStyle(statusBarColor: mainColor, statusBarBrightness: Brightness.dark),
                 title: Stack(
                   alignment: Alignment.center,
