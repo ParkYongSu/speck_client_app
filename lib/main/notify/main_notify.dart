@@ -179,6 +179,7 @@ class MainNotifyPageState extends State<MainNotifyPage> {
 
     var response = await http.post(url, headers: header, body: body);
     dynamic result = response.body;
+    print("result $result");
     sendPort.send(result);
   }
 

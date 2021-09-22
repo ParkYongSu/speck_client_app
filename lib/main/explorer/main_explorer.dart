@@ -520,6 +520,6 @@ class _MainExplorerState extends State<MainExplorer> {
   void _navigateExplorer(int official, String galaxyName, int todayReserve, String imgUrl, int galaxyNum, List<dynamic> timeList, int timeNum) {
     _setExplorerData(official, galaxyName, todayReserve, imgUrl, galaxyNum, timeList, timeNum);
     Navigator.push(context, MaterialPageRoute(builder: (context)
-    => Explorer()));
+    => Explorer(galaxyNum: galaxyNum,)));
   }
 }

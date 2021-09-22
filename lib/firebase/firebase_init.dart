@@ -15,11 +15,12 @@ FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 /// notification setting
 void firebaseSettings() async {
   _localNotificationSetting();
-  // FirebaseOptions firebaseOptions = new FirebaseOptions(apiKey: "AIzaSyD76dAMLAyLWosh7tjuBl629_mtwMaNy6c", appId: "1:687330380704:android:c28864c56c8d1bd9b7b2c5", messagingSenderId: "687330380704", projectId: "paidagogosspeck");
   SharedPreferences sp = await SharedPreferences.getInstance();
   firebaseMessaging = FirebaseMessaging.instance;
   firebaseMessaging.requestPermission();
+
   firebaseMessaging.getToken().then((value) async {
+    print(value);
     await sp.setString("fcmToken", value); // fcm 토큰을 저장
   });
 
@@ -41,7 +42,7 @@ void firebaseSettings() async {
 
 void _localNotificationSetting() async {
   flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
-  var androidInitializationSettings =AndroidInitializationSettings('@drawable/ic_launcher');
+  var androidInitializationSettings = AndroidInitializationSettings('@drawable/ic_launcher');
   // 안드로이드 알림 올 때 앱 아이콘 설정
 
   var iOSInitializationSettings = IOSInitializationSettings(
@@ -52,7 +53,9 @@ void _localNotificationSetting() async {
   // 만약에 사용자에게 앱 권한을 안 물어봤을 경우 이 셋팅으로 인해 permission check 함
 
   var initSetting = InitializationSettings(
-      android: androidInitializationSettings, iOS: iOSInitializationSettings);
+      android: androidInitializationSettings,
+      iOS: iOSInitializationSettings
+  );
 
   await flutterLocalNotificationsPlugin.initialize(initSetting);
 }
@@ -63,7 +66,6 @@ Future<void> showNotification(RemoteMessage message) async {
   body = message.notification.body;
   var androidNotificationDetails = AndroidNotificationDetails('dexterous.com.flutter.local_notifications', title, body, importance: Importance.max, priority: Priority.max);
   var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
-
   var details = NotificationDetails(android: androidNotificationDetails, iOS: iOSPlatformChannelSpecifics);
   await flutterLocalNotificationsPlugin.show(0, title, body, details);
 }

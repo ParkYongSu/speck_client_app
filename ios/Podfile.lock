@@ -13,7 +13,7 @@ PODS:
   - firebase_core (1.6.0):
     - Firebase/CoreOnly (= 8.6.0)
     - Flutter
-  - firebase_messaging (10.0.5):
+  - firebase_messaging (10.0.7):
     - Firebase/Messaging (= 8.6.0)
     - firebase_core
     - Flutter
@@ -91,7 +91,7 @@ PODS:
     - Flutter
   - image_picker (0.0.1):
     - Flutter
-  - kakao_flutter_sdk (0.6.1):
+  - kakao_flutter_sdk (0.6.4):
     - Flutter
   - MTBBarcodeScanner (5.0.11)
   - nanopb (2.30908.0):
@@ -209,7 +209,7 @@ SPEC CHECKSUMS:
   connectivity: c4130b2985d4ef6fd26f9702e886bd5260681467
   Firebase: 21ac9f28b09a8bdfc005f34c984fca84e7e8786d
   firebase_core: c21ac09a8d23afd3594b56ed786bad12e5266bba
-  firebase_messaging: 375e0be01be51416c1edaa07bdaad59a55d65be5
+  firebase_messaging: 0fddeca6fcfee0bed23c66210391d782af8f8d0e
   firebase_remote_config: ffc2c3cd7fec9bcf8c1922cd4cd38e583e29c335
   FirebaseABTesting: c3e48ebf5e7e5c674c5a131c68e941d7921d83dc
   FirebaseCore: 620b677f70f5470a8e59cb77f3ddc666f6f09785
@@ -228,7 +228,7 @@ SPEC CHECKSUMS:
   GoogleUtilities: 8de2a97a17e15b6b98e38e8770e2d129a57c0040
   image_gallery_saver: 259eab68fb271cfd57d599904f7acdc7832e7ef2
   image_picker: 50e7c7ff960e5f58faa4d1f4af84a771c671bc4a
-  kakao_flutter_sdk: 4084c8ebd615866755f881efb34846b3bb5fb919
+  kakao_flutter_sdk: 90f18c09513cfaaa6af63214617ceb696878fc09
   MTBBarcodeScanner: f453b33c4b7dfe545d8c6484ed744d55671788cb
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
   naver_map_plugin: d1d67733c56b20b88270d9da51218e18fa916232
@@ -245,4 +245,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.11.0

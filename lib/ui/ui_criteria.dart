@@ -18,6 +18,8 @@ class UICriteria {
   double textSize15;
   double textSize24;
   double textSize17;
+  double textSize11;
+  double textSize21;
 
   double horizontalPadding; // 가로 방향 패딩
   double verticalPadding; // 세로 방향 패
@@ -44,6 +46,8 @@ class UICriteria {
       this.textSize15 = height * 0.0185;
       this.textSize24 = height * 0.02956;
       this.textSize17 = height * 0.0209;
+      this.textSize11 = height * 0.0135;
+      this.textSize21 = height * 0.0259;
       this.calendarMarkerSize = height * 0.0061;
     }
     else if (Platform.isIOS){
@@ -57,6 +61,8 @@ class UICriteria {
       this.textSize15 = width * 0.04;
       this.textSize24 = width * 0.064;
       this.textSize17 = width * 0.0453;
+      this.textSize11 = width * 0.0293;
+      this.textSize21 = width * 0.056;
       this.calendarMarkerSize = width * 0.0133;
     }
 

@@ -587,7 +587,7 @@ class _GpsAuthState extends State<GpsAuth> with TickerProviderStateMixin, Widget
     _positionSubscription = Geolocator.getPositionStream(desiredAccuracy: LocationAccuracy.best).listen((Position position) {
       print("position1 $position-----------------------");
       print("distance  ${Geolocator.distanceBetween(_lat, _lng, position.latitude, position.longitude)}");
-      if (Geolocator.distanceBetween(_lat, _lng, position.latitude, position.longitude) > _radius) {
+      if (Geolocator.distanceBetween(_lat, _lng, position.latitude, position.longitude) > 1) {
 
         if (_checkTimer == null || !_checkTimer.isActive) {
           _checkTimer = Timer.periodic(Duration(seconds: 1), (timer) {
@@ -622,7 +622,7 @@ class _GpsAuthState extends State<GpsAuth> with TickerProviderStateMixin, Widget
             else {
               _positionSubscription.cancel();
               _checkTimer.cancel();
-              _action();
+              _action(position.latitude, position.longitude);
             }
             setState(() {});
           });
@@ -749,9 +749,10 @@ class _GpsAuthState extends State<GpsAuth> with TickerProviderStateMixin, Widget
     );
   }
 
-  Future<dynamic> _authenticate() async {
+  Future<dynamic> _authenticate(double latitude, double longitude) async {
     SharedPreferences sp = await SharedPreferences.getInstance();
-    var url = Uri.parse("$speckUrl/certify/auth");
+    var url = Uri.parse("$speckUrl/certify/auth?lat=$latitude&lng=$longitude");
+    print(url);
     int bookInfo = sp.getInt("bookInfo");
     String email = sp.getString("email");
     String body = ''' {
@@ -782,10 +783,10 @@ class _GpsAuthState extends State<GpsAuth> with TickerProviderStateMixin, Widget
         });
   }
 
-  void _action() async {
+  void _action(double latitude, double longitude) async {
     SharedPreferences sp = await SharedPreferences.getInstance();
     dynamic result;
-    Future future = _authenticate();
+    Future future = _authenticate(latitude, longitude);
     await future.then((value) => result = value);
     int statusCode = result["defaultRes"]["statusCode"];
     dynamic ticketData = result["ticket"];

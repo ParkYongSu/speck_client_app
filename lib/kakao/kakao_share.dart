@@ -39,10 +39,6 @@ class KakaoShareManager {
   DefaultTemplate _getTemplate() {
     String title = "스펙 - 집 밖을 나서는 순간, 계획은 시작!";
     Uri imageLink = Uri.parse("https://users-profile-bucket.s3.ap-northeast-2.amazonaws.com/kakao_share_image.png");
-    // Link link = Link(
-    //     webUrl: Uri.parse("https://developers.kakao.com"),
-    //     mobileWebUrl: Uri.parse("https://developers.kakao.com")
-    // );
     Link link;
     if (Platform.isAndroid) {
       link = new Link(

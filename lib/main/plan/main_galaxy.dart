@@ -223,6 +223,7 @@ class _MainPlanState extends State<MainPlan> {
     galaxy = result["galaxyList"];// 서버에서 갤럭시 정보를 가져와서 리스트에 저장
     int count = galaxy.length;// 총 갤럭시 수
     print(count);
+    // _koreanSort(galaxy);
     _todayReservationSort(galaxy);
     for (int i = 0; i < count; i++) {
       dynamic info = galaxy[i];
@@ -368,22 +369,27 @@ class _MainPlanState extends State<MainPlan> {
                         ]
                     ),
                   ),
-                  GestureDetector(
-                    child: Hero(
-                      tag: "hi",
-                      child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: _uiCriteria.screenWidth * 0.0213, vertical: _uiCriteria.screenWidth * 0.0156),
-                        decoration: BoxDecoration(
-                          color: greyB3B3BC,
-                          borderRadius: BorderRadius.circular(3.5),
+                  Row(
+                    children: [
+                      Text("예약자순  ", style: TextStyle(color: mainColor, fontSize: uiCriteria.textSize3, fontWeight: FontWeight.w700, letterSpacing: 0.5),),
+                      GestureDetector(
+                        child: Hero(
+                          tag: "hi",
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: _uiCriteria.screenWidth * 0.0213, vertical: _uiCriteria.screenWidth * 0.0156),
+                            decoration: BoxDecoration(
+                              color: greyB3B3BC,
+                              borderRadius: BorderRadius.circular(3.5),
 
+                            ),
+                            child: Text("추천", style: TextStyle(fontSize: _uiCriteria.textSize5, letterSpacing: 0.5, color: Colors.white, fontWeight: FontWeight.bold),),
+                          ),
                         ),
-                        child: Text("추천", style: TextStyle(fontSize: _uiCriteria.textSize5, letterSpacing: 0.5, color: Colors.white, fontWeight: FontWeight.bold),),
+                        onTap: () {
+                          _showDialog("희망 갤럭시 추천", "토익, 한국사, 자격증, 대기업면접 등", "학습목표", "ex) 컴활 1급, 공무원 시험 등");
+                        },
                       ),
-                    ),
-                    onTap: () {
-                      _showDialog("희망 갤럭시 추천", "토익, 한국사, 자격증, 대기업면접 등", "학습목표", "ex) 컴활 1급, 공무원 시험 등");
-                    },
+                    ],
                   )
                   // GestureDetector(
                   //   onTap: () => _sortList(context),
@@ -733,6 +739,21 @@ class _MainPlanState extends State<MainPlan> {
       dynamic temp = list[i];
       list[i] = list[max];
       list[max] = temp;
+      _koreanSort(list, i + 1);
+    }
+  }
+
+  void _koreanSort(List<dynamic> list, int k) {
+    for (int i = k; i < list.length - 1; i++) {
+      int min = i;
+      for (int j = i + 1; j < list.length; j++) {
+        if (list[min]["galaxyName"].toString().codeUnitAt(0) > list[j]["galaxyName"].toString().codeUnitAt(0)) {
+          min = j;
+        }
+      }
+      dynamic temp = list[i];
+      list[i] = list[min];
+      list[min] = temp;
     }
   }
 }

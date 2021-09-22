@@ -33,6 +33,7 @@ import 'package:speck_app/firebase/check_token.dart';
 import 'package:speck_app/firebase/firebase_init.dart';
 import 'package:speck_app/firebase/token_init_state.dart';
 import 'package:speck_app/kakao/kakao_share.dart';
+import 'package:speck_app/main/explorer/chat_user_state.dart';
 import 'package:speck_app/main/notify/notification_state.dart';
 import 'package:speck_app/main/tutorial/tutorial.dart';
 import 'package:speck_app/main/tutorial/tutorial_state.dart';
@@ -58,8 +59,7 @@ void main() async {
   KakaoShareManager manager = new KakaoShareManager();
   manager.initializeKakaoSDK();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  await Firebase.initializeApp(
-   );
+  await Firebase.initializeApp();
   firebaseSettings();
   FirebaseMessaging.onBackgroundMessage(showNotification);
   initializeDateFormatting().then((_) => runApp(MultiProvider(
@@ -85,7 +85,8 @@ void main() async {
       ChangeNotifierProvider(create: (context) => TokenInitState()),
       ChangeNotifierProvider(create: (context) => NotificationState()),
       ChangeNotifierProvider(create: (context) => PageState()),
-      ChangeNotifierProvider(create: (context) => TutorialState())
+      ChangeNotifierProvider(create: (context) => TutorialState()),
+      ChangeNotifierProvider(create: (context) => ChatUserState(),)
     ],
     child: MaterialApp(
         debugShowCheckedModeBanner: false,

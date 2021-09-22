@@ -38,7 +38,7 @@
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
-	<string>NO</string>
+	<false/>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>http</string>

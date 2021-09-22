@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speck_app/Login/Todo/state_time_sort.dart';
 import 'package:speck_app/State/explorer_state.dart';
 import 'package:speck_app/Time/return_auth_time.dart';
+import 'package:speck_app/main/explorer/chat_user_state.dart';
 import 'package:speck_app/main/explorer/explorer.dart';
 import 'package:speck_app/main/explorer/explorer_detail.dart';
 import 'package:speck_app/ui/ui_color.dart';
@@ -65,6 +66,7 @@ class GalaxyDetailState extends State<GalaxyDetail> {
   String _message;
   List<dynamic> _hashTags;
   List<dynamic> _myTimeNumList;
+  ChatUserState _cus;
 
   void initState() {
     super.initState();
@@ -80,6 +82,8 @@ class GalaxyDetailState extends State<GalaxyDetail> {
   Widget build(BuildContext context) {
     _uiCriteria.init(context);
     _es = Provider.of<ExplorerState>(context, listen: false);
+    _cus = Provider.of<ChatUserState>(context, listen: false);
+    _cus.setCount(0);
     return _galaxyDetail();
   }
 
@@ -218,12 +222,7 @@ class GalaxyDetailState extends State<GalaxyDetail> {
         _setExplorerState(timeNum);
         Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (context) =>
             Explorer(
-              // galaxyName: widget.galaxyName,
-              // imageUrl: widget.imagePath,
-              // galaxyNum: widget.galaxyNum,
-              // official: widget.official,
-              // timeNum: timeNum,
-              // route: 1,
+              galaxyNum: widget.galaxyNum,
             )));
       },
       child: Container(
@@ -285,7 +284,7 @@ class GalaxyDetailState extends State<GalaxyDetail> {
       onTap: (){
         _setExplorerState(timeNum);
         Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(builder: (context) =>
-            Explorer()));
+            Explorer(galaxyNum: widget.galaxyNum,)));
         },
       child: Container(
           margin: EdgeInsets.only(left: (popularSortList.length == 4)? _uiCriteria.horizontalPadding : 0, right: _uiCriteria.screenWidth * 0.032),

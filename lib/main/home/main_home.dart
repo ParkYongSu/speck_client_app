@@ -14,6 +14,7 @@ import 'package:speck_app/Time/stopwatch.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:speck_app/event/event_list_page.dart';
 import 'package:speck_app/main/explorer/explorer.dart';
 import 'package:speck_app/main/notify/notification_state.dart';
 import 'package:speck_app/main/tutorial/main_tutorial.dart';
@@ -83,7 +84,6 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
                   ).whenComplete(() async{
                     await _sp.setBool("tutorialMain3", true);
                     if (_ts.getTutorialState() == 1) {
-                      print("*******************************************");
                       _pageState.setIndex(1);
                       _ts.setTutorialState(0);
                       print("pageState: ${_pageState.getIndex()}");
@@ -183,7 +183,6 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
     Future getNotification = _getNotification();
     await getNotification.then((value) {
       _ns.setNotificationList(value);
-      print(_ns.isExistNew(value));
     });
 
     List<Widget> items = [];
@@ -197,15 +196,14 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
     var response = await http.post(url, headers: header, body: body);
     var utf = utf8.decode(response.bodyBytes);
     dynamic result = jsonDecode(utf);
-    print("result $result");
     int statusCode = result["defaultRes"]["statusCode"];
     if (statusCode == 200) {
       dynamic homeDataMyInfo = result["homeDataMyInfo"];
       _dust = homeDataMyInfo["dust"].toString();
       int myAttNum = homeDataMyInfo["myAttNum"];
       int allAttNum = homeDataMyInfo["allAttNum"];
-      String myPoint = homeDataMyInfo["myPoint"].toString().replaceAllMapped(new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');// 총 출첵횟수
-
+      // String myPoint = homeDataMyInfo["myPoint"].toString().replaceAllMapped(new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');// 총 출첵횟수
+      String myDeposit = homeDataMyInfo["myDeposit"].toString().replaceAllMapped(new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');// 총 출첵횟수
       List<dynamic> homeExplorerVOS = result["homeExplorerVOS"]; // 카드 정보
 
       if (homeExplorerVOS.isEmpty) {
@@ -213,9 +211,6 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
             GestureDetector(
                 onTap: () {
                   _pageState.setIndex(1);
-                  print("시발 좀");
-                  // Navigator.push(context,
-                  //     MaterialPageRoute(builder: (context) => MakePlanPage()));
                 },
                 child: Container(
                   decoration: BoxDecoration(
@@ -256,7 +251,6 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
       }
       else {
         _selectionSort(homeExplorerVOS); // 최신순 정렬
-        print("6*******************************");
         for (int i = 0; i < homeExplorerVOS.length; i++) {
 
           dynamic info = homeExplorerVOS[i];
@@ -268,6 +262,7 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
           String galaxyName = info["galaxyName"];
           String imgUrl = info["imgUrl"];
           int myDeposit = info["myDeposit"];
+          int myPrize = info["myPrize"];
           int totalDeposit = info["totalDeposit"];
           int todayReserve = info["todayReserve"];
           int totalCount = info["totalCount"];
@@ -280,9 +275,7 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
           _cardTime.startTimer();
 
           if (i == 0) {
-            print("****************");
             await _sp.setInt("bookInfo", bookInfo);
-            print("tlqkf ${_sp.getInt("bookInfo")}");
           }
 
           int hour = _cardTime.seconds ~/ (60 * 60);
@@ -293,7 +286,6 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
           items.add(
             GestureDetector(
                 onTap: () {
-                  _cardTime.stopTimer();
                   _cardTap(galaxyName, imgUrl, galaxyNum, official, timeNum);
                 },
                 child: Container(
@@ -414,7 +406,7 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
                                                       ]
                                                   ),
                                                   SizedBox(height: constraints.maxHeight * 0.0476),
-                                                  Text("$myPoint원", style: TextStyle(letterSpacing: 0.6, color: Colors.white, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w700),),
+                                                  Text("$myPrize원", style: TextStyle(letterSpacing: 0.6, color: Colors.white, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w700),),
                                                 ]
                                             ),
                                           ],
@@ -475,8 +467,8 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
                                   width: 1,
                                   color: greyD8D8D8
                               ),
-                              Text("  나의 상금 ", style: TextStyle(letterSpacing: 0.6, color: greyD8D8D8, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w700)),
-                              Text("$myPoint원", style: TextStyle(letterSpacing: 0.6, color: Colors.white, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w700))
+                              Text("  누적 보증금 ", style: TextStyle(letterSpacing: 0.6, color: greyD8D8D8, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w700)),
+                              Text("$myDeposit원", style: TextStyle(letterSpacing: 0.6, color: Colors.white, fontSize: _uiCriteria.textSize3, fontWeight: FontWeight.w700))
                             ]
                         ),
                         SizedBox(height: _uiCriteria.totalHeight * 0.007),
@@ -558,12 +550,13 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
       elevation: 0,
       backgroundColor: Colors.transparent,
       contentPadding: EdgeInsets.zero,
-      insetPadding: EdgeInsets.symmetric(horizontal: uiCriteria.screenWidth * 0.0986),
+      insetPadding: EdgeInsets.symmetric(horizontal: uiCriteria.screenWidth * 0.1093),
       content: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Spacer(flex: 127,),
           AspectRatio(
-            aspectRatio: 301/423,
+            aspectRatio: 293/480,
             child: GestureDetector(
               onTap: _bannerTap,
               child: Container(
@@ -608,7 +601,9 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
                 ),
               ],
             ),
-          )
+          ),
+          Spacer(flex: 172,),
+
         ],
       )
     );
@@ -632,41 +627,45 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
     Navigator.pop(context);
   }
 
-  void _bannerTap() async {
-    String package;
-    String urlScheme;
-    bool isInstalled;
+  // void _bannerTap() async {
+  //   String package;
+  //   String urlScheme;
+  //   bool isInstalled;
+  //
+  //   if (Platform.isAndroid) {
+  //     package = "https://play.google.com/store/apps/details?id=com.instagram.android";
+  //   }
+  //   else if (Platform.isIOS){
+  //     package = "https://apps.apple.com/us/app/instagram/id389801252";
+  //   }
+  //   urlScheme = "instagram://user?username=speck_app";
+  //
+  //   await canLaunch("instagram://app").then((value) => isInstalled = value).onError((error, stackTrace) {
+  //     print("설치여부 $error");
+  //     return false;
+  //   });
+  //
+  //   if (isInstalled) {
+  //     try {
+  //       launch(urlScheme);
+  //     }
+  //     catch (e) {
+  //       print(e);
+  //     }
+  //   }
+  //   else {
+  //     try {
+  //       launch(package);
+  //     }
+  //     catch (e) {
+  //       print(e);
+  //     }
+  //   }
+  //
+  // }
 
-    if (Platform.isAndroid) {
-      package = "https://play.google.com/store/apps/details?id=com.instagram.android";
-    }
-    else if (Platform.isIOS){
-      package = "https://apps.apple.com/us/app/instagram/id389801252";
-    }
-    urlScheme = "instagram://user?username=speck_app";
-
-    await canLaunch("instagram://app").then((value) => isInstalled = value).onError((error, stackTrace) {
-      print("설치여부 $error");
-      return false;
-    });
-
-    if (isInstalled) {
-      try {
-        launch(urlScheme);
-      }
-      catch (e) {
-        print(e);
-      }
-    }
-    else {
-      try {
-        launch(package);
-      }
-      catch (e) {
-        print(e);
-      }
-    }
-
+  void _bannerTap() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => EventListPage()));
   }
 
 
@@ -1018,12 +1017,11 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
 
   void _cardTap(String galaxyName, String imagePath, int galaxyNum, int official, int timeNum) {
     _setExplorerData(galaxyName, imagePath, galaxyNum, official, timeNum);
-    Navigator.push((context), MaterialPageRoute(builder: (context) => Explorer()));
+    Navigator.push((context), MaterialPageRoute(builder: (context) => Explorer(galaxyNum: galaxyNum,)));
   }
 
   /// 알림 데이터 받아오기
   Future<List<dynamic>> _getNotification() async {
-    print("알림 데이터 받기");
     var url = Uri.parse("$speckUrl/user/notification");
     String body = """{
       "email" : "${_sp.getString("email")}"
@@ -1033,7 +1031,6 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
     };
     var response = await http.post(url, headers: header, body: body);
     var result = jsonDecode(utf8.decode(response.bodyBytes));
-    print(result);
     return Future(() {
       return result;
     });
@@ -1043,8 +1040,6 @@ class MainHomeState extends State<MainHome> with WidgetsBindingObserver {
   _getCardPosition(GlobalKey key) {
     RenderBox _viewBox = key.currentContext.findRenderObject();
     // Offset offset = _viewBox.localToGlobal(Offset.zero);
-    print(_viewBox.size.width);
-    print(_viewBox.size.height);
     return _viewBox;
   }
 }
